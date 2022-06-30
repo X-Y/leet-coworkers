@@ -2,31 +2,18 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import https from "https";
 import {ClientRequest} from "http";
 
+import {Coworker} from "../../interfaces/CoworkerModel";
+
+
 const API_URL = process.env.API_URL;
 const ENDPOINT = process.env.API_ENDPOINT_EMPLOYEE;
 const AUTH_TOKEN = process.env.API_KEY;
 
-type Employee = {
-  name: string,
-  email: string,
-  phoneNumber: string,
-  office: string,
-  manager: string,
-  orgUnit: string,
-  mainText: string,
-  gitHub: string,
-  twitter: string,
-  stackOverflow: string,
-  linkedIn: string,
-  imagePortraitUrl: string,
-  imageWallOfLeetUrl: string,
-  highlighted: boolean,
-  published: boolean
-};
+
 
 export default function handler(
   req: NextApiRequest,
-  res: NextApiResponse<Employee[]>
+  res: NextApiResponse<Coworker[]>
 ) {
   const leetCoworkerUrl: URL = new URL(ENDPOINT || '', API_URL || '');
 
@@ -44,7 +31,7 @@ export default function handler(
     apiRes.on('data', function(chunk: string) {
       output += chunk;
     }).on('end', function() {
-      const jsonRes: Employee[] = JSON.parse(output);
+      const jsonRes: Coworker[] = JSON.parse(output);
       res.status(200).json(jsonRes)
     })
   })
