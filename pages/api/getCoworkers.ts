@@ -29,7 +29,7 @@ export default function handler(
   res: NextApiResponse<Employee[]>
 ) {
   const leetCoworkerUrl: URL = new URL(ENDPOINT || '', API_URL || '');
-  
+
   const apiReq: ClientRequest = https.get(leetCoworkerUrl, {
     headers: {
       'Authorization': AUTH_TOKEN
