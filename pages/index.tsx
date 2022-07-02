@@ -7,7 +7,7 @@ import {Coworker} from "../interfaces/CoworkerModel";
 
 import {coworkersApi} from "../lib/frontendApi";
 
-import CoworkersList from '../components/CoworkersList';
+import CoworkersList from '../components/CoworkersList/CoworkersList';
 
 import styles from '../styles/Home.module.css'
 
@@ -19,7 +19,7 @@ const Home: NextPage = () => {
 
   let coworkersList;
   if(data) {
-    coworkersList = <CoworkersList coworkers={data} />
+    coworkersList = <CoworkersList coworkers={data.slice(0, 10)} />
   }
 
   return (
