@@ -12,7 +12,8 @@ import CoworkersList from '../components/CoworkersList/CoworkersList';
 import styles from '../styles/Home.module.scss'
 import {useState} from "react";
 import ControlBar from "../containers/ControlBar/ControlBar";
-import {useSort} from "../Hooks/useSort";
+import {useSort} from "../hooks/useSort";
+import {useFilter} from "../hooks/useFilter";
 
 const Home: NextPage = () => {
   const [amount, setAmount] = useState(20);
@@ -21,6 +22,7 @@ const Home: NextPage = () => {
   });
 
   const sortedData = useSort(data);
+  const filteredData = useFilter(sortedData, amount);
 
   const onLoadMoreClick= () => {
     setAmount(amount + 10);
@@ -29,10 +31,10 @@ const Home: NextPage = () => {
   return (
     <div className={styles.container}>
       <ControlBar />
-      {!!sortedData &&
-        <CoworkersList coworkers={sortedData?.slice(0, amount)} />
+      {!!filteredData &&
+        <CoworkersList coworkers={filteredData?.slice(0, amount)} />
       }
-      {!sortedData &&
+      {!filteredData &&
         <div>Loading...</div>
       }
 

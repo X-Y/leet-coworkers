@@ -14,7 +14,7 @@ const Sort:React.FC = () => {
   const onSortChange = (e:ChangeEvent<HTMLSelectElement>) => {
     setSortBy(+e.target.value);
   }
-  return <Dropdown id={id} onChange={onSortChange} options={options} />
+  return <Dropdown id={id} label={'Sort By'} onChange={onSortChange} options={options} />
 }
 
 export default Sort;
