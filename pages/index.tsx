@@ -9,22 +9,29 @@ import {coworkersApi} from "../lib/frontendApi";
 
 import CoworkersList from '../components/CoworkersList/CoworkersList';
 
-import styles from '../styles/Home.module.css'
+import styles from '../styles/Home.module.scss'
+import {useState} from "react";
 
 const Home: NextPage = () => {
-
+  const [amount, setAmount] = useState(20);
   const { status, data, error, isFetching } = useQuery<Coworker[]>('getCoworkers', coworkersApi, {
     staleTime: 60000
   });
 
-  let coworkersList;
-  if(data) {
-    coworkersList = <CoworkersList coworkers={data.slice(0, 10)} />
+  const onLoadMoreClick= () => {
+    setAmount(amount + 10);
   }
 
   return (
     <div className={styles.container}>
-      {coworkersList}
+      {!!data &&
+        <CoworkersList coworkers={data.slice(0, amount)} />
+      }
+      {!data &&
+        <div>Loading...</div>
+      }
+
+      <button className={styles.LoadMoreButton} onClick={onLoadMoreClick}>Load More</button>
     </div>
   )
 }
