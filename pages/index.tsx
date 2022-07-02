@@ -11,6 +11,8 @@ import CoworkersList from '../components/CoworkersList/CoworkersList';
 
 import styles from '../styles/Home.module.scss'
 import {useState} from "react";
+import ControlBar from "../containers/ControlBar/ControlBar";
+import {useSort} from "../Hooks/useSort";
 
 const Home: NextPage = () => {
   const [amount, setAmount] = useState(20);
@@ -18,16 +20,19 @@ const Home: NextPage = () => {
     staleTime: 60000
   });
 
+  const sortedData = useSort(data);
+
   const onLoadMoreClick= () => {
     setAmount(amount + 10);
   }
 
   return (
     <div className={styles.container}>
-      {!!data &&
-        <CoworkersList coworkers={data.slice(0, amount)} />
+      <ControlBar />
+      {!!sortedData &&
+        <CoworkersList coworkers={sortedData?.slice(0, amount)} />
       }
-      {!data &&
+      {!sortedData &&
         <div>Loading...</div>
       }
 
