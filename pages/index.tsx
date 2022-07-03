@@ -21,8 +21,9 @@ const Home: NextPage = () => {
     staleTime: 60000
   });
 
-  const sortedData = useSort(data);
-  const filteredData = useFilter(sortedData, amount);
+  let resData = data;
+  resData = useFilter(resData);
+  resData = useSort(resData);
 
   const onLoadMoreClick= () => {
     setAmount(amount + 10);
@@ -31,10 +32,10 @@ const Home: NextPage = () => {
   return (
     <div className={styles.container}>
       <ControlBar />
-      {!!filteredData &&
-        <CoworkersList coworkers={filteredData?.slice(0, amount)} />
+      {!!resData &&
+        <CoworkersList coworkers={resData?.slice(0, amount)} />
       }
-      {!filteredData &&
+      {!resData &&
         <div>Loading...</div>
       }
 
