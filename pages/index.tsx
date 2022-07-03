@@ -33,13 +33,16 @@ const Home: NextPage = () => {
     <div className={styles.container}>
       <ControlBar />
       {!!resData &&
-        <CoworkersList coworkers={resData?.slice(0, amount)} />
+        <CoworkersList coworkers={resData.slice(0, amount)} />
       }
       {!resData &&
         <div>Loading...</div>
       }
 
-      <button className={styles.LoadMoreButton} onClick={onLoadMoreClick}>Load More</button>
+      {
+        resData && amount < resData.length &&
+        <button className={styles.LoadMoreButton} onClick={onLoadMoreClick}>Load More</button>
+      }
     </div>
   )
 }
