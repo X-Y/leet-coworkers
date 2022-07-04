@@ -1,34 +1,69 @@
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
-## Getting Started
+## Description
 
-First, run the development server:
+This is a web app that displays all colleagues of 13|37. You'll be able to see the name, office, portrait, and social media links to each of the coworkers. You can also search and sort the coworkers.
 
+## How to run
+
+You can see it live in https://leet-coworkers-q1qn1ou7z-x-y.vercel.app/
+
+Alternatively, you can run it locally with the following instructions
+
+Before you start, make sure you are using node 16.
+
+In the root of the project folder, run the following commands:
 ```bash
-npm run dev
-# or
+yarn
 yarn dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+## Desgin of code
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+This project is built upon Nextjs Framework. It has a builtin Express API server, which makes requests to the remote API with the API key defined as build time env variables.
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+On the frontend side, data fetching and state management is handled by react-query. Then the data is modified by 2 hooks to apply filter and sorting, before rendered into view.
 
-## Learn More
+User input for sort and filter is shared between the UI components and hooks through context.  
 
-To learn more about Next.js, take a look at the following resources:
+React components follows presentation/container pattern. 
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Project codebase is divided into a few folders, each named to reflect their purposes. e.g. "components" for presentational components, and "containers" for logical containers. "interfaces" for Typescript definitions(in which only the data model is placed), and "lib" for unspecific reusable logics. 
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+Typescript is implicitly defined, relying on IDE to infer as much as possible. Sharable Data model "Coworkers" is defined in the interface folder to allow reusing. 
 
-## Deploy on Vercel
+Styling is built upon sass modules out of convenience. In principle all styling should stay next to the presentational components.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Motivation of installed packages 
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+### Nextjs: 
+1. Provides a default approach for intermediate api server. Helps in making API requests
+2. Is integrated with Vercel, which provides a simple way of CI/CD and deployment.
+3. Provides a good project base with lots of tools at disposal, potential for future expansions
+
+### react-query:
+1. An easy and powerful tool of managing queries. 
+2. Handles data sharing between components
+
+### axios
+1. Simple way of making queries
+
+### sass
+1. Easy and well-established tool for doing styling
+
+## Stories Selected
+
+### Responsive design
+When applying responsive design, it defines the way css would be structured(Mobile first). So it just naturely flows with the base styling itself.
+
+### Sort by name and office
+### Filter by name and office
+I like writing code which involves a bit logical thinking. Formulated the structure of how these two can work together, I think it makes the project more interesting.
+
+### Available on free public url
+It comes with Vercel
+
+### Use Typescript
+I'm using it regularly, so it's easy to adapt.
