@@ -9,8 +9,6 @@ const API_URL = process.env.API_URL;
 const ENDPOINT = process.env.API_ENDPOINT_EMPLOYEE;
 const AUTH_TOKEN = process.env.API_KEY;
 
-
-
 export default function handler(
   req: NextApiRequest,
   res: NextApiResponse<Coworker[]>
