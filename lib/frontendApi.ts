@@ -10,8 +10,3 @@ export const coworkersApi:CoworkersApiType = async () => {
 
   return data;
 }
-
-export const mockCoworkersApi:CoworkersApiType = async () => {
-
-  return mockData;
-}

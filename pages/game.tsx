@@ -46,30 +46,31 @@ const gameCities = [
 type Entry = Coworker & {
   options: string[]
 }
+type Answer = [string, boolean];
 
 const iniGameState = {
   step: GAME_STATES.MENU,
   score: 0,
   amount: 10,
+  confusions: 2,
   entries: [] as Entry[],
+  answers: [] as Answer[],
 }
 
-interface Payload {
-  score?: number;
-  entries?: Entry[];
-}
-interface GameAction {
-  type: GAME_ACTIONS;
-  payload?: Payload;
-}
+type GameAction = 
+  | { type: GAME_ACTIONS.CONFIGS_DONE; payload: {entries: Entry[]}}  
+  | { type: GAME_ACTIONS.START; }
+  | { type: GAME_ACTIONS.END; payload: {answers: Answer[]; score: number}}
+  | { type: GAME_ACTIONS.RESTART; }
+
 const gameStateReducer = (state: typeof iniGameState, action:GameAction) => {
   switch(action.type) {
     case GAME_ACTIONS.CONFIGS_DONE:
-      return {...state, step: GAME_STATES.MEMORY, score: 0, entries: action?.payload?.entries};
+      return {...state, step: GAME_STATES.MEMORY, score: 0, entries: action.payload.entries};
     case GAME_ACTIONS.START:
       return {...state, step: GAME_STATES.PLAY};
     case GAME_ACTIONS.END:
-      return {...state, step: GAME_STATES.RESULT, score: action?.payload?.score};
+      return {...state, step: GAME_STATES.RESULT, score: action.payload.score, answers: action.payload.answers};
     case GAME_ACTIONS.RESTART:
       return iniGameState;
   }
@@ -84,7 +85,7 @@ const Game: NextPage = () => {
     setFilterValue('Borlänge')
   }, [])
 
-  const { status, data, error, isFetching } = useQuery<Coworker[]>('getCoworkers', mockCoworkersApi, {
+  const { status, data, error, isFetching } = useQuery<Coworker[]>('getCoworkers', coworkersApi, {
     staleTime: 60000
   });
 
@@ -94,19 +95,30 @@ const Game: NextPage = () => {
 
 
   const onConfigsDoneClick = () => {
-    if(!resData) return ;
+    const resDataConst = resData;
+    if(!resDataConst) return ;
 
-    const entries:Entry[] = resData.sort(() => 0.5-Math.random()).slice(0, gameState.amount);
-    entries.forEach(one => {
-      let confuse:Coworker;
-      do {
-        confuse = resData[Math.round(Math.random() * (resData.length-1))];
-      } while(confuse?.name === one.name)
-        
-      one.options = [one.name, confuse.name].sort(() => 0.5-Math.random());
-    })
+    const entries:Entry[] = resDataConst
+      .filter((one) => !!one.imagePortraitUrl )
+      .sort(() => 0.5-Math.random())
+      .slice(0, gameState.amount)
+      .map(one => {
+        let confuses: string[] = [];
+        while(confuses.length < gameState.confusions) {
+          const confuse = resDataConst[Math.round(Math.random() * (resDataConst.length-1))];
+          if(confuses.findIndex(name => name === confuse.name) === -1) {
+            confuses.push(confuse.name)
+          }
+        }
+          
+        const options = [one.name, ...confuses].sort(() => 0.5-Math.random());
 
-    console.log(entries.map(({name, options}) => ({name, options})))
+        return {
+          ...one,
+          options
+        };
+      });
+
     gameDispatch({type: GAME_ACTIONS.CONFIGS_DONE, payload: {entries}});
   }
 
@@ -114,6 +126,29 @@ const Game: NextPage = () => {
     gameDispatch({type: GAME_ACTIONS.START});
 
   }
+
+  const calculateScore = (answersOrig: string[], entries: Entry[]) => {
+    let score = 0;
+    const result = entries.reduce((prev, curr, idx) => {
+      const currentAnswer = answersOrig[idx]
+      let isCorrect = false;
+      if(curr.name === currentAnswer) {
+        score += 1;
+        isCorrect = true;
+      }
+
+      return [...prev, [currentAnswer, isCorrect] as Answer];
+    }, [] as Answer[]);
+    return [score, result] as [number, Answer[]];
+  }
+  const onPlayDone = (answers: string[]) => {
+    const [score, correctedAnswers] = calculateScore(answers, gameState.entries);
+    gameDispatch({type: GAME_ACTIONS.END, payload: {score, answers: correctedAnswers}});
+  }
+  const onResultDone = () => {
+    gameDispatch({type: GAME_ACTIONS.RESTART});
+  }
+
 
   return (
     <div className={styles.container}>
@@ -140,69 +175,96 @@ const Game: NextPage = () => {
       {
         gameState.step === GAME_STATES.PLAY &&
         <>
-          <PlayStage entries={gameState.entries} />
+          <PlayStage entries={gameState.entries} onDone={onPlayDone} />
         </>
       }
 
+      {
+        gameState.step === GAME_STATES.RESULT &&
+        <>
+          <ResultStage 
+            entries={gameState.entries} 
+            answers={gameState.answers} 
+            score={gameState.score} 
+            onDone={onResultDone}
+            />
+        </>
+      }
     </div>
   )
 }
 
 interface PlayStageProps {
-  entries: Entry[]
+  entries: Entry[];
+  onDone: (answers: string[]) => void;
 }
-const PlayStage:React.FC<PlayStageProps> = ({entries}) => {
+const PlayStage:React.FC<PlayStageProps> = ({entries, onDone}) => {
   const [answers, setAnswers] = useState([] as string[]);
   const [current, setCurrent] = useState(0);
   
   const setAnswer = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log(e.target.value)
     setAnswers(prev => [...prev, e.target.value]);
     setCurrent(prev => prev + 1);
   }
 
-  if(current < entries.length) {
-    const currentCoworker = entries[current];
-    const {options} = currentCoworker;
-  
-    return <div>
-      <CoworkersList coworkers={[currentCoworker]} />
-  
-      <ul>
-        {
-          options.map((option, idx) => {
-            return <li key={current*1000 + idx}>
-              <label>
-                <input type='radio' name='entry-option' value={option} onChange={setAnswer}/>
-                {option}
-              </label>
-            </li>
-          })
-        }
-      </ul>
-    </div>
-  }
-  console.log(answers)
-  const score = entries.reduce((prev, curr, idx) => {
-    if(curr.name === answers[idx]) {
-      return prev + 1;
+  useEffect(() => {
+    if(current >= entries.length) {
+      onDone(answers);
     }
-    return prev;
-  }, 0)
+  }, [current])
+
+  const currentCoworker = entries[Math.min(current, entries.length-1)];
+  const {options, imagePortraitUrl} = currentCoworker;
+  const coworker = {imagePortraitUrl} as Coworker;
+
+  return <div>
+    <CoworkersList coworkers={[coworker]} />
+
+    <ul>
+      {
+        options.map((option, idx) => {
+          return <li key={current*1000 + idx}>
+            <label>
+              <input type='radio' name='entry-option' value={option} onChange={setAnswer}/>
+              {option}
+            </label>
+          </li>
+        })
+      }
+    </ul>
+  </div>
+
+  
+}
+
+interface ResultStageProps {
+  entries: Entry[];
+  answers: Answer[];
+  score: number;
+  onDone: () => void;
+}
+
+const ResultStage:React.FC<ResultStageProps> = ({entries, answers, score, onDone}) => {
   return <div>
     done!
     <ul>
       {
         entries.map((one, idx) => (<li key={one.name}>
-          {one.name} {answers[idx]}
+          <CoworkersList coworkers={[one]} />
+
+          {
+            answers[idx][1] ?
+              <div>Correct!</div> :
+              <div>Your answer: {answers[idx][0]} is not correct </div>
+          }
+          
         </li>))
       }
     </ul>
     <div>
       {score} / {entries.length}
     </div>
-    <button>next</button>
-    
+    <button onClick={onDone}>next</button>
   </div>
 }
 

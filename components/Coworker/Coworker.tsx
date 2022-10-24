@@ -17,7 +17,7 @@ const Coworker: React.FC<Props> = ({name, office, imagePortraitUrl, linkedIn, gi
     <div className={styles.InfoBox}>
       <div className={styles.Details}>
         <div className={styles.Name}>{name}</div>
-        <div className={styles.Office}>Office: {office}</div>
+        <div className={styles.Office}>{office && <>Office: {office}</>}</div>
       </div>
       <div className={styles.SocialMedia}>
         {
