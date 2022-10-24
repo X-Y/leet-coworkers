@@ -1,4 +1,4 @@
-const PlayStage = ({entries}) => {
+const PlayStage = () => {
 
 
 }
