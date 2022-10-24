@@ -5,7 +5,7 @@ import {useQuery} from 'react-query';
 
 import {Coworker} from "../interfaces/CoworkerModel";
 
-import {coworkersApi, mockCoworkersApi} from "../lib/frontendApi";
+import {coworkersApi} from "../lib/frontendApi";
 
 import {FILTER_BY, FilterContext} from "../contexts/FilterContext/FilterContext";
 

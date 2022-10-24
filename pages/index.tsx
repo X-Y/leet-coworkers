@@ -5,7 +5,7 @@ import {useQuery} from 'react-query';
 
 import {Coworker} from "../interfaces/CoworkerModel";
 
-import {coworkersApi, mockCoworkersApi} from "../lib/frontendApi";
+import {coworkersApi} from "../lib/frontendApi";
 
 import CoworkersList from '../components/CoworkersList/CoworkersList';
 
@@ -17,7 +17,7 @@ import {useFilter} from "../hooks/useFilter";
 
 const Home: NextPage = () => {
   const [amount, setAmount] = useState(20);
-  const { status, data, error, isFetching } = useQuery<Coworker[]>('getCoworkers', mockCoworkersApi, {
+  const { status, data, error, isFetching } = useQuery<Coworker[]>('getCoworkers', coworkersApi, {
     staleTime: 60000
   });
 
