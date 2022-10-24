@@ -2,14 +2,22 @@ import React, {ChangeEvent, useContext} from "react";
 import Dropdown from "../../components/Dropdown/Dropdown";
 import {FILTER_BY, FilterContext} from "../../contexts/FilterContext/FilterContext";
 
-const filterByOptions = {
+const filterByOptionsDefault = {
   [FILTER_BY.NONE]: 'none',
   [FILTER_BY.NAME]: 'name',
   [FILTER_BY.CITY]: 'city',
 }
 
-const cities = [ 'Borlänge','Helsingborg','Ljubljana','Lund', 'Stockholm' ]
-const Filter:React.FC = () => {
+const citiesDefault = [ 'Borlänge','Helsingborg','Ljubljana','Lund', 'Stockholm' ]
+
+interface Props {
+  filterByOptions?: {
+    [key: string]: string;
+  },
+  cities?: Array<string>
+}
+
+const Filter:React.FC<Props> = ({filterByOptions = filterByOptionsDefault, cities = citiesDefault}) => {
   const { filterBy, setFilterBy, setFilterValue} = useContext(FilterContext);
   const onFilterByChange = (e:ChangeEvent<HTMLSelectElement>) => {
     setFilterBy(+e.target.value);

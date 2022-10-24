@@ -10,12 +10,14 @@
   },
   "dependencies": {
     "axios": "^0.27.2",
+    "memory-cache": "^0.2.0",
     "next": "12.2.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-query": "^3.39.1"
   },
   "devDependencies": {
+    "@types/memory-cache": "^0.2.2",
     "@types/node": "18.0.0",
     "@types/react": "18.0.14",
     "@types/react-dom": "18.0.5",
