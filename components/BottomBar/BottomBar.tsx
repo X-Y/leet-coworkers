@@ -12,15 +12,17 @@ const BottomBar: React.FC<Props> = ({ children }) => {
   return (
     <Box
       ref={ref}
-      sx={{
+      sx={(theme) => ({
         padding: "1rem 5rem",
         position: "sticky",
         bottom: "-1px",
-        background: "white",
+        background: theme.colors.leetGreen[6],
         width: "100%",
         textAlign: "right",
-        boxShadow: entry?.isIntersecting ? "" : "0 0 1.5rem lightGrey",
-      }}
+        boxShadow: entry?.isIntersecting
+          ? ""
+          : "0 0 1.5rem " + theme.colors.leetGreen[7],
+      })}
     >
       {children}
     </Box>

@@ -41,6 +41,15 @@ const randomConfetti = () => {
   confetti({ origin: { y: 1, x: Math.random() }, startVelocity: 60 });
 };
 
+const GradientText = {
+  variant: "gradient" as "gradient",
+  gradient: {
+    from: "white",
+    to: "leetPurple.0",
+    deg: 15,
+  },
+};
+
 const ResultStage: React.FC<ResultStageProps> = ({
   gameState,
   gameDispatch,
@@ -60,7 +69,6 @@ const ResultStage: React.FC<ResultStageProps> = ({
     const tid = setTimeout(() => {
       const next = stageNum + 1;
       if (next <= STAGES.RESULT_DISPLAY) {
-        console.log(next);
         triggerNextStage(next);
         setStage(next);
       }
@@ -114,11 +122,7 @@ const ResultStage: React.FC<ResultStageProps> = ({
           >
             {(styles) => (
               <Center style={{ ...styles, marginTop: "30vh" }}>
-                <Title
-                  size={90}
-                  variant="gradient"
-                  gradient={{ from: "blue", to: "cyan", deg: 15 }}
-                >
+                <Title size={90} {...GradientText}>
                   Done!
                 </Title>
               </Center>
@@ -132,9 +136,8 @@ const ResultStage: React.FC<ResultStageProps> = ({
             {(styles) => (
               <Title
                 size={60}
-                variant="gradient"
-                gradient={{ from: "cyan", to: "blue", deg: 15 }}
-                style={{ ...styles, marginTop: "20vh" }}
+                {...GradientText}
+                style={{ ...styles, margin: "20vh 0 0 0" }}
               >
                 Your score is:
               </Title>
@@ -149,11 +152,12 @@ const ResultStage: React.FC<ResultStageProps> = ({
               <Title
                 size={90}
                 variant="gradient"
-                gradient={{ from: "cyan", to: "blue", deg: 15 }}
+                gradient={{ from: "leetGreen.6", to: "leetPurple.4", deg: 15 }}
                 style={{
                   ...styles,
                   textAlign: "center",
-                  marginBottom: "20vh",
+                  marginBottom: "10vh",
+                  filter: "drop-shadow(8px 12px black)",
                 }}
               >
                 {score} / {entries.length}
@@ -172,13 +176,19 @@ const ResultStage: React.FC<ResultStageProps> = ({
             <MediaQuery
               largerThan="xs"
               styles={{
-                display: "grid",
                 gridTemplateColumns: "repeat(auto-fill, 300px)",
                 gap: "2rem",
                 justifyContent: "center",
               }}
             >
-              <Box sx={{ padding: "2rem", marginBottom: "2rem" }}>
+              <Box
+                sx={{
+                  display: "grid",
+                  padding: "2rem",
+                  marginBottom: "2rem",
+                  gap: "2rem",
+                }}
+              >
                 {entries.map((one, idx) => (
                   <GameResultTile
                     key={idx}
@@ -191,6 +201,7 @@ const ResultStage: React.FC<ResultStageProps> = ({
             </MediaQuery>
             <BottomBar>
               <Button
+                color="leetPurple"
                 sx={{ padding: "0 4rem" }}
                 size="lg"
                 onClick={onGameRestartClick}

@@ -1,5 +1,13 @@
 import { useState, useEffect } from "react";
-import { Radio, Center, Stack, MediaQuery, Box, Space } from "@mantine/core";
+import {
+  Radio,
+  Center,
+  Stack,
+  MediaQuery,
+  Box,
+  Space,
+  Progress,
+} from "@mantine/core";
 
 import { Entry, Answer, GAME_ACTIONS } from "../../interfaces/Game";
 import { Coworker as CoworkerModel } from "../../interfaces/CoworkerModel";
@@ -61,40 +69,53 @@ const PlayStage: React.FC<PlayStageProps> = ({ gameState, gameDispatch }) => {
   const { options, imagePortraitUrl } = currentCoworker;
   const coworker = { imagePortraitUrl } as CoworkerModel;
 
+  const progress = (current / entries.length) * 100;
+  console.log(progress);
+
   return (
-    <Center>
-      <Stack>
-        <MediaQuery
-          largerThan={"sm"}
-          styles={{
+    <Stack
+      sx={{
+        width: "100%",
+        justifyContent: "center",
+        alignItems: "center",
+        padding: "2vh 0 0 0",
+      }}
+    >
+      <Progress
+        sx={{ width: "90%", maxWidth: "40rem", marginBottom: "6vh" }}
+        value={progress + 1}
+        color={"leetGreen"}
+      />
+
+      <MediaQuery
+        largerThan={"sm"}
+        styles={{
+          width: "20rem",
+        }}
+      >
+        <Box
+          sx={{
             width: "20rem",
-            margin: "10vh 0 0 0",
           }}
         >
-          <Box
-            sx={{
-              width: "100%",
-            }}
-          >
-            <Coworker {...coworker} />
-          </Box>
-        </MediaQuery>
-        <Space h="xl" />
-        <Center>
-          <Radio.Group
-            key={current}
-            orientation="vertical"
-            name="quiz"
-            onChange={setAnswer}
-            sx={(theme) => ({ label: { fontSize: "30px" } })}
-          >
-            {options.map((option, idx) => (
-              <Radio key={current + "_" + idx} value={option} label={option} />
-            ))}
-          </Radio.Group>
-        </Center>
-      </Stack>
-    </Center>
+          <Coworker {...coworker} />
+        </Box>
+      </MediaQuery>
+      <Space h="xl" />
+      <Center>
+        <Radio.Group
+          key={current}
+          orientation="vertical"
+          name="quiz"
+          onChange={setAnswer}
+          sx={(theme) => ({ label: { fontSize: "30px" } })}
+        >
+          {options.map((option, idx) => (
+            <Radio key={current + "_" + idx} value={option} label={option} />
+          ))}
+        </Radio.Group>
+      </Center>
+    </Stack>
   );
 };
 
