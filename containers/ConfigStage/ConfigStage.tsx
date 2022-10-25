@@ -1,5 +1,12 @@
 import { Dispatch, useContext } from "react";
-import { Button, Select } from "@mantine/core";
+import {
+  Button,
+  Select,
+  Title,
+  Stack,
+  Center,
+  MediaQuery,
+} from "@mantine/core";
 
 import { Entry, GAME_ACTIONS } from "../../interfaces/Game";
 import { Coworker } from "../../interfaces/CoworkerModel";
@@ -76,12 +83,39 @@ const ConfigStage: React.FC<ConfigStageProps> = ({
   });
   return (
     <div>
-      <Select
-        label="Please pick a location:"
-        data={data}
-        onChange={setFilterValue}
-      />
-      <Button onClick={onConfigsDoneClick}>Start</Button>
+      <MediaQuery largerThan={"sm"} styles={{ marginTop: "15%" }}>
+        <Stack>
+          <Title
+            size={70}
+            weight={900}
+            variant="gradient"
+            gradient={{ from: "cyan", to: "yellow", deg: 15 }}
+          >
+            THE GUESSING GAME
+          </Title>
+
+          <MediaQuery largerThan={"sm"} styles={{ maxWidth: "20rem" }}>
+            <Stack style={{ width: "100%", margin: "2rem auto" }}>
+              <Select
+                label="Pick a location:"
+                data={data}
+                onChange={setFilterValue}
+              />
+              <Select label="How many quizes:" data={data} />
+              <Select label="How many options:" data={data} />
+            </Stack>
+          </MediaQuery>
+          <MediaQuery largerThan={"xs"} styles={{ maxWidth: "15rem" }}>
+            <Button
+              style={{ width: "100%", margin: "2rem auto" }}
+              size="xl"
+              onClick={onConfigsDoneClick}
+            >
+              Start
+            </Button>
+          </MediaQuery>
+        </Stack>
+      </MediaQuery>
     </div>
   );
 };

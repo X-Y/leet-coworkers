@@ -1,6 +1,7 @@
 import { useContext, useEffect, useReducer, useState } from "react";
 import type { NextPage } from "next";
 import { useQuery } from "react-query";
+import { Center, Container } from "@mantine/core";
 
 import type { Coworker } from "../interfaces/CoworkerModel";
 import { GAME_STATES } from "../interfaces/Game";
@@ -47,33 +48,35 @@ const Game: NextPage = () => {
   resData = useSort(resData);
 
   return (
-    <div className={styles.container}>
-      {!resData && <div>Loading...</div>}
+    <Container style={{ minHeight: "100vh" }}>
+      <Center>
+        {!resData && <div>Loading...</div>}
 
-      {gameState.step === GAME_STATES.MENU && (
-        <ConfigStage
-          resData={resData}
-          gameDispatch={gameDispatch}
-          gameState={gameState}
-        />
-      )}
+        {gameState.step === GAME_STATES.MENU && (
+          <ConfigStage
+            resData={resData}
+            gameDispatch={gameDispatch}
+            gameState={gameState}
+          />
+        )}
 
-      {gameState.step === GAME_STATES.MEMORY && (
-        <MemoryStage gameDispatch={gameDispatch} gameState={gameState} />
-      )}
+        {gameState.step === GAME_STATES.MEMORY && (
+          <MemoryStage gameDispatch={gameDispatch} gameState={gameState} />
+        )}
 
-      {gameState.step === GAME_STATES.PLAY && (
-        <>
-          <PlayStage gameDispatch={gameDispatch} gameState={gameState} />
-        </>
-      )}
+        {gameState.step === GAME_STATES.PLAY && (
+          <>
+            <PlayStage gameDispatch={gameDispatch} gameState={gameState} />
+          </>
+        )}
 
-      {gameState.step === GAME_STATES.RESULT && (
-        <>
-          <ResultStage gameDispatch={gameDispatch} gameState={gameState} />
-        </>
-      )}
-    </div>
+        {gameState.step === GAME_STATES.RESULT && (
+          <>
+            <ResultStage gameDispatch={gameDispatch} gameState={gameState} />
+          </>
+        )}
+      </Center>
+    </Container>
   );
 };
 
