@@ -1,5 +1,6 @@
 import type { Dispatch } from "react";
-import { Button } from "@mantine/core";
+import { Button, Container } from "@mantine/core";
+import { useIntersection } from "@mantine/hooks";
 
 import { GAME_ACTIONS } from "../../interfaces/Game";
 
@@ -19,15 +20,43 @@ const MemoryStage: React.FC<MemoryStageProps> = ({
   gameState,
   gameDispatch,
 }) => {
+  const { ref, entry } = useIntersection({
+    threshold: 1,
+  });
+
+  console.log(entry);
+
   const onGameStartClick = () => {
     gameDispatch({ type: GAME_ACTIONS.START });
   };
 
   return (
-    <div>
-      <CoworkersList coworkers={gameState.entries} />
-      <Button onClick={onGameStartClick}>Next</Button>
-    </div>
+    <>
+      <div style={{ padding: "2rem", position: "relative" }}>
+        <CoworkersList coworkers={gameState.entries} />
+      </div>
+
+      <div
+        ref={ref}
+        style={{
+          padding: "2rem 5rem",
+          position: "sticky",
+          bottom: "-1px",
+          background: "white",
+          width: "100%",
+          textAlign: "right",
+          boxShadow: entry?.isIntersecting ? "" : "0 0 1.5rem lightGrey",
+        }}
+      >
+        <Button
+          style={{ padding: "0 4rem" }}
+          size="xl"
+          onClick={onGameStartClick}
+        >
+          Start!
+        </Button>
+      </div>
+    </>
   );
 };
 
