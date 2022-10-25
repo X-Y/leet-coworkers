@@ -53,7 +53,7 @@ const ConfigStage: React.FC<ConfigStageProps> = ({
       .sort(() => 0.5 - Math.random())
       .slice(0, gameState.amount)
       .map((one) => {
-        let confuses: string[] = [];
+        let confuses: string[] = [one.name];
         while (confuses.length < gameState.confusions) {
           const confuse =
             resDataConst[Math.round(Math.random() * (resDataConst.length - 1))];
@@ -62,7 +62,7 @@ const ConfigStage: React.FC<ConfigStageProps> = ({
           }
         }
 
-        const options = [one.name, ...confuses].sort(() => 0.5 - Math.random());
+        const options = confuses.sort(() => 0.5 - Math.random());
 
         return {
           ...one,
@@ -84,7 +84,7 @@ const ConfigStage: React.FC<ConfigStageProps> = ({
   return (
     <Center>
       <MediaQuery largerThan={"sm"} styles={{ marginTop: "8rem" }}>
-        <Stack style={{ padding: "0 0.5rem" }}>
+        <Stack sx={{ padding: "0 0.5rem" }}>
           <Title
             size={70}
             weight={900}
@@ -95,7 +95,7 @@ const ConfigStage: React.FC<ConfigStageProps> = ({
           </Title>
 
           <MediaQuery largerThan={"sm"} styles={{ maxWidth: "20rem" }}>
-            <Stack style={{ width: "100%", margin: "2rem auto" }}>
+            <Stack sx={{ width: "100%", margin: "2rem auto" }}>
               <Select
                 label="Pick a location:"
                 data={data}
@@ -107,7 +107,7 @@ const ConfigStage: React.FC<ConfigStageProps> = ({
           </MediaQuery>
           <MediaQuery largerThan={"xs"} styles={{ maxWidth: "15rem" }}>
             <Button
-              style={{ width: "100%", margin: " auto" }}
+              sx={{ width: "100%", margin: " auto" }}
               size="xl"
               onClick={onConfigsDoneClick}
             >

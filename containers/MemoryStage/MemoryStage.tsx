@@ -1,5 +1,5 @@
 import type { Dispatch } from "react";
-import { Button, Container } from "@mantine/core";
+import { Box, Button, Container } from "@mantine/core";
 import { useIntersection } from "@mantine/hooks";
 
 import { GAME_ACTIONS } from "../../interfaces/Game";
@@ -32,13 +32,13 @@ const MemoryStage: React.FC<MemoryStageProps> = ({
 
   return (
     <>
-      <div style={{ padding: "2rem", position: "relative" }}>
+      <Box sx={{ padding: "2rem", position: "relative" }}>
         <CoworkersList coworkers={gameState.entries} />
-      </div>
+      </Box>
 
-      <div
+      <Box
         ref={ref}
-        style={{
+        sx={{
           padding: "2rem 5rem",
           position: "sticky",
           bottom: "-1px",
@@ -48,14 +48,10 @@ const MemoryStage: React.FC<MemoryStageProps> = ({
           boxShadow: entry?.isIntersecting ? "" : "0 0 1.5rem lightGrey",
         }}
       >
-        <Button
-          style={{ padding: "0 4rem" }}
-          size="xl"
-          onClick={onGameStartClick}
-        >
+        <Button sx={{ padding: "0 4rem" }} size="xl" onClick={onGameStartClick}>
           Start!
         </Button>
-      </div>
+      </Box>
     </>
   );
 };
