@@ -1,14 +1,14 @@
 import { useState, useEffect } from "react";
-import { Radio } from "@mantine/core";
+import { Radio, Center, Stack, MediaQuery, Box, Space } from "@mantine/core";
 
 import { Entry, Answer, GAME_ACTIONS } from "../../interfaces/Game";
-import { Coworker } from "../../interfaces/CoworkerModel";
+import { CoworkerModel } from "../../interfaces/CoworkerModel";
 import type {
   GameDispatch,
   GameState,
 } from "../../reducers/gameReducer/gameReducer";
 
-import CoworkersList from "../../components/CoworkersList/CoworkersList";
+import Coworker from "../../components/Coworker/Coworker";
 
 const calculateScore = (answersOrig: string[], entries: Entry[]) => {
   let score = 0;
@@ -59,17 +59,47 @@ const PlayStage: React.FC<PlayStageProps> = ({ gameState, gameDispatch }) => {
 
   const currentCoworker = entries[Math.min(current, entries.length - 1)];
   const { options, imagePortraitUrl } = currentCoworker;
-  const coworker = { imagePortraitUrl } as Coworker;
+  const coworker = { imagePortraitUrl } as CoworkerModel;
 
   return (
-    <div>
-      <CoworkersList coworkers={[coworker]} />
-      <Radio.Group orientation="vertical" name="quiz" onChange={setAnswer}>
-        {options.map((option) => (
-          <Radio value={option} label={option} />
-        ))}
-      </Radio.Group>
-    </div>
+    <Center>
+      <Stack>
+        <MediaQuery
+          largerThan={"sm"}
+          styles={{
+            width: "20rem",
+            margin: "10rem 0 0 0",
+          }}
+        >
+          <Box
+            sx={{
+              width: "100%",
+            }}
+          >
+            <Coworker {...coworker} />
+          </Box>
+        </MediaQuery>
+        <Space h="xl" />
+        <Center>
+          <Radio.Group
+            orientation="vertical"
+            name="quiz"
+            onChange={setAnswer}
+            sx={(theme) => ({ label: { fontSize: "30px" } })}
+          >
+            {options.map((option, idx) => (
+              <Radio
+                wrapperProps={{
+                  key: current + "_" + idx,
+                }}
+                value={option}
+                label={option}
+              />
+            ))}
+          </Radio.Group>
+        </Center>
+      </Stack>
+    </Center>
   );
 };
 
