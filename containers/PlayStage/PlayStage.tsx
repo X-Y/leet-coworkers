@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Radio, Center, Stack, MediaQuery, Box, Space } from "@mantine/core";
 
 import { Entry, Answer, GAME_ACTIONS } from "../../interfaces/Game";
-import { CoworkerModel } from "../../interfaces/CoworkerModel";
+import { Coworker as CoworkerModel } from "../../interfaces/CoworkerModel";
 import type {
   GameDispatch,
   GameState,
