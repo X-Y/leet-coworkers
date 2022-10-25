@@ -82,6 +82,7 @@ const PlayStage: React.FC<PlayStageProps> = ({ gameState, gameDispatch }) => {
         <Space h="xl" />
         <Center>
           <Radio.Group
+            key={current}
             orientation="vertical"
             name="quiz"
             onChange={setAnswer}

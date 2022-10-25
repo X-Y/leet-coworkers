@@ -92,7 +92,7 @@ const ResultStage: React.FC<ResultStageProps> = ({
 
   return (
     <>
-      <div style={{ position: "fixed", top: "0" }}>
+      <div style={{ position: "fixed", top: "0", display: "none" }}>
         {Array(6)
           .fill(0)
           .map((one, idx) => (
