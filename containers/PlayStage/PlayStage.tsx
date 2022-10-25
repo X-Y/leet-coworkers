@@ -68,7 +68,7 @@ const PlayStage: React.FC<PlayStageProps> = ({ gameState, gameDispatch }) => {
           largerThan={"sm"}
           styles={{
             width: "20rem",
-            margin: "10rem 0 0 0",
+            margin: "10vh 0 0 0",
           }}
         >
           <Box

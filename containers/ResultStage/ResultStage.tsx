@@ -9,6 +9,7 @@ import {
   Title,
   Transition,
 } from "@mantine/core";
+import confetti from "canvas-confetti";
 
 import { GAME_ACTIONS } from "../../interfaces/Game";
 import type {
@@ -36,11 +37,16 @@ enum STAGES {
 
 const stageTimers = [500, 1000, 500, 1000, 1200];
 
+const randomConfetti = () => {
+  confetti({ origin: { y: 1, x: Math.random() }, startVelocity: 60 });
+};
+
 const ResultStage: React.FC<ResultStageProps> = ({
   gameState,
   gameDispatch,
 }) => {
   const timerRef = useRef<NodeJS.Timeout>();
+  const confettiTimerRef = useRef<NodeJS.Timeout>();
   const [stage, setStage] = useState<STAGES>(STAGES.BEFORE_DONE);
   const { entries, answers, score } = gameState;
 
@@ -62,12 +68,20 @@ const ResultStage: React.FC<ResultStageProps> = ({
 
     timerRef.current = tid;
   };
+  const startConfetti = () => {
+    randomConfetti();
+    const tid = setTimeout(() => {
+      startConfetti();
+    }, Math.random() * 700);
+    confettiTimerRef.current = tid;
+  };
   useEffect(() => {
-    console.log(testStarter);
+    startConfetti();
     setStage(0);
     triggerNextStage(0);
 
     return () => {
+      clearTimeout(confettiTimerRef.current);
       clearTimeout(timerRef.current);
     };
   }, [testStarter]);
@@ -88,6 +102,7 @@ const ResultStage: React.FC<ResultStageProps> = ({
           ))}
 
         <button onClick={() => setTestStarter((prev) => !prev)}>Restart</button>
+        <button onClick={() => randomConfetti()}>Confetti</button>
       </div>
 
       <Center>
@@ -177,7 +192,7 @@ const ResultStage: React.FC<ResultStageProps> = ({
             <BottomBar>
               <Button
                 sx={{ padding: "0 4rem" }}
-                size="xl"
+                size="lg"
                 onClick={onGameRestartClick}
               >
                 Restart!

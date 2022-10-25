@@ -29,7 +29,7 @@ const MemoryStage: React.FC<MemoryStageProps> = ({
       </Box>
 
       <BottomBar>
-        <Button sx={{ padding: "0 4rem" }} size="xl" onClick={onGameStartClick}>
+        <Button sx={{ padding: "0 4rem" }} size="lg" onClick={onGameStartClick}>
           Start!
         </Button>
       </BottomBar>

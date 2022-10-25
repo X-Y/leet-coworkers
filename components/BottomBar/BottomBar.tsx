@@ -14,7 +14,7 @@ const BottomBar: React.FC<Props> = ({ children }) => {
     <Box
       ref={ref}
       sx={{
-        padding: "2rem 5rem",
+        padding: "1rem 5rem",
         position: "sticky",
         bottom: "-1px",
         background: "white",
