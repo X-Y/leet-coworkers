@@ -72,9 +72,13 @@ const ResultStage: React.FC<ResultStageProps> = ({
     };
   }, [testStarter]);
 
+  const onGameRestartClick = () => {
+    gameDispatch({ type: GAME_ACTIONS.RESTART });
+  };
+
   return (
     <>
-      <div>
+      <div style={{ position: "fixed", top: "0" }}>
         {Array(6)
           .fill(0)
           .map((one, idx) => (
@@ -85,25 +89,26 @@ const ResultStage: React.FC<ResultStageProps> = ({
 
         <button onClick={() => setTestStarter((prev) => !prev)}>Restart</button>
       </div>
-      <Transition
-        mounted={stage === STAGES.DONE}
-        transition="pop"
-        timingFunction="cubic-bezier(0.68, -0.6, 0.32, 4)"
-      >
-        {(styles) => (
-          <Center style={{ ...styles, marginTop: "30vh" }}>
-            <Title
-              size={90}
-              variant="gradient"
-              gradient={{ from: "blue", to: "cyan", deg: 15 }}
-            >
-              Done!
-            </Title>
-          </Center>
-        )}
-      </Transition>
+
       <Center>
         <Stack>
+          <Transition
+            mounted={stage === STAGES.DONE}
+            transition="pop"
+            timingFunction="cubic-bezier(0.68, -0.6, 0.32, 4)"
+          >
+            {(styles) => (
+              <Center style={{ ...styles, marginTop: "30vh" }}>
+                <Title
+                  size={90}
+                  variant="gradient"
+                  gradient={{ from: "blue", to: "cyan", deg: 15 }}
+                >
+                  Done!
+                </Title>
+              </Center>
+            )}
+          </Transition>
           <Transition
             mounted={stage >= STAGES.YOUR_SCORE_IS}
             transition="fade"
@@ -169,14 +174,18 @@ const ResultStage: React.FC<ResultStageProps> = ({
                 ))}
               </Box>
             </MediaQuery>
+            <BottomBar>
+              <Button
+                sx={{ padding: "0 4rem" }}
+                size="xl"
+                onClick={onGameRestartClick}
+              >
+                Restart!
+              </Button>
+            </BottomBar>
           </Box>
         )}
       </Transition>
-      <BottomBar>
-        <Button sx={{ padding: "0 4rem" }} size="xl">
-          Restart!
-        </Button>
-      </BottomBar>
     </>
   );
 };
