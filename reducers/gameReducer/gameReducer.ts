@@ -17,7 +17,10 @@ export const iniGameState = {
 };
 
 export type GameAction =
-  | { type: GAME_ACTIONS.CONFIGS_DONE; payload: { entries: Entry[] } }
+  | {
+      type: GAME_ACTIONS.CONFIGS_DONE;
+      payload: { entries: Entry[]; amount: number; confusions: number };
+    }
   | { type: GAME_ACTIONS.START }
   | { type: GAME_ACTIONS.END; payload: { answers: Answer[]; score: number } }
   | { type: GAME_ACTIONS.RESTART };
@@ -33,6 +36,8 @@ export const gameStateReducer = (
         step: GAME_STATES.MEMORY,
         score: 0,
         entries: action.payload.entries,
+        amount: action.payload.amount,
+        confusions: action.payload.confusions,
       };
     case GAME_ACTIONS.START:
       return { ...state, step: GAME_STATES.PLAY };

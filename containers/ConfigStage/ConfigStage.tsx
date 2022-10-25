@@ -1,4 +1,4 @@
-import { Dispatch, useContext } from "react";
+import { Dispatch, useContext, useRef } from "react";
 import {
   Button,
   Select,
@@ -32,6 +32,10 @@ const gameCities: (string | [string, string])[] = [
   ["Whole Sweden", "(Borlänge|Stockholm|Helsingborg|Lund)"],
 ];
 
+const numberQuizes = [10, 20];
+
+const numberOptions = [2, 3, 4];
+
 interface ConfigStageProps {
   resData?: Coworker[];
   gameState: GameState;
@@ -42,19 +46,27 @@ const ConfigStage: React.FC<ConfigStageProps> = ({
   gameState,
   gameDispatch,
 }) => {
+  const numQuizRef = useRef<HTMLInputElement>(null);
+  const numOptionsRef = useRef<HTMLInputElement>(null);
+
   const { setFilterValue } = useContext(FilterContext);
 
   const onConfigsDoneClick = () => {
     const resDataConst = resData;
     if (!resDataConst) return;
 
+    const numQuiz = +(numQuizRef.current?.value || "0");
+    const numOptions = +(numOptionsRef.current?.value || "0");
+
+    console.log(numOptions, numQuiz);
+
     const entries: Entry[] = resDataConst
       .filter((one) => !!one.imagePortraitUrl)
       .sort(() => 0.5 - Math.random())
-      .slice(0, gameState.amount)
+      .slice(0, numQuiz || gameState.amount)
       .map((one) => {
         let confuses: string[] = [one.name];
-        while (confuses.length < gameState.confusions) {
+        while (confuses.length < (numOptions || gameState.confusions)) {
           const confuse =
             resDataConst[Math.round(Math.random() * (resDataConst.length - 1))];
           if (confuses.findIndex((name) => name === confuse.name) === -1) {
@@ -70,7 +82,10 @@ const ConfigStage: React.FC<ConfigStageProps> = ({
         };
       });
 
-    gameDispatch({ type: GAME_ACTIONS.CONFIGS_DONE, payload: { entries } });
+    gameDispatch({
+      type: GAME_ACTIONS.CONFIGS_DONE,
+      payload: { entries, amount: numQuiz, confusions: numOptions },
+    });
   };
 
   const data = gameCities.map((one) => {
@@ -101,8 +116,22 @@ const ConfigStage: React.FC<ConfigStageProps> = ({
                 data={data}
                 onChange={setFilterValue}
               />
-              <Select label="How many quizes:" data={data} />
-              <Select label="How many options:" data={data} />
+              <Select
+                label="How many quizes:"
+                ref={numQuizRef}
+                data={numberQuizes.map((one) => ({
+                  value: "" + one,
+                  label: "" + one,
+                }))}
+              />
+              <Select
+                label="How many options:"
+                ref={numOptionsRef}
+                data={numberOptions.map((one) => ({
+                  value: "" + one,
+                  label: "" + one,
+                }))}
+              />
             </Stack>
           </MediaQuery>
           <MediaQuery largerThan={"xs"} styles={{ maxWidth: "15rem" }}>

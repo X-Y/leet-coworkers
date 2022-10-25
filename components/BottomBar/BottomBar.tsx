@@ -9,7 +9,6 @@ const BottomBar: React.FC<Props> = ({ children }) => {
     threshold: 1,
   });
 
-  console.log(entry?.isIntersecting);
   return (
     <Box
       ref={ref}
