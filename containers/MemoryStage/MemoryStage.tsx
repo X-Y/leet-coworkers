@@ -1,16 +1,14 @@
-import type { Dispatch } from "react";
 import { Box, Button, Container } from "@mantine/core";
-import { useIntersection } from "@mantine/hooks";
 
 import { GAME_ACTIONS } from "../../interfaces/Game";
 
-import { GameAction } from "../../reducers/gameReducer/gameReducer";
 import type {
   GameDispatch,
   GameState,
 } from "../../reducers/gameReducer/gameReducer";
 
 import CoworkersList from "../../components/CoworkersList/CoworkersList";
+import BottomBar from "../../components/BottomBar/BottomBar";
 
 interface MemoryStageProps {
   gameState: GameState;
@@ -20,12 +18,6 @@ const MemoryStage: React.FC<MemoryStageProps> = ({
   gameState,
   gameDispatch,
 }) => {
-  const { ref, entry } = useIntersection({
-    threshold: 1,
-  });
-
-  console.log(entry);
-
   const onGameStartClick = () => {
     gameDispatch({ type: GAME_ACTIONS.START });
   };
@@ -36,22 +28,11 @@ const MemoryStage: React.FC<MemoryStageProps> = ({
         <CoworkersList coworkers={gameState.entries} />
       </Box>
 
-      <Box
-        ref={ref}
-        sx={{
-          padding: "2rem 5rem",
-          position: "sticky",
-          bottom: "-1px",
-          background: "white",
-          width: "100%",
-          textAlign: "right",
-          boxShadow: entry?.isIntersecting ? "" : "0 0 1.5rem lightGrey",
-        }}
-      >
+      <BottomBar>
         <Button sx={{ padding: "0 4rem" }} size="xl" onClick={onGameStartClick}>
           Start!
         </Button>
-      </Box>
+      </BottomBar>
     </>
   );
 };

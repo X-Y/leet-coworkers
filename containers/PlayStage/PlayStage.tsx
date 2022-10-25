@@ -88,13 +88,7 @@ const PlayStage: React.FC<PlayStageProps> = ({ gameState, gameDispatch }) => {
             sx={(theme) => ({ label: { fontSize: "30px" } })}
           >
             {options.map((option, idx) => (
-              <Radio
-                wrapperProps={{
-                  key: current + "_" + idx,
-                }}
-                value={option}
-                label={option}
-              />
+              <Radio key={current + "_" + idx} value={option} label={option} />
             ))}
           </Radio.Group>
         </Center>
