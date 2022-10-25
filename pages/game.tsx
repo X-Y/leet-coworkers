@@ -48,35 +48,33 @@ const Game: NextPage = () => {
   resData = useSort(resData);
 
   return (
-    <Container style={{ minHeight: "100vh" }}>
-      <Center>
-        {!resData && <div>Loading...</div>}
+    <div style={{ minHeight: "100vh" }}>
+      {!resData && <div>Loading...</div>}
 
-        {gameState.step === GAME_STATES.MENU && (
-          <ConfigStage
-            resData={resData}
-            gameDispatch={gameDispatch}
-            gameState={gameState}
-          />
-        )}
+      {gameState.step === GAME_STATES.MENU && (
+        <ConfigStage
+          resData={resData}
+          gameDispatch={gameDispatch}
+          gameState={gameState}
+        />
+      )}
 
-        {gameState.step === GAME_STATES.MEMORY && (
-          <MemoryStage gameDispatch={gameDispatch} gameState={gameState} />
-        )}
+      {gameState.step === GAME_STATES.MEMORY && (
+        <MemoryStage gameDispatch={gameDispatch} gameState={gameState} />
+      )}
 
-        {gameState.step === GAME_STATES.PLAY && (
-          <>
-            <PlayStage gameDispatch={gameDispatch} gameState={gameState} />
-          </>
-        )}
+      {gameState.step === GAME_STATES.PLAY && (
+        <>
+          <PlayStage gameDispatch={gameDispatch} gameState={gameState} />
+        </>
+      )}
 
-        {gameState.step === GAME_STATES.RESULT && (
-          <>
-            <ResultStage gameDispatch={gameDispatch} gameState={gameState} />
-          </>
-        )}
-      </Center>
-    </Container>
+      {gameState.step === GAME_STATES.RESULT && (
+        <>
+          <ResultStage gameDispatch={gameDispatch} gameState={gameState} />
+        </>
+      )}
+    </div>
   );
 };
 

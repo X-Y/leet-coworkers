@@ -82,9 +82,9 @@ const ConfigStage: React.FC<ConfigStageProps> = ({
     }
   });
   return (
-    <div>
-      <MediaQuery largerThan={"sm"} styles={{ marginTop: "15%" }}>
-        <Stack>
+    <Center>
+      <MediaQuery largerThan={"sm"} styles={{ marginTop: "8rem" }}>
+        <Stack style={{ padding: "0 0.5rem" }}>
           <Title
             size={70}
             weight={900}
@@ -107,7 +107,7 @@ const ConfigStage: React.FC<ConfigStageProps> = ({
           </MediaQuery>
           <MediaQuery largerThan={"xs"} styles={{ maxWidth: "15rem" }}>
             <Button
-              style={{ width: "100%", margin: "2rem auto" }}
+              style={{ width: "100%", margin: " auto" }}
               size="xl"
               onClick={onConfigsDoneClick}
             >
@@ -116,7 +116,7 @@ const ConfigStage: React.FC<ConfigStageProps> = ({
           </MediaQuery>
         </Stack>
       </MediaQuery>
-    </div>
+    </Center>
   );
 };
 
