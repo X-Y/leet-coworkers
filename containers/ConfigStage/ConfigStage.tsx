@@ -11,15 +11,14 @@ import {
 import { Entry, GAME_ACTIONS } from "../../interfaces/Game";
 import { Coworker } from "../../interfaces/CoworkerModel";
 
-import { GameAction } from "../../reducers/gameReducer/gameReducer";
 import type {
   GameDispatch,
   GameState,
 } from "../../reducers/gameReducer/gameReducer";
 
-import CoworkersList from "../../components/CoworkersList/CoworkersList";
-import Filter from "../Filter/Filter";
 import { FilterContext } from "../../contexts/FilterContext/FilterContext";
+
+import FlagText from "../../components/FlagText/FlagText";
 
 const gameCities: (string | [string, string])[] = [
   "Borlänge",
@@ -100,17 +99,9 @@ const ConfigStage: React.FC<ConfigStageProps> = ({
     <Center>
       <MediaQuery largerThan={"sm"} styles={{ marginTop: "8rem" }}>
         <Stack sx={{ padding: "0 0.5rem" }}>
-          <Title
-            size={70}
-            weight={900}
-            sx={{
-              filter: "drop-shadow(12px 14px 0 black)",
-            }}
-            variant="gradient"
-            gradient={{ from: "leetGreen.6", to: "leetPurple.4", deg: 15 }}
-          >
+          <FlagText size={70} weight={900}>
             THE GUESSING GAME
-          </Title>
+          </FlagText>
 
           <MediaQuery largerThan={"sm"} styles={{ maxWidth: "20rem" }}>
             <Stack sx={{ width: "100%", margin: "2rem auto" }}>
