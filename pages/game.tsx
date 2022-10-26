@@ -52,9 +52,6 @@ const Game: NextPage = () => {
       sx={(theme) => ({
         minHeight: "100vh",
         backgroundColor: theme.colors.leetPurple[6],
-
-        opacity: 0.8,
-
         background:
           "repeating-linear-gradient( -45deg, #1E1E9D, #1E1E9D 2px, #0c0c91 2px, #0c0c91 25px )",
       })}

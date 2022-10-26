@@ -109,6 +109,11 @@ const ConfigStage: React.FC<ConfigStageProps> = ({
                 label="Pick a location:"
                 data={data}
                 onChange={setFilterValue}
+                styles={(theme) => ({
+                  label: {
+                    color: theme.colors.leetPurple[0],
+                  },
+                })}
               />
               <Select
                 label="How many quizes:"
@@ -117,6 +122,11 @@ const ConfigStage: React.FC<ConfigStageProps> = ({
                   value: "" + one,
                   label: "" + one,
                 }))}
+                styles={(theme) => ({
+                  label: {
+                    color: theme.colors.leetPurple[0],
+                  },
+                })}
               />
               <Select
                 label="How many options:"
@@ -125,6 +135,11 @@ const ConfigStage: React.FC<ConfigStageProps> = ({
                   value: "" + one,
                   label: "" + one,
                 }))}
+                styles={(theme) => ({
+                  label: {
+                    color: theme.colors.leetPurple[0],
+                  },
+                })}
               />
             </Stack>
           </MediaQuery>
