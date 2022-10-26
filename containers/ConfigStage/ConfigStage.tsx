@@ -103,8 +103,11 @@ const ConfigStage: React.FC<ConfigStageProps> = ({
           <Title
             size={70}
             weight={900}
+            sx={{
+              filter: "drop-shadow(12px 14px 0 black)",
+            }}
             variant="gradient"
-            gradient={{ from: "cyan", to: "yellow", deg: 15 }}
+            gradient={{ from: "leetGreen.6", to: "leetPurple.4", deg: 15 }}
           >
             THE GUESSING GAME
           </Title>
@@ -136,6 +139,7 @@ const ConfigStage: React.FC<ConfigStageProps> = ({
           </MediaQuery>
           <MediaQuery largerThan={"xs"} styles={{ maxWidth: "15rem" }}>
             <Button
+              color="leetGreen"
               sx={{ width: "100%", margin: " auto" }}
               size="xl"
               onClick={onConfigsDoneClick}

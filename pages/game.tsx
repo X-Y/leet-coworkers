@@ -1,7 +1,7 @@
 import { useContext, useEffect, useReducer, useState } from "react";
 import type { NextPage } from "next";
 import { useQuery } from "react-query";
-import { Center, Container } from "@mantine/core";
+import { Center, Container, Box } from "@mantine/core";
 
 import type { Coworker } from "../interfaces/CoworkerModel";
 import { GAME_STATES } from "../interfaces/Game";
@@ -48,7 +48,17 @@ const Game: NextPage = () => {
   resData = useSort(resData);
 
   return (
-    <div style={{ minHeight: "100vh" }}>
+    <Box
+      sx={(theme) => ({
+        minHeight: "100vh",
+        backgroundColor: theme.colors.leetPurple[6],
+
+        opacity: 0.8,
+
+        background:
+          "repeating-linear-gradient( -45deg, #1E1E9D, #1E1E9D 2px, #0c0c91 2px, #0c0c91 25px )",
+      })}
+    >
       {!resData && <div>Loading...</div>}
 
       {gameState.step === GAME_STATES.MENU && (
@@ -74,7 +84,7 @@ const Game: NextPage = () => {
           <ResultStage gameDispatch={gameDispatch} gameState={gameState} />
         </>
       )}
-    </div>
+    </Box>
   );
 };
 
