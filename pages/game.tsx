@@ -26,6 +26,7 @@ import ConfigStage from "../containers/ConfigStage/ConfigStage";
 import styles from "../styles/Home.module.scss";
 import { useSort } from "../hooks/useSort";
 import { useFilter } from "../hooks/useFilter";
+import GameBackground from "../components/GameBackground/GameBackground";
 
 const Game: NextPage = () => {
   const { setFilterBy, setFilterValue } = useContext(FilterContext);
@@ -48,15 +49,8 @@ const Game: NextPage = () => {
   resData = useSort(resData);
 
   return (
-    <Box
-      sx={(theme) => ({
-        minHeight: "100vh",
-        backgroundColor: theme.colors.leetPurple[6],
-        background:
-          "repeating-linear-gradient( -45deg, #1E1E9D, #1E1E9D 2px, #0c0c91 2px, #0c0c91 25px )",
-      })}
-    >
-      {!resData && <div>Loading...</div>}
+    <GameBackground>
+      {!resData && <div style={{ position: "fixed" }}>Loading...</div>}
 
       {gameState.step === GAME_STATES.MENU && (
         <ConfigStage
@@ -81,7 +75,7 @@ const Game: NextPage = () => {
           <ResultStage gameDispatch={gameDispatch} gameState={gameState} />
         </>
       )}
-    </Box>
+    </GameBackground>
   );
 };
 
