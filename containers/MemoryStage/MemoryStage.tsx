@@ -24,7 +24,7 @@ const MemoryStage: React.FC<MemoryStageProps> = ({
 
   return (
     <>
-      <Box sx={{ padding: "2rem", position: "relative" }}>
+      <Box sx={{ padding: "2rem", position: "relative", minHeight: "100vh" }}>
         <CoworkersList coworkers={gameState.entries} />
       </Box>
 
