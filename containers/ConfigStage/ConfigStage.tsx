@@ -65,6 +65,8 @@ const ConfigStage: React.FC<ConfigStageProps> = ({
       .sort(() => 0.5 - Math.random())
       .slice(0, numQuiz || gameState.amount)
       .map((one) => {
+        const img = new Image();
+        img.src = one.imagePortraitUrl;
         let confuses: string[] = [one.name];
         while (confuses.length < (numOptions || gameState.confusions)) {
           const confuse =
