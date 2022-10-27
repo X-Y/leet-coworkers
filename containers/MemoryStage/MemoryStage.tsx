@@ -32,7 +32,7 @@ const MemoryStage: React.FC<MemoryStageProps> = ({
   useEffect(() => {
     setTimeout(() => {
       setInStage(true);
-    }, 300);
+    }, 600);
     return () => {
       setInStage(false);
     };

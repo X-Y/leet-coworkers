@@ -8,6 +8,7 @@ import {
   Space,
   Progress,
 } from "@mantine/core";
+import { AnimatePresence, motion, Variant } from "framer-motion";
 
 import { Entry, Answer, GAME_ACTIONS } from "../../interfaces/Game";
 import { Coworker as CoworkerModel } from "../../interfaces/CoworkerModel";
@@ -17,6 +18,35 @@ import type {
 } from "../../reducers/gameReducer/gameReducer";
 
 import Coworker from "../../components/Coworker/Coworker";
+
+const variantsContainer: Record<string, Variant> = {
+  center: {
+    transition: {
+      staggerChildren: 0.2,
+    },
+  },
+  exit: {
+    transition: {
+      staggerChildren: 0.06,
+    },
+  },
+};
+const variants: Record<string, Variant> = {
+  enter: {
+    x: 200,
+    opacity: 0,
+  },
+  center: {
+    x: 0,
+    opacity: 1,
+  },
+  exit: {
+    x: -100,
+    opacity: 0,
+
+    transition: { duration: 0.2, ease: [0.395, 0.005, 1.0, 0.38] },
+  },
+};
 
 const calculateScore = (answersOrig: string[], entries: Entry[]) => {
   let score = 0;
@@ -53,10 +83,12 @@ const PlayStage: React.FC<PlayStageProps> = ({ gameState, gameDispatch }) => {
       answers,
       gameState.entries
     );
-    gameDispatch({
-      type: GAME_ACTIONS.END,
-      payload: { score, answers: correctedAnswers },
-    });
+    setTimeout(() => {
+      gameDispatch({
+        type: GAME_ACTIONS.END,
+        payload: { score, answers: correctedAnswers },
+      });
+    }, 500);
   };
 
   useEffect(() => {
@@ -65,66 +97,79 @@ const PlayStage: React.FC<PlayStageProps> = ({ gameState, gameDispatch }) => {
     }
   }, [current]);
 
-  const currentCoworker = entries[Math.min(current, entries.length - 1)];
+  const currentCoworker =
+    current >= entries.length
+      ? { options: [], imagePortraitUrl: "" }
+      : entries[current];
   const { options, imagePortraitUrl } = currentCoworker;
   const coworker = { imagePortraitUrl } as CoworkerModel;
 
   const progress = (current / entries.length) * 100;
-  console.log(progress);
 
   return (
-    <Stack
-      sx={{
-        width: "100%",
-        justifyContent: "center",
-        alignItems: "center",
-        padding: "2vh 0 0 0",
-      }}
-    >
-      <Progress
-        sx={{ width: "90%", maxWidth: "40rem", marginBottom: "6vh" }}
-        value={progress + 1}
-        color={"leetGreen"}
-      />
-
-      <MediaQuery
-        largerThan={"sm"}
-        styles={{
-          width: "20rem",
-        }}
-      >
-        <Box
-          sx={{
-            width: "20rem",
-          }}
-        >
-          <Coworker {...coworker} />
-        </Box>
-      </MediaQuery>
-      <Space h="xl" />
-      <Center>
-        <Radio.Group
+    <div>
+      <Box sx={{ padding: "1rem 0 2rem 0" }}>
+        <Progress
+          sx={{ width: "90%", maxWidth: "40rem", margin: "auto" }}
+          value={progress + 1}
+          color={"leetGreen"}
+        />
+      </Box>
+      <AnimatePresence exitBeforeEnter>
+        <motion.div
           key={current}
-          orientation="vertical"
-          name="quiz"
-          onChange={setAnswer}
-          sx={(theme) => ({ label: { fontSize: "30px" } })}
+          initial="enter"
+          animate="center"
+          exit="exit"
+          variants={variantsContainer}
         >
-          {options.map((option, idx) => (
-            <Radio
-              key={current + "_" + idx}
-              value={option}
-              label={option}
-              styles={(theme) => ({
-                label: {
-                  color: theme.colors.leetPurple[0],
-                },
-              })}
-            />
-          ))}
-        </Radio.Group>
-      </Center>
-    </Stack>
+          <Stack
+            justify="space-between"
+            align="center"
+            sx={{
+              width: "100%",
+              gap: "5vh",
+            }}
+          >
+            <motion.div variants={variants}>
+              <Box
+                sx={{
+                  width: "20rem",
+                }}
+              >
+                {coworker.imagePortraitUrl !== "" && <Coworker {...coworker} />}
+              </Box>
+            </motion.div>
+
+            <motion.div variants={variants}>
+              <Radio.Group
+                key={current}
+                orientation="vertical"
+                name="quiz"
+                onChange={setAnswer}
+                sx={(theme) => ({
+                  flexGrow: 1,
+                  label: { fontSize: "30px" },
+                })}
+              >
+                {options.map((option, idx) => (
+                  <Radio
+                    key={current + "_" + idx}
+                    value={option}
+                    label={option}
+                    styles={(theme) => ({
+                      label: {
+                        color: theme.colors.leetPurple[0],
+                      },
+                    })}
+                  />
+                ))}
+              </Radio.Group>
+            </motion.div>
+          </Stack>
+        </motion.div>
+      </AnimatePresence>
+    </div>
   );
 };
 

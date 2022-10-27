@@ -104,7 +104,7 @@ const ResultStage: React.FC<ResultStageProps> = ({
     if (stage >= STAGES.RESULT_DISPLAY) {
       setTimeout(() => {
         clearTimeout(confettiTimerRef.current);
-      }, 500);
+      }, 3000);
     }
   }, [stage]);
 
