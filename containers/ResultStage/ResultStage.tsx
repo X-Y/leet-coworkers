@@ -19,6 +19,7 @@ import type {
 
 import GameResultTile from "../../components/GameResultTile/GameResultTile";
 import BottomBar from "../../components/BottomBar/BottomBar";
+import FlagText from "../../components/FlagText/FlagText";
 
 import { useEffect, useRef, useState } from "react";
 interface ResultStageProps {
@@ -76,15 +77,20 @@ const ResultStage: React.FC<ResultStageProps> = ({
 
     timerRef.current = tid;
   };
+
   const startConfetti = () => {
-    randomConfetti();
+    if (!document.hidden) {
+      randomConfetti();
+    }
     const tid = setTimeout(() => {
       startConfetti();
     }, Math.random() * 700);
     confettiTimerRef.current = tid;
   };
+
   useEffect(() => {
     startConfetti();
+
     setStage(0);
     triggerNextStage(0);
 
@@ -137,7 +143,7 @@ const ResultStage: React.FC<ResultStageProps> = ({
               <Title
                 size={60}
                 {...GradientText}
-                style={{ ...styles, margin: "20vh 0 0 0" }}
+                style={{ ...styles, margin: "20vh 2rem 0" }}
               >
                 Your score is:
               </Title>
@@ -149,10 +155,8 @@ const ResultStage: React.FC<ResultStageProps> = ({
             timingFunction="ease-in"
           >
             {(styles) => (
-              <Title
+              <FlagText
                 size={90}
-                variant="gradient"
-                gradient={{ from: "leetGreen.6", to: "leetPurple.4", deg: 15 }}
                 style={{
                   ...styles,
                   textAlign: "center",
@@ -161,7 +165,7 @@ const ResultStage: React.FC<ResultStageProps> = ({
                 }}
               >
                 {score} / {entries.length}
-              </Title>
+              </FlagText>
             )}
           </Transition>
         </Stack>

@@ -111,7 +111,16 @@ const PlayStage: React.FC<PlayStageProps> = ({ gameState, gameDispatch }) => {
           sx={(theme) => ({ label: { fontSize: "30px" } })}
         >
           {options.map((option, idx) => (
-            <Radio key={current + "_" + idx} value={option} label={option} />
+            <Radio
+              key={current + "_" + idx}
+              value={option}
+              label={option}
+              styles={(theme) => ({
+                label: {
+                  color: theme.colors.leetPurple[0],
+                },
+              })}
+            />
           ))}
         </Radio.Group>
       </Center>

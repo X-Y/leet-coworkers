@@ -19,7 +19,7 @@ function MyApp({ Component, pageProps }: AppProps) {
               withGlobalStyles
               withNormalizeCSS
               theme={{
-                colorScheme: "dark",
+                colorScheme: "light",
                 primaryShade: { light: 6, dark: 6 },
                 colors: {
                   leetPurple: [
