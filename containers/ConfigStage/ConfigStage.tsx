@@ -28,7 +28,8 @@ const gameCities: (string | [string, string])[] = [
   "Stockholm",
   ["Northen Sweden", "(Borlänge|Stockholm)"],
   ["Southen Sweden", "(Helsingborg|Lund)"],
-  ["Whole Sweden", "(Borlänge|Stockholm|Helsingborg|Lund)"],
+  ["Sweden", "(Borlänge|Stockholm|Helsingborg|Lund)"],
+  ["Everywhere", ""],
 ];
 
 const numberQuizes = [10, 20];
@@ -64,6 +65,8 @@ const ConfigStage: React.FC<ConfigStageProps> = ({
       .sort(() => 0.5 - Math.random())
       .slice(0, numQuiz || gameState.amount)
       .map((one) => {
+        const img = new Image();
+        img.src = one.imagePortraitUrl;
         let confuses: string[] = [one.name];
         while (confuses.length < (numOptions || gameState.confusions)) {
           const confuse =
@@ -108,6 +111,7 @@ const ConfigStage: React.FC<ConfigStageProps> = ({
               <Select
                 label="Pick a location:"
                 data={data}
+                defaultValue=""
                 onChange={setFilterValue}
                 styles={(theme) => ({
                   label: {
@@ -116,12 +120,13 @@ const ConfigStage: React.FC<ConfigStageProps> = ({
                 })}
               />
               <Select
-                label="How many quizes:"
+                label="Length of the quiz:"
                 ref={numQuizRef}
                 data={numberQuizes.map((one) => ({
                   value: "" + one,
                   label: "" + one,
                 }))}
+                defaultValue="10"
                 styles={(theme) => ({
                   label: {
                     color: theme.colors.leetPurple[0],
@@ -129,12 +134,13 @@ const ConfigStage: React.FC<ConfigStageProps> = ({
                 })}
               />
               <Select
-                label="How many options:"
+                label="How many choices:"
                 ref={numOptionsRef}
                 data={numberOptions.map((one) => ({
                   value: "" + one,
                   label: "" + one,
                 }))}
+                defaultValue="4"
                 styles={(theme) => ({
                   label: {
                     color: theme.colors.leetPurple[0],

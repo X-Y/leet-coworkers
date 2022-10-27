@@ -10,8 +10,9 @@ const AnimatedBackground = () => {
       return;
     }
 
+    const period = 3000;
     const now = Date.now();
-    const offset = (-1 + (now % 10000) / 10000) * 17.36111;
+    const offset = (-1 + (now % period) / period) * Math.sqrt((25 * 25) / 2);
     ref.current.style.backgroundPosition = `${offset}px ${offset}px`;
 
     animationRef.current = window.requestAnimationFrame(animate);

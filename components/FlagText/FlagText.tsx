@@ -37,8 +37,10 @@ const FlagText: React.FC<Props> = ({
   }
 
   function onMouseMove(e: MouseEvent) {
-    const midPoint = getMiddlePoint();
-    if (!midPoint) return;
+    const midPoint = {
+      x: window.innerWidth / 2,
+      y: window.innerHeight / 2,
+    };
 
     const shadow = {
       x: ((midPoint.x - e.clientX) / (window.innerWidth - midPoint.x)) * 16,

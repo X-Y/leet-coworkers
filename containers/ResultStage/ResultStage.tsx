@@ -100,6 +100,14 @@ const ResultStage: React.FC<ResultStageProps> = ({
     };
   }, [testStarter]);
 
+  useEffect(() => {
+    if (stage >= STAGES.RESULT_DISPLAY) {
+      setTimeout(() => {
+        clearTimeout(confettiTimerRef.current);
+      }, 3000);
+    }
+  }, [stage]);
+
   const onGameRestartClick = () => {
     gameDispatch({ type: GAME_ACTIONS.RESTART });
   };
