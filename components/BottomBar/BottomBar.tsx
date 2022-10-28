@@ -29,8 +29,7 @@ const BottomBar: React.FC<Props> = ({ children }) => {
       </Box>
       <Box
         sx={(theme) => ({
-          marginTop: "-1px",
-          borderTop: `1px solid transparent`,
+          borderTop: `1px solid ${theme.colors.leetGreen[6]}`,
         })}
       />
     </>
