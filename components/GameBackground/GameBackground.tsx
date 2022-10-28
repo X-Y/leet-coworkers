@@ -1,21 +1,26 @@
 import { Box } from "@mantine/core";
 import { useEffect, useRef } from "react";
 
+const bgMoveVector = Math.sqrt((25 * 25) / 2);
+const period = 3000;
+
 const AnimatedBackground = () => {
   const ref = useRef<HTMLDivElement>(null);
   const animationRef = useRef<number>();
+  const animationTimerRef = useRef<NodeJS.Timeout>();
 
   function animate() {
     if (!ref.current) {
       return;
     }
 
-    const period = 3000;
     const now = Date.now();
-    const offset = (-1 + (now % period) / period) * Math.sqrt((25 * 25) / 2);
+    const offset = (-1 + (now % period) / period) * bgMoveVector;
     ref.current.style.backgroundPosition = `${offset}px ${offset}px`;
 
-    animationRef.current = window.requestAnimationFrame(animate);
+    animationTimerRef.current = setTimeout(() => {
+      animationRef.current = window.requestAnimationFrame(animate);
+    }, 160);
   }
 
   useEffect(() => {
@@ -23,6 +28,7 @@ const AnimatedBackground = () => {
 
     return () => {
       animationRef.current && window.cancelAnimationFrame(animationRef.current);
+      clearTimeout(animationTimerRef.current);
     };
   }, []);
 
