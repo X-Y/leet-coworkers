@@ -48,7 +48,7 @@ interface Props {
 }
 const GameBackground: React.FC<Props> = ({ children }) => {
   return (
-    <div style={{ position: "relative" }}>
+    <div style={{ position: "relative", overflow: "hidden" }}>
       <AnimatedBackground />
 
       <Box

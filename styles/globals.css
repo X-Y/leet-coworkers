@@ -6,7 +6,6 @@ body {
     Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
   color: #333;
   background: #efefef;
-
 }
 
 a {
@@ -22,7 +21,8 @@ figure {
   margin: 0;
 }
 
-ul, li {
+ul,
+li {
   padding: 0;
   list-style: none;
 }
