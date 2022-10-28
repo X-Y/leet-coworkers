@@ -7,6 +7,7 @@ import {
   Center,
   MediaQuery,
 } from "@mantine/core";
+import { motion, Variants } from "framer-motion";
 
 import { Entry, GAME_ACTIONS } from "../../interfaces/Game";
 import { Coworker } from "../../interfaces/CoworkerModel";
@@ -19,6 +20,36 @@ import type {
 import { FilterContext } from "../../contexts/FilterContext/FilterContext";
 
 import FlagText from "../../components/FlagText/FlagText";
+
+const variantsTitle: Variants = {
+  enter: {
+    y: -200,
+    opacity: 0,
+  },
+  ready: {
+    y: 0,
+    opacity: 1,
+  },
+  exit: {
+    y: -200,
+    opacity: 0,
+  },
+};
+
+const variantsMenu: Variants = {
+  enter: {
+    x: 200,
+    opacity: 0,
+  },
+  ready: {
+    x: 0,
+    opacity: 1,
+  },
+  exit: {
+    x: -200,
+    opacity: 0,
+  },
+};
 
 const gameCities: (string | [string, string])[] = [
   "Borlänge",
@@ -100,67 +131,90 @@ const ConfigStage: React.FC<ConfigStageProps> = ({
   });
   return (
     <Center>
-      <MediaQuery largerThan={"sm"} styles={{ marginTop: "8rem" }}>
-        <Stack sx={{ padding: "0 0.5rem" }}>
-          <FlagText size={70} weight={900}>
-            THE GUESSING GAME
-          </FlagText>
+      <motion.div
+        initial="enter"
+        animate="ready"
+        exit="exit"
+        variants={{
+          exit: {
+            transition: {
+              staggerChildren: 0.05,
+            },
+          },
+        }}
+        transition={{
+          staggerChildren: 0.2,
+        }}
+      >
+        <MediaQuery largerThan={"sm"} styles={{ marginTop: "8rem" }}>
+          <Stack sx={{ padding: "0 0.5rem" }}>
+            <motion.div variants={variantsTitle}>
+              <FlagText size={70} weight={900}>
+                THE GUESSING GAME
+              </FlagText>
+            </motion.div>
 
-          <MediaQuery largerThan={"sm"} styles={{ maxWidth: "20rem" }}>
-            <Stack sx={{ width: "100%", margin: "2rem auto" }}>
-              <Select
-                label="Pick a location:"
-                data={data}
-                defaultValue=""
-                onChange={setFilterValue}
-                styles={(theme) => ({
-                  label: {
-                    color: theme.colors.leetPurple[0],
-                  },
-                })}
-              />
-              <Select
-                label="Length of the quiz:"
-                ref={numQuizRef}
-                data={numberQuizes.map((one) => ({
-                  value: "" + one,
-                  label: "" + one,
-                }))}
-                defaultValue="10"
-                styles={(theme) => ({
-                  label: {
-                    color: theme.colors.leetPurple[0],
-                  },
-                })}
-              />
-              <Select
-                label="How many choices:"
-                ref={numOptionsRef}
-                data={numberOptions.map((one) => ({
-                  value: "" + one,
-                  label: "" + one,
-                }))}
-                defaultValue="4"
-                styles={(theme) => ({
-                  label: {
-                    color: theme.colors.leetPurple[0],
-                  },
-                })}
-              />
-            </Stack>
-          </MediaQuery>
-          <MediaQuery largerThan={"xs"} styles={{ maxWidth: "15rem" }}>
-            <Button
-              color="leetGreen"
-              sx={{ width: "100%", margin: " auto" }}
-              size="xl"
-              onClick={onConfigsDoneClick}
-            >
-              Start
-            </Button>
-          </MediaQuery>
-        </Stack>
-      </MediaQuery>
+            <motion.div variants={variantsMenu}>
+              <MediaQuery largerThan={"sm"} styles={{ maxWidth: "20rem" }}>
+                <Stack sx={{ width: "100%", margin: "2rem auto" }}>
+                  <Select
+                    label="Pick a location:"
+                    data={data}
+                    defaultValue=""
+                    onChange={setFilterValue}
+                    styles={(theme) => ({
+                      label: {
+                        color: theme.colors.leetPurple[0],
+                      },
+                    })}
+                  />
+                  <Select
+                    label="Length of the quiz:"
+                    ref={numQuizRef}
+                    data={numberQuizes.map((one) => ({
+                      value: "" + one,
+                      label: "" + one,
+                    }))}
+                    defaultValue="10"
+                    styles={(theme) => ({
+                      label: {
+                        color: theme.colors.leetPurple[0],
+                      },
+                    })}
+                  />
+                  <Select
+                    label="How many choices:"
+                    ref={numOptionsRef}
+                    data={numberOptions.map((one) => ({
+                      value: "" + one,
+                      label: "" + one,
+                    }))}
+                    defaultValue="4"
+                    styles={(theme) => ({
+                      label: {
+                        color: theme.colors.leetPurple[0],
+                      },
+                    })}
+                  />
+                </Stack>
+              </MediaQuery>
+            </motion.div>
+
+            <motion.div variants={variantsMenu} style={{ textAlign: "center" }}>
+              <MediaQuery largerThan={"xs"} styles={{ maxWidth: "15rem" }}>
+                <Button
+                  color="leetGreen"
+                  sx={{ width: "100%", margin: " auto" }}
+                  size="xl"
+                  onClick={onConfigsDoneClick}
+                >
+                  Start
+                </Button>
+              </MediaQuery>
+            </motion.div>
+          </Stack>
+        </MediaQuery>
+      </motion.div>
     </Center>
   );
 };

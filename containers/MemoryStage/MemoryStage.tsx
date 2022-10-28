@@ -20,26 +20,12 @@ const MemoryStage: React.FC<MemoryStageProps> = ({
   gameState,
   gameDispatch,
 }) => {
-  const [inStage, setInStage] = useState(false);
-
   const onGameStartClick = () => {
-    setInStage(false);
-    setTimeout(() => {
-      gameDispatch({ type: GAME_ACTIONS.START });
-    }, 1000);
+    gameDispatch({ type: GAME_ACTIONS.START });
   };
 
-  useEffect(() => {
-    setTimeout(() => {
-      setInStage(true);
-    }, 600);
-    return () => {
-      setInStage(false);
-    };
-  }, []);
-
   return (
-    <motion.div animate={inStage ? "open" : "closed"} initial={false}>
+    <motion.div initial="closed" animate="open" exit="closed">
       <Box sx={{ padding: "2rem", position: "relative", minHeight: "100vh" }}>
         <CoworkersList coworkers={gameState.entries} />
       </Box>
