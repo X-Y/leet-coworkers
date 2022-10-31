@@ -127,7 +127,7 @@ const PlayStage: React.FC<PlayStageProps> = ({ gameState, gameDispatch }) => {
           />
         </Box>
       </motion.div>
-      <AnimatePresence exitBeforeEnter>
+      <AnimatePresence mode="wait">
         <motion.div
           initial="enter"
           animate="center"

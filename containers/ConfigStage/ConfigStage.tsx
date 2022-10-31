@@ -1,4 +1,4 @@
-import { Dispatch, useContext, useRef } from "react";
+import { Dispatch, useContext, useRef, useState } from "react";
 import {
   Button,
   Select,
@@ -15,8 +15,9 @@ import { Coworker } from "../../interfaces/CoworkerModel";
 import type {
   GameDispatch,
   GameState,
+  regionType,
 } from "../../reducers/gameReducer/gameReducer";
-
+import { regionEveryWhere } from "../../reducers/gameReducer/gameReducer";
 import { FilterContext } from "../../contexts/FilterContext/FilterContext";
 
 import FlagText from "../../components/FlagText/FlagText";
@@ -51,7 +52,7 @@ const variantsMenu: Variants = {
   },
 };
 
-const gameCities: (string | [string, string])[] = [
+const gameCities: regionType[] = [
   "Borlänge",
   "Helsingborg",
   "Ljubljana",
@@ -60,64 +61,34 @@ const gameCities: (string | [string, string])[] = [
   ["Northen Sweden", "(Borlänge|Stockholm)"],
   ["Southen Sweden", "(Helsingborg|Lund)"],
   ["Sweden", "(Borlänge|Stockholm|Helsingborg|Lund)"],
-  ["Everywhere", ""],
+  regionEveryWhere,
 ];
 
-const numberQuizes = [10, 20];
+const numberQuizes = [10, 20, 40, 60];
 
 const numberOptions = [2, 3, 4];
 
 interface ConfigStageProps {
-  resData?: Coworker[];
   gameState: GameState;
   gameDispatch: GameDispatch;
 }
 const ConfigStage: React.FC<ConfigStageProps> = ({
-  resData,
   gameState,
   gameDispatch,
 }) => {
+  const [gameRegion, setGameRegion] = useState<regionType>(regionEveryWhere);
   const numQuizRef = useRef<HTMLInputElement>(null);
   const numOptionsRef = useRef<HTMLInputElement>(null);
 
   const { setFilterValue } = useContext(FilterContext);
 
   const onConfigsDoneClick = () => {
-    const resDataConst = resData;
-    if (!resDataConst) return;
-
     const numQuiz = +(numQuizRef.current?.value || "0");
     const numOptions = +(numOptionsRef.current?.value || "0");
 
-    console.log(numOptions, numQuiz);
-
-    const entries: Entry[] = resDataConst
-      .filter((one) => !!one.imagePortraitUrl)
-      .sort(() => 0.5 - Math.random())
-      .slice(0, numQuiz || gameState.amount)
-      .map((one) => {
-        const img = new Image();
-        img.src = one.imagePortraitUrl;
-        let confuses: string[] = [one.name];
-        while (confuses.length < (numOptions || gameState.confusions)) {
-          const confuse =
-            resDataConst[Math.round(Math.random() * (resDataConst.length - 1))];
-          if (confuses.findIndex((name) => name === confuse.name) === -1) {
-            confuses.push(confuse.name);
-          }
-        }
-
-        const options = confuses.sort(() => 0.5 - Math.random());
-
-        return {
-          ...one,
-          options,
-        };
-      });
-
     gameDispatch({
       type: GAME_ACTIONS.CONFIGS_DONE,
-      payload: { entries, amount: numQuiz, confusions: numOptions },
+      payload: { amount: numQuiz, confusions: numOptions, region: gameRegion },
     });
   };
 
@@ -161,7 +132,9 @@ const ConfigStage: React.FC<ConfigStageProps> = ({
                     label="Pick a location:"
                     data={data}
                     defaultValue=""
-                    onChange={setFilterValue}
+                    onChange={(value) =>
+                      setGameRegion(value || regionEveryWhere)
+                    }
                     styles={(theme) => ({
                       label: {
                         color: theme.colors.leetPurple[0],

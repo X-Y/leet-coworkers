@@ -96,14 +96,17 @@ const ResultStage: React.FC<ResultStageProps> = ({
     };
   }, [stage]);
 
-  const onGameRestartClick = () => {
+  const onGameMenuClick = () => {
     gameDispatch({ type: GAME_ACTIONS.RESTART });
+  };
+  const onGameRestartClick = () => {
+    gameDispatch({ type: GAME_ACTIONS.CONFIGS_DONE });
   };
 
   return (
     <>
-      <div style={{ position: "fixed", top: "0", display: "" }}>
-        {Array(6)
+      <div style={{ position: "fixed", top: "0", display: "none" }}>
+        {Array(4)
           .fill(0)
           .map((one, idx) => (
             <button key={idx} onClick={() => setStage(idx)}>
@@ -219,10 +222,13 @@ const ResultStage: React.FC<ResultStageProps> = ({
             <BottomBar>
               <Button
                 color="leetPurple"
-                sx={{ padding: "0 4rem" }}
+                variant="light"
                 size="lg"
-                onClick={onGameRestartClick}
+                onClick={onGameMenuClick}
               >
+                Menu
+              </Button>
+              <Button color="leetPurple" size="lg" onClick={onGameRestartClick}>
                 Restart!
               </Button>
             </BottomBar>

@@ -29,7 +29,7 @@ import { useFilter } from "../hooks/useFilter";
 import GameBackground from "../components/GameBackground/GameBackground";
 
 const Game: NextPage = () => {
-  const { setFilterBy, setFilterValue } = useContext(FilterContext);
+  const { setFilterBy } = useContext(FilterContext);
   const [gameState, gameDispatch] = useReducer(gameStateReducer, iniGameState);
 
   useEffect(() => {
@@ -46,19 +46,14 @@ const Game: NextPage = () => {
 
   let resData = data;
   resData = useFilter(resData);
-  resData = useSort(resData);
 
   return (
     <GameBackground>
       {!resData && <div style={{ position: "fixed" }}>Loading...</div>}
-      <AnimatePresence exitBeforeEnter>
+      <AnimatePresence mode="wait">
         {gameState.step === GAME_STATES.MENU && (
           <motion.div key={GAME_STATES.MENU}>
-            <ConfigStage
-              resData={resData}
-              gameDispatch={gameDispatch}
-              gameState={gameState}
-            />
+            <ConfigStage gameDispatch={gameDispatch} gameState={gameState} />
           </motion.div>
         )}
 
