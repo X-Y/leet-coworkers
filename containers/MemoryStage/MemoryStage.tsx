@@ -83,6 +83,12 @@ const MemoryStage: React.FC<MemoryStageProps> = ({
         };
       });
 
+    // Preload some images
+    entries.slice(0, 5).forEach(({ imagePortraitUrl }) => {
+      const img = new Image();
+      img.src = imagePortraitUrl;
+    });
+
     setTimestamp(Date.now());
     setEntries(entries);
 
