@@ -102,7 +102,7 @@ const ResultStage: React.FC<ResultStageProps> = ({
 
   return (
     <>
-      <div style={{ position: "fixed", top: "0", display: "none" }}>
+      <div style={{ position: "fixed", top: "0", display: "" }}>
         {Array(6)
           .fill(0)
           .map((one, idx) => (
@@ -118,24 +118,24 @@ const ResultStage: React.FC<ResultStageProps> = ({
       <Center>
         <Stack>
           {stage === STAGES.DONE && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{
-                ease: "easeOut",
-                duration: 0.5,
-                repeat: 1,
-                repeatDelay: 0.5,
-                repeatType: "reverse",
-              }}
-              onAnimationComplete={() => setStage(STAGES.YOUR_SCORE_IS)}
-            >
-              <Center style={{ marginTop: "30vh" }}>
+            <Center style={{ marginTop: "30vh" }}>
+              <motion.div
+                initial={{ opacity: 0, scale: 0 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{
+                  ease: [0.24, 0.0, 0.395, 1.61],
+                  duration: 0.5,
+                  repeat: 1,
+                  repeatDelay: 0.5,
+                  repeatType: "reverse",
+                }}
+                onAnimationComplete={() => setStage(STAGES.YOUR_SCORE_IS)}
+              >
                 <Title size={90} {...GradientText}>
                   Done!
                 </Title>
-              </Center>
-            </motion.div>
+              </motion.div>
+            </Center>
           )}
 
           {stage >= STAGES.YOUR_SCORE_IS && (
@@ -162,7 +162,7 @@ const ResultStage: React.FC<ResultStageProps> = ({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{
-                delay: 1,
+                delay: 1.5,
               }}
               onAnimationComplete={() => setStage(STAGES.RESULT_DISPLAY)}
             >
@@ -186,7 +186,7 @@ const ResultStage: React.FC<ResultStageProps> = ({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{
-            delay: 1.5,
+            delay: 1,
           }}
         >
           <Box>
