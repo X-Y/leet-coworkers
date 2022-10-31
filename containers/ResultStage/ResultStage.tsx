@@ -10,6 +10,7 @@ import {
   Transition,
 } from "@mantine/core";
 import confetti from "canvas-confetti";
+import { motion } from "framer-motion";
 
 import { GAME_ACTIONS } from "../../interfaces/Game";
 import type {
@@ -28,15 +29,11 @@ interface ResultStageProps {
 }
 
 enum STAGES {
-  BEFORE_DONE,
   DONE,
-  DONE_END,
   YOUR_SCORE_IS,
   SCORE_DISPLAY,
   RESULT_DISPLAY,
 }
-
-const stageTimers = [500, 1000, 500, 1000, 1200];
 
 const randomConfetti = () => {
   confetti({ origin: { y: 1, x: Math.random() }, startVelocity: 60 });
@@ -55,27 +52,14 @@ const ResultStage: React.FC<ResultStageProps> = ({
   gameState,
   gameDispatch,
 }) => {
-  const timerRef = useRef<NodeJS.Timeout>();
   const confettiTimerRef = useRef<NodeJS.Timeout>();
-  const [stage, setStage] = useState<STAGES>(STAGES.BEFORE_DONE);
+  const [stage, setStage] = useState<STAGES>(STAGES.DONE);
   const { entries, answers, score } = gameState;
 
   const [testStarter, setTestStarter] = useState(false);
 
   const onClick = () => {
     gameDispatch({ type: GAME_ACTIONS.RESTART });
-  };
-
-  const triggerNextStage = (stageNum: number = 0) => {
-    const tid = setTimeout(() => {
-      const next = stageNum + 1;
-      if (next <= STAGES.RESULT_DISPLAY) {
-        triggerNextStage(next);
-        setStage(next);
-      }
-    }, stageTimers[stageNum]);
-
-    timerRef.current = tid;
   };
 
   const startConfetti = () => {
@@ -92,30 +76,37 @@ const ResultStage: React.FC<ResultStageProps> = ({
     startConfetti();
 
     setStage(0);
-    triggerNextStage(0);
 
     return () => {
       clearTimeout(confettiTimerRef.current);
-      clearTimeout(timerRef.current);
     };
-  }, [testStarter]);
+  }, [testStarter, setStage]);
 
+  // Remove confetti after Results have been shown
   useEffect(() => {
+    let tid: NodeJS.Timeout;
     if (stage >= STAGES.RESULT_DISPLAY) {
-      setTimeout(() => {
+      tid = setTimeout(() => {
         clearTimeout(confettiTimerRef.current);
       }, 3000);
     }
+
+    return () => {
+      clearTimeout(tid);
+    };
   }, [stage]);
 
-  const onGameRestartClick = () => {
+  const onGameMenuClick = () => {
     gameDispatch({ type: GAME_ACTIONS.RESTART });
+  };
+  const onGameRestartClick = () => {
+    gameDispatch({ type: GAME_ACTIONS.CONFIGS_DONE });
   };
 
   return (
     <>
       <div style={{ position: "fixed", top: "0", display: "none" }}>
-        {Array(6)
+        {Array(4)
           .fill(0)
           .map((one, idx) => (
             <button key={idx} onClick={() => setStage(idx)}>
@@ -129,44 +120,58 @@ const ResultStage: React.FC<ResultStageProps> = ({
 
       <Center>
         <Stack>
-          <Transition
-            mounted={stage === STAGES.DONE}
-            transition="pop"
-            timingFunction="cubic-bezier(0.68, -0.6, 0.32, 4)"
-          >
-            {(styles) => (
-              <Center style={{ ...styles, marginTop: "30vh" }}>
+          {stage === STAGES.DONE && (
+            <Center style={{ marginTop: "30vh" }}>
+              <motion.div
+                initial={{ opacity: 0, scale: 0 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{
+                  ease: [0.24, 0.0, 0.395, 1.61],
+                  duration: 0.5,
+                  repeat: 1,
+                  repeatDelay: 0.5,
+                  repeatType: "reverse",
+                }}
+                onAnimationComplete={() => setStage(STAGES.YOUR_SCORE_IS)}
+              >
                 <Title size={90} {...GradientText}>
                   Done!
                 </Title>
-              </Center>
-            )}
-          </Transition>
-          <Transition
-            mounted={stage >= STAGES.YOUR_SCORE_IS}
-            transition="fade"
-            timingFunction="ease-in"
-          >
-            {(styles) => (
+              </motion.div>
+            </Center>
+          )}
+
+          {stage >= STAGES.YOUR_SCORE_IS && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{
+                delay: 0.3,
+              }}
+              onAnimationComplete={() => setStage(STAGES.SCORE_DISPLAY)}
+            >
               <Title
                 size={60}
                 {...GradientText}
-                style={{ ...styles, margin: "20vh 2rem 0" }}
+                style={{ margin: "20vh 2rem 0" }}
               >
                 Your score is:
               </Title>
-            )}
-          </Transition>
-          <Transition
-            mounted={stage >= STAGES.SCORE_DISPLAY}
-            transition="fade"
-            timingFunction="ease-in"
-          >
-            {(styles) => (
+            </motion.div>
+          )}
+
+          {stage >= STAGES.SCORE_DISPLAY && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{
+                delay: 1.5,
+              }}
+              onAnimationComplete={() => setStage(STAGES.RESULT_DISPLAY)}
+            >
               <FlagText
                 size={90}
                 style={{
-                  ...styles,
                   textAlign: "center",
                   marginBottom: "10vh",
                   filter: "drop-shadow(8px 12px black)",
@@ -174,17 +179,20 @@ const ResultStage: React.FC<ResultStageProps> = ({
               >
                 {score} / {entries.length}
               </FlagText>
-            )}
-          </Transition>
+            </motion.div>
+          )}
         </Stack>
       </Center>
-      <Transition
-        mounted={stage >= STAGES.RESULT_DISPLAY}
-        transition="fade"
-        timingFunction="ease-in"
-      >
-        {(styles) => (
-          <Box style={styles}>
+
+      {stage >= STAGES.RESULT_DISPLAY && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{
+            delay: 1,
+          }}
+        >
+          <Box>
             <MediaQuery
               largerThan="xs"
               styles={{
@@ -214,16 +222,19 @@ const ResultStage: React.FC<ResultStageProps> = ({
             <BottomBar>
               <Button
                 color="leetPurple"
-                sx={{ padding: "0 4rem" }}
+                variant="light"
                 size="lg"
-                onClick={onGameRestartClick}
+                onClick={onGameMenuClick}
               >
+                Menu
+              </Button>
+              <Button color="leetPurple" size="lg" onClick={onGameRestartClick}>
                 Restart!
               </Button>
             </BottomBar>
           </Box>
-        )}
-      </Transition>
+        </motion.div>
+      )}
     </>
   );
 };

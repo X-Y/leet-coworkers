@@ -83,12 +83,10 @@ const PlayStage: React.FC<PlayStageProps> = ({ gameState, gameDispatch }) => {
       answers,
       gameState.entries
     );
-    setTimeout(() => {
-      gameDispatch({
-        type: GAME_ACTIONS.END,
-        payload: { score, answers: correctedAnswers },
-      });
-    }, 500);
+    gameDispatch({
+      type: GAME_ACTIONS.END,
+      payload: { score, answers: correctedAnswers },
+    });
   };
 
   useEffect(() => {
@@ -107,20 +105,34 @@ const PlayStage: React.FC<PlayStageProps> = ({ gameState, gameDispatch }) => {
   const progress = (current / entries.length) * 100;
 
   return (
-    <div>
-      <Box sx={{ padding: "1rem 0 2rem 0" }}>
-        <Progress
-          sx={{ width: "90%", maxWidth: "40rem", margin: "auto" }}
-          value={progress + 1}
-          color={"leetGreen"}
-        />
-      </Box>
-      <AnimatePresence exitBeforeEnter>
+    <motion.div initial="enter" animate="center" exit="exit">
+      <motion.div
+        variants={{
+          enter: {
+            opacity: 0,
+          },
+          center: {
+            opacity: 1,
+          },
+          exit: {
+            opacity: 0,
+          },
+        }}
+      >
+        <Box sx={{ padding: "1rem 0 2rem 0" }}>
+          <Progress
+            sx={{ width: "90%", maxWidth: "40rem", margin: "auto" }}
+            value={progress + 1}
+            color={"leetGreen"}
+          />
+        </Box>
+      </motion.div>
+      <AnimatePresence mode="wait">
         <motion.div
-          key={current}
           initial="enter"
           animate="center"
           exit="exit"
+          key={"play_" + current}
           variants={variantsContainer}
         >
           <Stack
@@ -169,7 +181,7 @@ const PlayStage: React.FC<PlayStageProps> = ({ gameState, gameDispatch }) => {
           </Stack>
         </motion.div>
       </AnimatePresence>
-    </div>
+    </motion.div>
   );
 };
 

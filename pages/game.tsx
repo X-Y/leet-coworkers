@@ -1,7 +1,7 @@
 import { useContext, useEffect, useReducer, useState } from "react";
 import type { NextPage } from "next";
 import { useQuery } from "react-query";
-import { Center, Container, Box } from "@mantine/core";
+import { AnimatePresence, motion } from "framer-motion";
 
 import type { Coworker } from "../interfaces/CoworkerModel";
 import { GAME_STATES } from "../interfaces/Game";
@@ -29,7 +29,7 @@ import { useFilter } from "../hooks/useFilter";
 import GameBackground from "../components/GameBackground/GameBackground";
 
 const Game: NextPage = () => {
-  const { setFilterBy, setFilterValue } = useContext(FilterContext);
+  const { setFilterBy } = useContext(FilterContext);
   const [gameState, gameDispatch] = useReducer(gameStateReducer, iniGameState);
 
   useEffect(() => {
@@ -46,35 +46,35 @@ const Game: NextPage = () => {
 
   let resData = data;
   resData = useFilter(resData);
-  resData = useSort(resData);
 
   return (
     <GameBackground>
       {!resData && <div style={{ position: "fixed" }}>Loading...</div>}
+      <AnimatePresence mode="wait">
+        {gameState.step === GAME_STATES.MENU && (
+          <motion.div key={GAME_STATES.MENU}>
+            <ConfigStage gameDispatch={gameDispatch} gameState={gameState} />
+          </motion.div>
+        )}
 
-      {gameState.step === GAME_STATES.MENU && (
-        <ConfigStage
-          resData={resData}
-          gameDispatch={gameDispatch}
-          gameState={gameState}
-        />
-      )}
+        {gameState.step === GAME_STATES.MEMORY && (
+          <motion.div key={GAME_STATES.MEMORY}>
+            <MemoryStage gameDispatch={gameDispatch} gameState={gameState} />
+          </motion.div>
+        )}
 
-      {gameState.step === GAME_STATES.MEMORY && (
-        <MemoryStage gameDispatch={gameDispatch} gameState={gameState} />
-      )}
+        {gameState.step === GAME_STATES.PLAY && (
+          <motion.div key={GAME_STATES.PLAY}>
+            <PlayStage gameDispatch={gameDispatch} gameState={gameState} />
+          </motion.div>
+        )}
 
-      {gameState.step === GAME_STATES.PLAY && (
-        <>
-          <PlayStage gameDispatch={gameDispatch} gameState={gameState} />
-        </>
-      )}
-
-      {gameState.step === GAME_STATES.RESULT && (
-        <>
-          <ResultStage gameDispatch={gameDispatch} gameState={gameState} />
-        </>
-      )}
+        {gameState.step === GAME_STATES.RESULT && (
+          <>
+            <ResultStage gameDispatch={gameDispatch} gameState={gameState} />
+          </>
+        )}
+      </AnimatePresence>{" "}
     </GameBackground>
   );
 };
