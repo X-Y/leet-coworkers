@@ -18,6 +18,7 @@ import { FILTER_BY } from "../../contexts/FilterContext/FilterContext";
 
 import CoworkersList from "../../components/CoworkersList/CoworkersList";
 import BottomBar from "../../components/BottomBar/BottomBar";
+import Spinner from "../../components/Spinner/Spinner";
 
 import { filterData } from "../../hooks/useFilter";
 import useAuditGameSet from "./useAuditGameSet";
@@ -38,15 +39,24 @@ const MemoryStage: React.FC<MemoryStageProps> = ({
   gameState,
   gameDispatch,
 }) => {
+  const spinnerTimerIdRef = useRef<NodeJS.Timeout>();
+  const [loading, setLoading] = useState(true);
   const [timestamp, setTimestamp] = useState<number>();
   const [entries, setEntries] = useState<Entry[]>([]);
 
-  const cleanUpGameSet = (brokens: string[]) =>
+  const cleanUpGameSet = (brokens: string[]) => {
     setEntries((prev) =>
       prev
         .filter(({ imagePortraitUrl }) => !brokens.includes(imagePortraitUrl))
         .slice(0, gameState.amount)
     );
+
+    spinnerTimerIdRef.current = setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+
+    window.scrollTo(0, 0);
+  };
 
   const { reset, audit } = useAuditGameSet(gameState.amount, cleanUpGameSet);
 
@@ -77,6 +87,7 @@ const MemoryStage: React.FC<MemoryStageProps> = ({
     if (!resDataConst) return;
 
     reset();
+    setLoading(true);
     const { amount, confusions, region } = gameState;
 
     const regionFilterString = getRegionFilterString(region);
@@ -114,12 +125,13 @@ const MemoryStage: React.FC<MemoryStageProps> = ({
 
     setTimestamp(Date.now());
     setEntries(entries);
-
-    window.scrollTo(0, 0);
   };
 
   useEffect(() => {
     generateGameSet();
+    return () => {
+      clearTimeout(spinnerTimerIdRef.current);
+    };
   }, []);
 
   const onGameStartClick = () => {
@@ -131,23 +143,32 @@ const MemoryStage: React.FC<MemoryStageProps> = ({
 
   return (
     <motion.div initial="closed" animate="open" exit="closed">
-      <Box sx={{ padding: "2rem", position: "relative", minHeight: "100vh" }}>
-        <CoworkersList key={timestamp} coworkers={entries || []} />
-      </Box>
-
-      <BottomBar>
-        <Button
-          color="leetPurple"
-          variant="light"
-          size="lg"
-          onClick={generateGameSet}
-        >
-          Shuffle
-        </Button>
-        <Button color="leetPurple" size="lg" onClick={onGameStartClick}>
-          Start!
-        </Button>
-      </BottomBar>
+      <AnimatePresence>
+        {loading ? (
+          <Spinner key="spinner" />
+        ) : (
+          <>
+            <Box
+              sx={{ padding: "2rem", position: "relative", minHeight: "100vh" }}
+            >
+              <CoworkersList key={timestamp} coworkers={entries || []} />
+            </Box>
+            <BottomBar>
+              <Button
+                color="leetPurple"
+                variant="light"
+                size="lg"
+                onClick={generateGameSet}
+              >
+                Shuffle
+              </Button>
+              <Button color="leetPurple" size="lg" onClick={onGameStartClick}>
+                Start!
+              </Button>
+            </BottomBar>
+          </>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 };
