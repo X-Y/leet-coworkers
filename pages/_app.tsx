@@ -19,6 +19,10 @@ function MyApp({ Component, pageProps }: AppProps) {
               withGlobalStyles
               withNormalizeCSS
               theme={{
+                fontFamily: "Sora, system-ui, -apple-system, sans-serif",
+                headings: {
+                  fontFamily: "Sora, system-ui, -apple-system, sans-serif",
+                },
                 colorScheme: "light",
                 primaryShade: { light: 6, dark: 6 },
                 colors: {
