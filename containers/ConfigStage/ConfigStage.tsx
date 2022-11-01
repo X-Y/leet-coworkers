@@ -120,7 +120,7 @@ const ConfigStage: React.FC<ConfigStageProps> = ({
         <MediaQuery largerThan={"sm"} styles={{ marginTop: "8rem" }}>
           <Stack sx={{ padding: "0 0.5rem" }}>
             <motion.div variants={variantsTitle}>
-              <FlagText size={70} weight={900}>
+              <FlagText size={60} weight={900}>
                 THE GUESSING GAME
               </FlagText>
             </motion.div>

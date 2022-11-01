@@ -1,8 +1,7 @@
 import { Box, Button, Container } from "@mantine/core";
-import { useWindowScroll } from "@mantine/hooks";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery } from "react-query";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState, useRef } from "react";
 
 import type { Coworker } from "../../interfaces/CoworkerModel";
 import { GAME_ACTIONS, Entry } from "../../interfaces/Game";
@@ -15,15 +14,14 @@ import type {
   regionType,
 } from "../../reducers/gameReducer/gameReducer";
 
-import {
-  FilterContext,
-  FILTER_BY,
-} from "../../contexts/FilterContext/FilterContext";
+import { FILTER_BY } from "../../contexts/FilterContext/FilterContext";
 
 import CoworkersList from "../../components/CoworkersList/CoworkersList";
 import BottomBar from "../../components/BottomBar/BottomBar";
+import Spinner from "../../components/Spinner/Spinner";
 
-import { useFilter, filterData } from "../../hooks/useFilter";
+import { filterData } from "../../hooks/useFilter";
+import useAuditGameSet from "./useAuditGameSet";
 
 const getRegionFilterString = (region: regionType) => {
   if (typeof region === "string") {
@@ -41,10 +39,26 @@ const MemoryStage: React.FC<MemoryStageProps> = ({
   gameState,
   gameDispatch,
 }) => {
-  const { filterValue, setFilterValue } = useContext(FilterContext);
-
+  const spinnerTimerIdRef = useRef<NodeJS.Timeout>();
+  const [loading, setLoading] = useState(true);
   const [timestamp, setTimestamp] = useState<number>();
   const [entries, setEntries] = useState<Entry[]>([]);
+
+  const cleanUpGameSet = (brokens: string[]) => {
+    setEntries((prev) =>
+      prev
+        .filter(({ imagePortraitUrl }) => !brokens.includes(imagePortraitUrl))
+        .slice(0, gameState.amount)
+    );
+
+    spinnerTimerIdRef.current = setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+
+    window.scrollTo(0, 0);
+  };
+
+  const { reset, audit } = useAuditGameSet(gameState.amount, cleanUpGameSet);
 
   const { data } = useQuery<Coworker[]>("getCoworkers", coworkersApi, {
     staleTime: 60000,
@@ -52,10 +66,28 @@ const MemoryStage: React.FC<MemoryStageProps> = ({
 
   let resData = data;
 
+  const onImageLoadError = (e: Event) => {
+    const target = e.target as HTMLImageElement | null;
+    const brokenSrc = target?.src;
+    audit(brokenSrc);
+
+    target?.removeEventListener("load", onImageLoadSuccess);
+    target?.removeEventListener("error", onImageLoadError);
+  };
+  const onImageLoadSuccess = (e: Event) => {
+    const target = e.target as HTMLImageElement | null;
+    audit();
+
+    target?.removeEventListener("load", onImageLoadSuccess);
+    target?.removeEventListener("error", onImageLoadError);
+  };
+
   const generateGameSet = () => {
     const resDataConst = resData;
     if (!resDataConst) return;
 
+    reset();
+    setLoading(true);
     const { amount, confusions, region } = gameState;
 
     const regionFilterString = getRegionFilterString(region);
@@ -64,8 +96,16 @@ const MemoryStage: React.FC<MemoryStageProps> = ({
     )
       .filter((one) => !!one.imagePortraitUrl)
       .sort(() => 0.5 - Math.random())
-      .slice(0, amount)
+      // Add some backups for broken images
+      .slice(0, amount + Math.min(amount * 0.1, 2))
       .map((one) => {
+        const { imagePortraitUrl } = one;
+        const img = new Image();
+        img.src = imagePortraitUrl;
+
+        img.addEventListener("error", onImageLoadError);
+        img.addEventListener("load", onImageLoadSuccess);
+
         let confuses: string[] = [one.name];
         while (confuses.length < confusions) {
           const confuse =
@@ -83,45 +123,52 @@ const MemoryStage: React.FC<MemoryStageProps> = ({
         };
       });
 
-    // Preload some images
-    entries.slice(0, 5).forEach(({ imagePortraitUrl }) => {
-      const img = new Image();
-      img.src = imagePortraitUrl;
-    });
-
     setTimestamp(Date.now());
     setEntries(entries);
-
-    window.scrollTo(0, 0);
   };
 
   useEffect(() => {
     generateGameSet();
+    return () => {
+      clearTimeout(spinnerTimerIdRef.current);
+    };
   }, []);
 
   const onGameStartClick = () => {
-    gameDispatch({ type: GAME_ACTIONS.START, payload: { entries } });
+    gameDispatch({
+      type: GAME_ACTIONS.START,
+      payload: { entries },
+    });
   };
 
   return (
     <motion.div initial="closed" animate="open" exit="closed">
-      <Box sx={{ padding: "2rem", position: "relative", minHeight: "100vh" }}>
-        <CoworkersList key={timestamp} coworkers={entries || []} />
-      </Box>
-
-      <BottomBar>
-        <Button
-          color="leetPurple"
-          variant="light"
-          size="lg"
-          onClick={generateGameSet}
-        >
-          Shuffle
-        </Button>
-        <Button color="leetPurple" size="lg" onClick={onGameStartClick}>
-          Start!
-        </Button>
-      </BottomBar>
+      <AnimatePresence>
+        {loading ? (
+          <Spinner key="spinner" />
+        ) : (
+          <>
+            <Box
+              sx={{ padding: "2rem", position: "relative", minHeight: "100vh" }}
+            >
+              <CoworkersList key={timestamp} coworkers={entries || []} />
+            </Box>
+            <BottomBar>
+              <Button
+                color="leetPurple"
+                variant="light"
+                size="lg"
+                onClick={generateGameSet}
+              >
+                Shuffle
+              </Button>
+              <Button color="leetPurple" size="lg" onClick={onGameStartClick}>
+                Start!
+              </Button>
+            </BottomBar>
+          </>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 };

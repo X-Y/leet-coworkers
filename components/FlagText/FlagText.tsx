@@ -1,4 +1,5 @@
-import { Title, TitleProps } from "@mantine/core";
+import { Text, Title, TitleProps } from "@mantine/core";
+import React from "react";
 import { useEffect, useRef } from "react";
 
 interface Props extends TitleProps {}
@@ -62,9 +63,6 @@ const FlagText: React.FC<Props> = ({
     <Title
       size={size}
       weight={weight}
-      sx={{
-        filter: "drop-shadow(12px 14px 0 black)",
-      }}
       variant="gradient"
       gradient={gradient}
       ref={ref}
