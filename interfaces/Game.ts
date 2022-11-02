@@ -5,6 +5,8 @@ export enum GAME_STATES {
   MEMORY,
   PLAY,
   RESULT,
+
+  STATS,
 }
 
 export enum GAME_ACTIONS {
@@ -12,6 +14,7 @@ export enum GAME_ACTIONS {
   START,
   END,
   RESTART,
+  SHOW_STATS,
 }
 
 export type Entry = Coworker & {

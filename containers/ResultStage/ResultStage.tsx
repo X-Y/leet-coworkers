@@ -18,6 +18,8 @@ import type {
   GameState,
 } from "../../reducers/gameReducer/gameReducer";
 
+import { initGameDB } from "../../lib/gameDB";
+
 import GameResultTile from "../../components/GameResultTile/GameResultTile";
 import BottomBar from "../../components/BottomBar/BottomBar";
 import FlagText from "../../components/FlagText/FlagText";

@@ -7,6 +7,7 @@ import type { Coworker } from "../../interfaces/CoworkerModel";
 import { GAME_ACTIONS, Entry } from "../../interfaces/Game";
 
 import { coworkersApi } from "../../lib/frontendApi";
+import { initGameDB } from "../../lib/gameDB";
 
 import type {
   GameDispatch,

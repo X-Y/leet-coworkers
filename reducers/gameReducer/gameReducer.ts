@@ -27,7 +27,8 @@ export type GameAction =
     }
   | { type: GAME_ACTIONS.START; payload: { entries: Entry[] } }
   | { type: GAME_ACTIONS.END; payload: { answers: Answer[]; score: number } }
-  | { type: GAME_ACTIONS.RESTART };
+  | { type: GAME_ACTIONS.RESTART }
+  | { type: GAME_ACTIONS.SHOW_STATS };
 
 export const gameStateReducer = (
   state: typeof iniGameState,
@@ -56,6 +57,11 @@ export const gameStateReducer = (
       };
     case GAME_ACTIONS.RESTART:
       return iniGameState;
+    case GAME_ACTIONS.SHOW_STATS:
+      return {
+        ...state,
+        step: GAME_STATES.STATS,
+      };
   }
 };
 

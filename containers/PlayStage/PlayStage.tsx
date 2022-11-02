@@ -7,6 +7,7 @@ import {
   Box,
   Space,
   Progress,
+  ScrollArea,
 } from "@mantine/core";
 import { AnimatePresence, motion, Variant } from "framer-motion";
 
@@ -16,6 +17,7 @@ import type {
   GameDispatch,
   GameState,
 } from "../../reducers/gameReducer/gameReducer";
+import { initGameDB } from "../../lib/gameDB";
 
 import Coworker from "../../components/Coworker/Coworker";
 
@@ -78,11 +80,20 @@ const PlayStage: React.FC<PlayStageProps> = ({ gameState, gameDispatch }) => {
     setCurrent((prev) => prev + 1);
   };
 
+  const saveStats = async (answers: Answer[]) => {
+    const db = await initGameDB();
+
+    db.saveResults(entries, answers);
+
+    console.log("stat saved");
+  };
+
   const onPlayDone = (answers: string[]) => {
     const [score, correctedAnswers] = calculateScore(
       answers,
       gameState.entries
     );
+    saveStats(correctedAnswers);
     gameDispatch({
       type: GAME_ACTIONS.END,
       payload: { score, answers: correctedAnswers },

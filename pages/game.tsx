@@ -4,7 +4,7 @@ import { useQuery } from "react-query";
 import { AnimatePresence, motion } from "framer-motion";
 
 import type { Coworker } from "../interfaces/CoworkerModel";
-import { GAME_STATES } from "../interfaces/Game";
+import { GAME_STATES, GAME_ACTIONS } from "../interfaces/Game";
 
 import { coworkersApi } from "../lib/frontendApi";
 
@@ -22,6 +22,7 @@ import PlayStage from "../containers/PlayStage/PlayStage";
 import ResultStage from "../containers/ResultStage/ResultStage";
 import MemoryStage from "../containers/MemoryStage/MemoryStage";
 import ConfigStage from "../containers/ConfigStage/ConfigStage";
+import StatsStage from "../containers/StatsStage/StatsStage";
 
 import styles from "../styles/Home.module.scss";
 import { useSort } from "../hooks/useSort";
@@ -49,6 +50,13 @@ const Game: NextPage = () => {
 
   return (
     <GameBackground>
+      <button
+        onClick={() => {
+          gameDispatch({ type: GAME_ACTIONS.SHOW_STATS });
+        }}
+      >
+        Stats
+      </button>
       {!resData && <div style={{ position: "fixed" }}>Loading...</div>}
       <AnimatePresence mode="wait">
         {gameState.step === GAME_STATES.MENU && (
@@ -72,6 +80,12 @@ const Game: NextPage = () => {
         {gameState.step === GAME_STATES.RESULT && (
           <>
             <ResultStage gameDispatch={gameDispatch} gameState={gameState} />
+          </>
+        )}
+
+        {gameState.step === GAME_STATES.STATS && (
+          <>
+            <StatsStage gameDispatch={gameDispatch} gameState={gameState} />
           </>
         )}
       </AnimatePresence>{" "}
