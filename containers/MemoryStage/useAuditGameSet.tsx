@@ -1,9 +1,7 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 
-const useAuditGameSet = (
-  amount: number,
-  callback: (brokens: string[]) => void
-) => {
+const useAuditGameSet = (callback: (brokens: string[]) => void) => {
+  const [amount, setAmount] = useState(0);
   const auditRef = useRef(0);
   const auditBrokensRef = useRef<string[]>([]);
 
@@ -23,7 +21,7 @@ const useAuditGameSet = (
     }
   };
 
-  return { reset, audit };
+  return { reset, audit, setAmount };
 };
 
 export default useAuditGameSet;

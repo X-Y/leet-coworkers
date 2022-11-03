@@ -16,16 +16,21 @@ import { GAME_ACTIONS } from "../../interfaces/Game";
 import type {
   GameDispatch,
   GameState,
+  HistoryType,
 } from "../../reducers/gameReducer/gameReducer";
+
+import { initGameDB } from "../../lib/gameDB";
 
 import GameResultTile from "../../components/GameResultTile/GameResultTile";
 import BottomBar from "../../components/BottomBar/BottomBar";
 import FlagText from "../../components/FlagText/FlagText";
 
 import { useEffect, useRef, useState } from "react";
+import TitleText from "../../components/TitleText/TitleText";
 interface ResultStageProps {
   gameState: GameState;
   gameDispatch: GameDispatch;
+  history: HistoryType;
 }
 
 enum STAGES {
@@ -39,28 +44,16 @@ const randomConfetti = () => {
   confetti({ origin: { y: 1, x: Math.random() }, startVelocity: 60 });
 };
 
-const GradientText = {
-  variant: "gradient" as "gradient",
-  gradient: {
-    from: "white",
-    to: "leetPurple.0",
-    deg: 15,
-  },
-};
-
 const ResultStage: React.FC<ResultStageProps> = ({
   gameState,
   gameDispatch,
+  history,
 }) => {
   const confettiTimerRef = useRef<NodeJS.Timeout>();
   const [stage, setStage] = useState<STAGES>(STAGES.DONE);
   const { entries, answers, score } = gameState;
 
   const [testStarter, setTestStarter] = useState(false);
-
-  const onClick = () => {
-    gameDispatch({ type: GAME_ACTIONS.RESTART });
-  };
 
   const startConfetti = () => {
     if (!document.hidden) {
@@ -72,10 +65,15 @@ const ResultStage: React.FC<ResultStageProps> = ({
     confettiTimerRef.current = tid;
   };
 
-  useEffect(() => {
-    startConfetti();
+  const isFirstVisit = !history.future.length;
 
-    setStage(0);
+  useEffect(() => {
+    if (!isFirstVisit) {
+      setStage(3);
+    } else {
+      startConfetti();
+      setStage(0);
+    }
 
     return () => {
       clearTimeout(confettiTimerRef.current);
@@ -96,6 +94,9 @@ const ResultStage: React.FC<ResultStageProps> = ({
     };
   }, [stage]);
 
+  const onShowStatsClick = () => {
+    gameDispatch({ type: GAME_ACTIONS.SHOW_STATS });
+  };
   const onGameMenuClick = () => {
     gameDispatch({ type: GAME_ACTIONS.RESTART });
   };
@@ -123,7 +124,7 @@ const ResultStage: React.FC<ResultStageProps> = ({
           {stage === STAGES.DONE && (
             <Center style={{ marginTop: "30vh" }}>
               <motion.div
-                initial={{ opacity: 0, scale: 0 }}
+                initial={isFirstVisit && { opacity: 0, scale: 0 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{
                   ease: [0.24, 0.0, 0.395, 1.61],
@@ -134,35 +135,29 @@ const ResultStage: React.FC<ResultStageProps> = ({
                 }}
                 onAnimationComplete={() => setStage(STAGES.YOUR_SCORE_IS)}
               >
-                <Title size={90} {...GradientText}>
-                  Done!
-                </Title>
+                <TitleText>Done!</TitleText>
               </motion.div>
             </Center>
           )}
 
           {stage >= STAGES.YOUR_SCORE_IS && (
             <motion.div
-              initial={{ opacity: 0 }}
+              initial={isFirstVisit && { opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{
                 delay: 0.3,
               }}
               onAnimationComplete={() => setStage(STAGES.SCORE_DISPLAY)}
             >
-              <Title
-                size={60}
-                {...GradientText}
-                style={{ margin: "20vh 2rem 0" }}
-              >
+              <TitleText style={{ margin: "20vh 2rem 0" }}>
                 Your score is:
-              </Title>
+              </TitleText>
             </motion.div>
           )}
 
           {stage >= STAGES.SCORE_DISPLAY && (
             <motion.div
-              initial={{ opacity: 0 }}
+              initial={isFirstVisit && { opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{
                 delay: 1.5,
@@ -186,7 +181,7 @@ const ResultStage: React.FC<ResultStageProps> = ({
 
       {stage >= STAGES.RESULT_DISPLAY && (
         <motion.div
-          initial={{ opacity: 0 }}
+          initial={isFirstVisit && { opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{
             delay: 1,
@@ -224,11 +219,34 @@ const ResultStage: React.FC<ResultStageProps> = ({
                 color="leetPurple"
                 variant="light"
                 size="lg"
+                style={{ padding: 0 }}
                 onClick={onGameMenuClick}
               >
                 Menu
               </Button>
-              <Button color="leetPurple" size="lg" onClick={onGameRestartClick}>
+              <MediaQuery
+                largerThan={"sm"}
+                styles={{
+                  order: -1,
+                }}
+              >
+                <Button
+                  color="leetPurple"
+                  variant="light"
+                  size="lg"
+                  style={{ padding: 0 }}
+                  onClick={onShowStatsClick}
+                >
+                  Stats
+                </Button>
+              </MediaQuery>
+
+              <Button
+                color="leetPurple"
+                size="lg"
+                style={{ padding: 0 }}
+                onClick={onGameRestartClick}
+              >
                 Restart!
               </Button>
             </BottomBar>

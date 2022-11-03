@@ -16,6 +16,8 @@ const Spinner = () => {
       <motion.div
         animate={{
           rotate: ["90deg", "180deg", "270deg"],
+          scale: [1, 0.5, 1],
+          opacity: [1, 0.3, 1],
         }}
         transition={{
           repeat: Infinity,

@@ -7,6 +7,7 @@ import type { Coworker } from "../../interfaces/CoworkerModel";
 import { GAME_ACTIONS, Entry } from "../../interfaces/Game";
 
 import { coworkersApi } from "../../lib/frontendApi";
+import { initGameDB } from "../../lib/gameDB";
 
 import type {
   GameDispatch,
@@ -58,7 +59,11 @@ const MemoryStage: React.FC<MemoryStageProps> = ({
     window.scrollTo(0, 0);
   };
 
-  const { reset, audit } = useAuditGameSet(gameState.amount, cleanUpGameSet);
+  const {
+    reset,
+    audit,
+    setAmount: setAuditAmount,
+  } = useAuditGameSet(cleanUpGameSet);
 
   const { data } = useQuery<Coworker[]>("getCoworkers", coworkersApi, {
     staleTime: 60000,
@@ -122,6 +127,8 @@ const MemoryStage: React.FC<MemoryStageProps> = ({
           options,
         };
       });
+
+    setAuditAmount(entries.length);
 
     setTimestamp(Date.now());
     setEntries(entries);

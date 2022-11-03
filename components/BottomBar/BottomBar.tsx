@@ -1,47 +1,62 @@
 import { Box, Button, Container, MediaQuery } from "@mantine/core";
 import { useIntersection } from "@mantine/hooks";
+import { motion } from "framer-motion";
+import React, { CSSProperties } from "react";
 
 interface Props {
+  motionRef?: React.ForwardedRef<HTMLDivElement>;
   children: React.ReactNode;
+  style?: CSSProperties;
 }
-const BottomBar: React.FC<Props> = ({ children }) => {
-  const { ref, entry } = useIntersection({
+const BottomBar: React.FC<Props> = ({ motionRef, style, children }) => {
+  const { ref: itsRef, entry } = useIntersection({
     threshold: 1,
   });
 
   return (
     <>
-      <MediaQuery
-        largerThan={"sm"}
-        styles={{
-          padding: "1rem 5rem 1rem calc(100vw - 5rem - 20rem)",
-          justifyContent: "space-between",
-          ">*": {
-            flexGrow: 1,
-          },
-        }}
+      <Box
+        ref={itsRef}
+        sx={(theme) => ({
+          position: "sticky",
+          bottom: "-1px",
+
+          width: "100%",
+        })}
       >
-        <Box
-          ref={ref}
-          sx={(theme) => ({
-            padding: "1rem ",
-            display: "flex",
-            justifyContent: "space-between",
-            gap: "1rem",
-
-            position: "sticky",
-            bottom: "-1px",
-            background: theme.colors.leetGreen[6],
-            width: "100%",
-
-            boxShadow: entry?.isIntersecting
-              ? ""
-              : "0 0 1.5rem " + theme.colors.leetGreen[7],
-          })}
+        <MediaQuery
+          largerThan={"sm"}
+          styles={{
+            justifyContent: "flex-end",
+            ">*": {
+              flexGrow: 1,
+            },
+          }}
         >
-          {children}
-        </Box>
-      </MediaQuery>
+          <Box
+            ref={motionRef}
+            sx={(theme) => ({
+              padding: "1rem ",
+              display: "flex",
+              justifyContent: "space-between",
+              gap: "1rem",
+              "> *": {
+                flexGrow: 1,
+                maxWidth: "10rem",
+              },
+
+              background: theme.colors.leetGreen[6],
+              width: "100%",
+
+              boxShadow: entry?.isIntersecting
+                ? ""
+                : "0 0 1.5rem " + theme.colors.leetGreen[7],
+            })}
+          >
+            {children}
+          </Box>
+        </MediaQuery>
+      </Box>
       <Box
         sx={(theme) => ({
           borderTop: `1px solid ${theme.colors.leetGreen[6]}`,
@@ -52,3 +67,8 @@ const BottomBar: React.FC<Props> = ({ children }) => {
 };
 
 export default BottomBar;
+
+const _BottomBar = React.forwardRef<HTMLDivElement, Props>((props, ref) => {
+  return <BottomBar motionRef={ref}>{props.children}</BottomBar>;
+});
+export const MotionBottomBar = motion(_BottomBar);
