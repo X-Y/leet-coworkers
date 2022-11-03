@@ -8,7 +8,10 @@ import {
 } from "../../interfaces/Game";
 import { Coworker } from "../../interfaces/CoworkerModel";
 
-import { UndoRedoAction } from "../../lib/useUndoReducer";
+import {
+  UndoRedoAction,
+  HistoryType as GenericHistoryType,
+} from "../../lib/useUndoReducer";
 
 export type regionType = string | [string, string];
 export const regionEveryWhere: regionType = ["Everywhere", ""];
@@ -71,3 +74,4 @@ export const gameStateReducer = (
 export type GameState = typeof iniGameState;
 export type GameDispatch = Dispatch<GameAction>;
 export type GameUndoAbleDispatch = Dispatch<GameAction | UndoRedoAction>;
+export type HistoryType = GenericHistoryType<GameState>;

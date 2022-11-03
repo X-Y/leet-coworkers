@@ -19,10 +19,4 @@ const TitleText: React.FC<TitleProps> = ({ children, ...otherProps }) => {
   );
 };
 
-const _MotionTitleText = React.forwardRef((props, ref) => (
-  <TitleText ref={ref} {...props} />
-));
-
-export const MotionTitleText = motion(_MotionTitleText);
-
 export default TitleText;

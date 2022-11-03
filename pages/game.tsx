@@ -16,6 +16,7 @@ import {
 
 import {
   gameStateReducer,
+  HistoryType,
   iniGameState,
 } from "../reducers/gameReducer/gameReducer";
 

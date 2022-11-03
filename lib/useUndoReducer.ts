@@ -1,5 +1,4 @@
-import { NextServer } from "next/dist/server/next";
-import { useReducer, Reducer, Dispatch } from "react";
+import { useReducer, Dispatch } from "react";
 
 export enum USE_UNDO_REDUCER_TYPES {
   undo = "UNDO",
@@ -25,10 +24,10 @@ const useUndoReducer = <A, T>(
   reducer: (prevState: T, action: A) => T,
   initialState: T
 ) => {
-  const undoState = {
-    past: [] as T[],
+  const undoState: HistoryType<T> = {
+    past: [],
     present: initialState,
-    future: [] as T[],
+    future: [],
   };
 
   const undoReducer = (state: typeof undoState, action: A | UndoRedoAction) => {
@@ -66,7 +65,7 @@ const useUndoReducer = <A, T>(
   return [state.present, dispatch, state] as [
     T,
     Dispatch<A | UndoRedoAction>,
-    typeof undoState
+    HistoryType<T>
   ];
 };
 
