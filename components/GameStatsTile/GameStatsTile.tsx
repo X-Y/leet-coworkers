@@ -6,8 +6,8 @@ import Coworker from "../Coworker/Coworker";
 
 interface Props {
   coworker: CoworkerModel;
-  hits: number;
-  misses: number;
+  hits?: number;
+  misses?: number;
 }
 const GameStatsTile: React.FC<Props> = ({ coworker, hits, misses }) => {
   return (
@@ -17,8 +17,8 @@ const GameStatsTile: React.FC<Props> = ({ coworker, hits, misses }) => {
       </Box>
       <Box>
         <Center sx={{ height: "100%" }}>
-          <Text color={"green"}>Hits: {hits}</Text>
-          <Text color={"red"}>Misses: {misses}</Text>
+          {hits && <Text color={"green"}>Hits: {hits}</Text>}
+          {misses && <Text color={"red"}>Misses: {misses}</Text>}
         </Center>
       </Box>
     </Stack>

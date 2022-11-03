@@ -82,6 +82,9 @@ const ConfigStage: React.FC<ConfigStageProps> = ({
 
   const { setFilterValue } = useContext(FilterContext);
 
+  const onShowStatsClick = () => {
+    gameDispatch({ type: GAME_ACTIONS.SHOW_STATS });
+  };
   const onConfigsDoneClick = () => {
     const numQuiz = +(numQuizRef.current?.value || "0");
     const numOptions = +(numOptionsRef.current?.value || "0");
@@ -182,6 +185,18 @@ const ConfigStage: React.FC<ConfigStageProps> = ({
                   onClick={onConfigsDoneClick}
                 >
                   Start
+                </Button>
+              </MediaQuery>
+            </motion.div>
+            <motion.div variants={variantsMenu} style={{ textAlign: "center" }}>
+              <MediaQuery largerThan={"xs"} styles={{ maxWidth: "10rem" }}>
+                <Button
+                  color="leetGreen.1"
+                  sx={{ width: "100%", margin: " auto" }}
+                  size="sm"
+                  onClick={onShowStatsClick}
+                >
+                  Stats
                 </Button>
               </MediaQuery>
             </motion.div>

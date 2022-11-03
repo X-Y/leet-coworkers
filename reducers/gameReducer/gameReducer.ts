@@ -1,3 +1,5 @@
+import { Dispatch } from "react";
+
 import {
   Entry,
   Answer,
@@ -5,7 +7,8 @@ import {
   GAME_STATES,
 } from "../../interfaces/Game";
 import { Coworker } from "../../interfaces/CoworkerModel";
-import { Dispatch } from "react";
+
+import { UndoRedoAction } from "../../lib/useUndoReducer";
 
 export type regionType = string | [string, string];
 export const regionEveryWhere: regionType = ["Everywhere", ""];
@@ -67,3 +70,4 @@ export const gameStateReducer = (
 
 export type GameState = typeof iniGameState;
 export type GameDispatch = Dispatch<GameAction>;
+export type GameUndoAbleDispatch = Dispatch<GameAction | UndoRedoAction>;

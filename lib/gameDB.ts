@@ -66,6 +66,9 @@ export const initGameDB = async () => {
   const getAllMisses = async () => {
     return db.getAllFromIndex("stats", "by-misses");
   };
+  const clearStats = async () => {
+    return db.clear("stats");
+  };
 
-  return { saveCoworker, saveResults, getAllMisses };
+  return { saveCoworker, saveResults, getAllMisses, clearStats };
 };
