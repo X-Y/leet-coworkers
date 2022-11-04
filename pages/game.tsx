@@ -25,6 +25,7 @@ import ResultStage from "../containers/ResultStage/ResultStage";
 import MemoryStage from "../containers/MemoryStage/MemoryStage";
 import ConfigStage from "../containers/ConfigStage/ConfigStage";
 import StatsStage from "../containers/StatsStage/StatsStage";
+import HighScoreStage from "../containers/HighScoreStage/HighScoreStage";
 
 import { useFilter } from "../hooks/useFilter";
 import GameBackground from "../components/GameBackground/GameBackground";
@@ -88,7 +89,13 @@ const Game: NextPage = () => {
             <StatsStage gameDispatch={gameDispatch} gameState={gameState} />
           </>
         )}
-      </AnimatePresence>{" "}
+
+        {gameState.step === GAME_STATES.HIGHSCORE && (
+          <>
+            <HighScoreStage gameDispatch={gameDispatch} gameState={gameState} />
+          </>
+        )}
+      </AnimatePresence>
     </GameBackground>
   );
 };
