@@ -7,6 +7,7 @@ export enum GAME_STATES {
   RESULT,
 
   STATS,
+  HIGHSCORE,
 }
 
 export enum GAME_ACTIONS {
@@ -14,7 +15,10 @@ export enum GAME_ACTIONS {
   START,
   END,
   RESTART,
+
   SHOW_STATS,
+  SUBMIT_HIGHSCORE,
+  SHOW_HIGHSCORE,
 }
 
 export type Entry = Coworker & {

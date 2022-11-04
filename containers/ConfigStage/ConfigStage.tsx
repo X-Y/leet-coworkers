@@ -15,9 +15,13 @@ import { Coworker } from "../../interfaces/CoworkerModel";
 import type {
   GameDispatch,
   GameState,
+  Regions,
   regionType,
 } from "../../reducers/gameReducer/gameReducer";
-import { regionEveryWhere } from "../../reducers/gameReducer/gameReducer";
+import {
+  gameCities,
+  regionEveryWhere,
+} from "../../reducers/gameReducer/gameReducer";
 import { FilterContext } from "../../contexts/FilterContext/FilterContext";
 
 import FlagText from "../../components/FlagText/FlagText";
@@ -52,18 +56,6 @@ const variantsMenu: Variants = {
   },
 };
 
-const gameCities: regionType[] = [
-  "Borlänge",
-  "Helsingborg",
-  "Ljubljana",
-  "Lund",
-  "Stockholm",
-  ["Northen Sweden", "(Borlänge|Stockholm)"],
-  ["Southen Sweden", "(Helsingborg|Lund)"],
-  ["Sweden", "(Borlänge|Stockholm|Helsingborg|Lund)"],
-  regionEveryWhere,
-];
-
 const numberQuizes = [10, 20, 40, 60];
 
 const numberOptions = [2, 3, 4];
@@ -84,6 +76,9 @@ const ConfigStage: React.FC<ConfigStageProps> = ({
 
   const onShowStatsClick = () => {
     gameDispatch({ type: GAME_ACTIONS.SHOW_STATS });
+  };
+  const onShowHighScoreClick = () => {
+    gameDispatch({ type: GAME_ACTIONS.SHOW_HIGHSCORE });
   };
   const onConfigsDoneClick = () => {
     const numQuiz = +(numQuizRef.current?.value || "0");
@@ -135,7 +130,7 @@ const ConfigStage: React.FC<ConfigStageProps> = ({
                     label="Pick a location:"
                     data={data}
                     defaultValue=""
-                    onChange={(value) =>
+                    onChange={(value: Regions) =>
                       setGameRegion(value || regionEveryWhere)
                     }
                     styles={(theme) => ({
@@ -197,6 +192,18 @@ const ConfigStage: React.FC<ConfigStageProps> = ({
                   onClick={onShowStatsClick}
                 >
                   Stats
+                </Button>
+              </MediaQuery>
+            </motion.div>
+            <motion.div variants={variantsMenu} style={{ textAlign: "center" }}>
+              <MediaQuery largerThan={"xs"} styles={{ maxWidth: "10rem" }}>
+                <Button
+                  color="leetGreen.1"
+                  sx={{ width: "100%", margin: " auto" }}
+                  size="sm"
+                  onClick={onShowHighScoreClick}
+                >
+                  High Score
                 </Button>
               </MediaQuery>
             </motion.div>
