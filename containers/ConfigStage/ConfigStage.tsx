@@ -9,12 +9,10 @@ import {
 } from "@mantine/core";
 import { motion, Variants } from "framer-motion";
 
-import { Entry, GAME_ACTIONS } from "../../interfaces/Game";
-import { Coworker } from "../../interfaces/CoworkerModel";
+import { GAME_ACTIONS, GAME_OVERLAY_ACTIONS } from "../../interfaces/Game";
+import { GameStepProps } from "../../interfaces/GameStepProps";
 
 import type {
-  GameDispatch,
-  GameState,
   Regions,
   regionType,
 } from "../../reducers/gameReducer/gameReducer";
@@ -60,25 +58,19 @@ const numberQuizes = [10, 20, 40, 60];
 
 const numberOptions = [2, 3, 4];
 
-interface ConfigStageProps {
-  gameState: GameState;
-  gameDispatch: GameDispatch;
-}
-const ConfigStage: React.FC<ConfigStageProps> = ({
-  gameState,
+const ConfigStage: React.FC<GameStepProps> = ({
   gameDispatch,
+  gameOverlayDispatch,
 }) => {
   const [gameRegion, setGameRegion] = useState<regionType>(regionEveryWhere);
   const numQuizRef = useRef<HTMLInputElement>(null);
   const numOptionsRef = useRef<HTMLInputElement>(null);
 
-  const { setFilterValue } = useContext(FilterContext);
-
   const onShowStatsClick = () => {
-    gameDispatch({ type: GAME_ACTIONS.SHOW_STATS });
+    gameOverlayDispatch({ type: GAME_OVERLAY_ACTIONS.SHOW_STATS });
   };
   const onShowHighScoreClick = () => {
-    gameDispatch({ type: GAME_ACTIONS.SHOW_HIGHSCORE });
+    gameOverlayDispatch({ type: GAME_OVERLAY_ACTIONS.SHOW_HIGHSCORE });
   };
   const onConfigsDoneClick = () => {
     const numQuiz = +(numQuizRef.current?.value || "0");

@@ -13,10 +13,8 @@ import { AnimatePresence, motion, Variant } from "framer-motion";
 
 import { Entry, Answer, GAME_ACTIONS } from "../../interfaces/Game";
 import { Coworker as CoworkerModel } from "../../interfaces/CoworkerModel";
-import type {
-  GameDispatch,
-  GameState,
-} from "../../reducers/gameReducer/gameReducer";
+import { GameStepProps } from "../../interfaces/GameStepProps";
+
 import { initGameDB } from "../../lib/gameDB";
 
 import Coworker from "../../components/Coworker/Coworker";
@@ -65,11 +63,10 @@ const calculateScore = (answersOrig: string[], entries: Entry[]) => {
   return [score, result] as [number, Answer[]];
 };
 
-interface PlayStageProps {
-  gameState: GameState;
-  gameDispatch: GameDispatch;
-}
-const PlayStage: React.FC<PlayStageProps> = ({ gameState, gameDispatch }) => {
+const PlayStage: React.FC<Omit<GameStepProps, "gameOverlayDispatch">> = ({
+  gameState,
+  gameDispatch,
+}) => {
   const { entries } = gameState;
 
   const [answers, setAnswers] = useState([] as string[]);

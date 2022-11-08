@@ -11,23 +11,17 @@ import {
 } from "@mantine/core";
 import { motion, MotionConfig, Variants } from "framer-motion";
 import { useQuery } from "react-query";
+import { useEffect, useMemo, useRef, useState } from "react";
 
-import { GAME_ACTIONS } from "../../interfaces/Game";
+import { GAME_OVERLAY_ACTIONS } from "../../interfaces/Game";
 import { Coworker } from "../../interfaces/CoworkerModel";
-import type {
-  GameUndoAbleDispatch,
-  GameState,
-} from "../../reducers/gameReducer/gameReducer";
+import { GameStepProps } from "../../interfaces/GameStepProps";
 
 import { coworkersApi } from "../../lib/frontendApi";
 import { initGameDB } from "../../lib/gameDB";
-import { USE_UNDO_REDUCER_TYPES } from "../../lib/useUndoReducer";
 
 import GameStatsTile from "../../components/GameStatsTile/GameStatsTile";
 import { MotionBottomBar } from "../../components/BottomBar/BottomBar";
-import FlagText from "../../components/FlagText/FlagText";
-
-import { useEffect, useMemo, useRef, useState } from "react";
 import TitleText from "../../components/TitleText/TitleText";
 
 const itemVariants: Variants = {
@@ -39,23 +33,15 @@ const itemVariants: Variants = {
   },
 };
 
-interface ResultStageProps {
-  gameState: GameState;
-  gameDispatch: GameUndoAbleDispatch;
-}
-
-const ResultStage: React.FC<ResultStageProps> = ({
+const ResultStage: React.FC<GameStepProps> = ({
   gameState,
-  gameDispatch,
+  gameOverlayDispatch,
 }) => {
   const { entries, answers, score } = gameState;
   const [gameStat, setGameStat] = useState<[Coworker, number, number][]>([]);
 
   const onGameBackClick = () => {
-    gameDispatch({ type: USE_UNDO_REDUCER_TYPES.undo });
-  };
-  const onGameRestartClick = () => {
-    gameDispatch({ type: GAME_ACTIONS.CONFIGS_DONE });
+    gameOverlayDispatch({ type: GAME_OVERLAY_ACTIONS.HIDE });
   };
 
   const { data } = useQuery<Coworker[]>("getCoworkers", coworkersApi, {

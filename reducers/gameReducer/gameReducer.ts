@@ -6,12 +6,6 @@ import {
   GAME_ACTIONS,
   GAME_STATES,
 } from "../../interfaces/Game";
-import { Coworker } from "../../interfaces/CoworkerModel";
-
-import {
-  UndoRedoAction,
-  HistoryType as GenericHistoryType,
-} from "../../lib/useUndoReducer";
 
 export enum Regions {
   Borlänge = "Borlänge",
@@ -46,8 +40,7 @@ export type GameAction =
   | { type: GAME_ACTIONS.START; payload: { entries: Entry[] } }
   | { type: GAME_ACTIONS.END; payload: { answers: Answer[]; score: number } }
   | { type: GAME_ACTIONS.RESTART }
-  | { type: GAME_ACTIONS.SHOW_STATS }
-  | { type: GAME_ACTIONS.SHOW_HIGHSCORE };
+  | { type: GAME_ACTIONS.SUBMIT_HIGHSCORE };
 
 export const gameStateReducer = (
   state: typeof iniGameState,
@@ -78,15 +71,10 @@ export const gameStateReducer = (
       };
     case GAME_ACTIONS.RESTART:
       return iniGameState;
-    case GAME_ACTIONS.SHOW_STATS:
+    case GAME_ACTIONS.SUBMIT_HIGHSCORE:
       return {
         ...state,
-        step: GAME_STATES.STATS,
-      };
-    case GAME_ACTIONS.SHOW_HIGHSCORE:
-      return {
-        ...state,
-        step: GAME_STATES.HIGHSCORE,
+        newHighScore: false,
       };
   }
 };
@@ -105,5 +93,3 @@ export const gameCities: regionType[] = [
 
 export type GameState = typeof iniGameState;
 export type GameDispatch = Dispatch<GameAction>;
-export type GameUndoAbleDispatch = Dispatch<GameAction | UndoRedoAction>;
-export type HistoryType = GenericHistoryType<GameState>;

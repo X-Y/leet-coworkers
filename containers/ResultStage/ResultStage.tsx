@@ -12,14 +12,8 @@ import {
 import confetti from "canvas-confetti";
 import { motion } from "framer-motion";
 
-import { GAME_ACTIONS } from "../../interfaces/Game";
-import type {
-  GameDispatch,
-  GameState,
-  HistoryType,
-} from "../../reducers/gameReducer/gameReducer";
-
-import { initGameDB } from "../../lib/gameDB";
+import { GAME_ACTIONS, GAME_OVERLAY_ACTIONS } from "../../interfaces/Game";
+import { GameStepProps } from "../../interfaces/GameStepProps";
 
 import GameResultTile from "../../components/GameResultTile/GameResultTile";
 import BottomBar from "../../components/BottomBar/BottomBar";
@@ -27,31 +21,27 @@ import FlagText from "../../components/FlagText/FlagText";
 
 import { useEffect, useRef, useState } from "react";
 import TitleText from "../../components/TitleText/TitleText";
-interface ResultStageProps {
-  gameState: GameState;
-  gameDispatch: GameDispatch;
-  history: HistoryType;
-}
 
 enum STAGES {
   DONE,
   YOUR_SCORE_IS,
   SCORE_DISPLAY,
   RESULT_DISPLAY,
+  SUBMIT_DISPLAY,
 }
 
 const randomConfetti = () => {
   confetti({ origin: { y: 1, x: Math.random() }, startVelocity: 60 });
 };
 
-const ResultStage: React.FC<ResultStageProps> = ({
+const ResultStage: React.FC<GameStepProps> = ({
   gameState,
   gameDispatch,
-  history,
+  gameOverlayDispatch,
 }) => {
   const confettiTimerRef = useRef<NodeJS.Timeout>();
   const [stage, setStage] = useState<STAGES>(STAGES.DONE);
-  const { entries, answers, score } = gameState;
+  const { entries, answers, score, newHighScore } = gameState;
 
   const [testStarter, setTestStarter] = useState(false);
 
@@ -65,11 +55,11 @@ const ResultStage: React.FC<ResultStageProps> = ({
     confettiTimerRef.current = tid;
   };
 
-  const isFirstVisit = !history.future.length;
+  const isFirstVisit = true;
 
   useEffect(() => {
     if (!isFirstVisit) {
-      setStage(3);
+      setStage(STAGES.SUBMIT_DISPLAY);
     } else {
       startConfetti();
       setStage(0);
@@ -95,13 +85,21 @@ const ResultStage: React.FC<ResultStageProps> = ({
   }, [stage]);
 
   const onShowStatsClick = () => {
-    gameDispatch({ type: GAME_ACTIONS.SHOW_STATS });
+    gameOverlayDispatch({ type: GAME_OVERLAY_ACTIONS.SHOW_STATS });
   };
   const onGameMenuClick = () => {
     gameDispatch({ type: GAME_ACTIONS.RESTART });
   };
   const onGameRestartClick = () => {
     gameDispatch({ type: GAME_ACTIONS.CONFIGS_DONE });
+  };
+  const onSubmitHighScoreClick = () => {
+    gameOverlayDispatch({ type: GAME_OVERLAY_ACTIONS.SHOW_HIGHSCORE });
+  };
+
+  const motionAppear = {
+    initial: isFirstVisit && { opacity: 0 },
+    animate: { opacity: 1 },
   };
 
   return (
@@ -142,8 +140,7 @@ const ResultStage: React.FC<ResultStageProps> = ({
 
           {stage >= STAGES.YOUR_SCORE_IS && (
             <motion.div
-              initial={isFirstVisit && { opacity: 0 }}
-              animate={{ opacity: 1 }}
+              {...motionAppear}
               transition={{
                 delay: 0.3,
               }}
@@ -156,36 +153,47 @@ const ResultStage: React.FC<ResultStageProps> = ({
           )}
 
           {stage >= STAGES.SCORE_DISPLAY && (
-            <motion.div
-              initial={isFirstVisit && { opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{
-                delay: 1.5,
-              }}
-              onAnimationComplete={() => setStage(STAGES.RESULT_DISPLAY)}
-            >
-              <FlagText
-                size={90}
-                style={{
-                  textAlign: "center",
-                  marginBottom: "10vh",
-                  filter: "drop-shadow(8px 12px black)",
+            <div style={{ position: "relative", marginBottom: "10vh" }}>
+              <motion.div
+                {...motionAppear}
+                transition={{
+                  delay: 1.5,
                 }}
+                onAnimationComplete={() => setStage(STAGES.RESULT_DISPLAY)}
               >
-                {score} / {entries.length}
-              </FlagText>
-            </motion.div>
+                <FlagText
+                  size={90}
+                  style={{
+                    textAlign: "center",
+                    filter: "drop-shadow(8px 12px black)",
+                  }}
+                >
+                  {score} / {entries.length}
+                </FlagText>
+                {stage >= STAGES.SUBMIT_DISPLAY && newHighScore && (
+                  <motion.div
+                    style={{ position: "absolute" }}
+                    {...motionAppear}
+                    transition={{
+                      delay: 0.9,
+                    }}
+                  >
+                    <button onClick={onSubmitHighScoreClick}>Submit</button>
+                  </motion.div>
+                )}
+              </motion.div>
+            </div>
           )}
         </Stack>
       </Center>
 
       {stage >= STAGES.RESULT_DISPLAY && (
         <motion.div
-          initial={isFirstVisit && { opacity: 0 }}
-          animate={{ opacity: 1 }}
+          {...motionAppear}
           transition={{
             delay: 1,
           }}
+          onAnimationComplete={() => setStage(STAGES.SUBMIT_DISPLAY)}
         >
           <Box>
             <MediaQuery

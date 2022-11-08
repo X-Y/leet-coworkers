@@ -4,10 +4,9 @@ import { useQuery } from "react-query";
 import { AnimatePresence, motion } from "framer-motion";
 
 import type { Coworker } from "../interfaces/CoworkerModel";
-import { GAME_STATES, GAME_ACTIONS } from "../interfaces/Game";
+import { GAME_STATES, GAME_OVERLAY_STATES } from "../interfaces/Game";
 
 import { coworkersApi } from "../lib/frontendApi";
-import useUndoReducer from "../lib/useUndoReducer";
 
 import {
   FILTER_BY,
@@ -16,9 +15,12 @@ import {
 
 import {
   gameStateReducer,
-  HistoryType,
   iniGameState,
 } from "../reducers/gameReducer/gameReducer";
+import {
+  gameOverlayStateReducer,
+  iniGameOverlayState,
+} from "../reducers/gameReducer/gameOverlayReducer";
 
 import PlayStage from "../containers/PlayStage/PlayStage";
 import ResultStage from "../containers/ResultStage/ResultStage";
@@ -32,9 +34,10 @@ import GameBackground from "../components/GameBackground/GameBackground";
 
 const Game: NextPage = () => {
   const { setFilterBy } = useContext(FilterContext);
-  const [gameState, gameDispatch, history] = useUndoReducer(
-    gameStateReducer,
-    iniGameState
+  const [gameState, gameDispatch] = useReducer(gameStateReducer, iniGameState);
+  const [gameOverlayState, gameOverlayDispatch] = useReducer(
+    gameOverlayStateReducer,
+    iniGameOverlayState
   );
 
   useEffect(() => {
@@ -52,47 +55,64 @@ const Game: NextPage = () => {
   let resData = data;
   resData = useFilter(resData);
 
+  const gameStep =
+    gameOverlayState.step === GAME_OVERLAY_STATES.NONE
+      ? gameState.step
+      : gameOverlayState.step;
+
   return (
     <GameBackground>
       {!resData && <div style={{ position: "fixed" }}>Loading...</div>}
       <AnimatePresence mode="wait">
-        {gameState.step === GAME_STATES.MENU && (
+        {gameStep === GAME_STATES.MENU && (
           <motion.div key={GAME_STATES.MENU}>
-            <ConfigStage gameDispatch={gameDispatch} gameState={gameState} />
+            <ConfigStage
+              gameDispatch={gameDispatch}
+              gameOverlayDispatch={gameOverlayDispatch}
+              gameState={gameState}
+            />
           </motion.div>
         )}
 
-        {gameState.step === GAME_STATES.MEMORY && (
+        {gameStep === GAME_STATES.MEMORY && (
           <motion.div key={GAME_STATES.MEMORY}>
             <MemoryStage gameDispatch={gameDispatch} gameState={gameState} />
           </motion.div>
         )}
 
-        {gameState.step === GAME_STATES.PLAY && (
+        {gameStep === GAME_STATES.PLAY && (
           <motion.div key={GAME_STATES.PLAY}>
             <PlayStage gameDispatch={gameDispatch} gameState={gameState} />
           </motion.div>
         )}
 
-        {gameState.step === GAME_STATES.RESULT && (
+        {gameStep === GAME_STATES.RESULT && (
           <>
             <ResultStage
               gameDispatch={gameDispatch}
+              gameOverlayDispatch={gameOverlayDispatch}
               gameState={gameState}
-              history={history}
             />
           </>
         )}
 
-        {gameState.step === GAME_STATES.STATS && (
+        {gameStep === GAME_OVERLAY_STATES.STATS && (
           <>
-            <StatsStage gameDispatch={gameDispatch} gameState={gameState} />
+            <StatsStage
+              gameDispatch={gameDispatch}
+              gameOverlayDispatch={gameOverlayDispatch}
+              gameState={gameState}
+            />
           </>
         )}
 
-        {gameState.step === GAME_STATES.HIGHSCORE && (
+        {gameStep === GAME_OVERLAY_STATES.HIGHSCORE && (
           <>
-            <HighScoreStage gameDispatch={gameDispatch} gameState={gameState} />
+            <HighScoreStage
+              gameDispatch={gameDispatch}
+              gameOverlayDispatch={gameOverlayDispatch}
+              gameState={gameState}
+            />
           </>
         )}
       </AnimatePresence>
