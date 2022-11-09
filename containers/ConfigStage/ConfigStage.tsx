@@ -24,6 +24,11 @@ import { FilterContext } from "../../contexts/FilterContext/FilterContext";
 
 import FlagText from "../../components/FlagText/FlagText";
 
+import {
+  ConfigStageMainButton,
+  ConfigStageSubButton,
+} from "./ConfigStageButton";
+
 const variantsTitle: Variants = {
   enter: {
     y: -200,
@@ -164,40 +169,19 @@ const ConfigStage: React.FC<GameStepProps> = ({
             </motion.div>
 
             <motion.div variants={variantsMenu} style={{ textAlign: "center" }}>
-              <MediaQuery largerThan={"xs"} styles={{ maxWidth: "15rem" }}>
-                <Button
-                  color="leetGreen"
-                  sx={{ width: "100%", margin: " auto" }}
-                  size="xl"
-                  onClick={onConfigsDoneClick}
-                >
-                  Start
-                </Button>
-              </MediaQuery>
+              <ConfigStageMainButton onClick={onConfigsDoneClick}>
+                Start
+              </ConfigStageMainButton>
             </motion.div>
             <motion.div variants={variantsMenu} style={{ textAlign: "center" }}>
-              <MediaQuery largerThan={"xs"} styles={{ maxWidth: "10rem" }}>
-                <Button
-                  color="leetGreen.1"
-                  sx={{ width: "100%", margin: " auto" }}
-                  size="sm"
-                  onClick={onShowStatsClick}
-                >
-                  Stats
-                </Button>
-              </MediaQuery>
+              <ConfigStageSubButton onClick={onShowStatsClick}>
+                Stats
+              </ConfigStageSubButton>
             </motion.div>
             <motion.div variants={variantsMenu} style={{ textAlign: "center" }}>
-              <MediaQuery largerThan={"xs"} styles={{ maxWidth: "10rem" }}>
-                <Button
-                  color="leetGreen.1"
-                  sx={{ width: "100%", margin: " auto" }}
-                  size="sm"
-                  onClick={onShowHighScoreClick}
-                >
-                  High Score
-                </Button>
-              </MediaQuery>
+              <ConfigStageSubButton onClick={onShowHighScoreClick}>
+                High Score
+              </ConfigStageSubButton>
             </motion.div>
           </Stack>
         </MediaQuery>

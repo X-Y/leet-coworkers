@@ -21,6 +21,7 @@ import FlagText from "../../components/FlagText/FlagText";
 
 import { useEffect, useRef, useState } from "react";
 import TitleText from "../../components/TitleText/TitleText";
+import SubmitHighScoreBtn from "./SubmitHighScoreBtn";
 
 enum STAGES {
   DONE,
@@ -55,7 +56,7 @@ const ResultStage: React.FC<GameStepProps> = ({
     confettiTimerRef.current = tid;
   };
 
-  const isFirstVisit = true;
+  const isFirstVisit = newHighScore;
 
   useEffect(() => {
     if (!isFirstVisit) {
@@ -172,13 +173,18 @@ const ResultStage: React.FC<GameStepProps> = ({
                 </FlagText>
                 {stage >= STAGES.SUBMIT_DISPLAY && newHighScore && (
                   <motion.div
-                    style={{ position: "absolute" }}
+                    style={{
+                      position: "absolute",
+                      transform: "translateX(-50%)",
+                      marginLeft: "50%",
+                      textAlign: "center",
+                    }}
                     {...motionAppear}
                     transition={{
                       delay: 0.9,
                     }}
                   >
-                    <button onClick={onSubmitHighScoreClick}>Submit</button>
+                    <SubmitHighScoreBtn onClick={onSubmitHighScoreClick} />
                   </motion.div>
                 )}
               </motion.div>
@@ -232,23 +238,25 @@ const ResultStage: React.FC<GameStepProps> = ({
               >
                 Menu
               </Button>
-              <MediaQuery
-                largerThan={"sm"}
-                styles={{
-                  order: -1,
-                }}
+              <Button
+                color="leetPurple"
+                variant="light"
+                size="lg"
+                style={{ padding: 0 }}
+                onClick={onShowStatsClick}
               >
-                <Button
-                  color="leetPurple"
-                  variant="light"
-                  size="lg"
-                  style={{ padding: 0 }}
-                  onClick={onShowStatsClick}
-                >
-                  Stats
-                </Button>
-              </MediaQuery>
+                Stats
+              </Button>
 
+              <Button
+                color="leetPurple"
+                variant="light"
+                size="lg"
+                style={{ padding: 0 }}
+                onClick={onSubmitHighScoreClick}
+              >
+                HighScore
+              </Button>
               <Button
                 color="leetPurple"
                 size="lg"

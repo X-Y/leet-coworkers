@@ -1,3 +1,4 @@
+import { createContext, useState } from "react";
 import {
   GameState,
   GameDispatch,
@@ -6,6 +7,14 @@ import { GameOverlayDispatch } from "../../reducers/gameReducer/gameOverlayReduc
 
 import SubmitHighScore from "./SubmitHighScore";
 import DisplayHighScore from "./DisplayHighScore";
+
+export const KeyContext = createContext<{
+  key: string;
+  setKey: (val: string) => void;
+}>({
+  key: "",
+  setKey: () => {},
+});
 
 interface ResultStageProps {
   gameState: GameState;
@@ -19,14 +28,19 @@ const HighScoreStage: React.FC<ResultStageProps> = ({
   gameOverlayDispatch,
 }) => {
   const { newHighScore } = gameState;
+  const [key, setKey] = useState("");
 
-  return newHighScore ? (
-    <SubmitHighScore gameDispatch={gameDispatch} gameState={gameState} />
-  ) : (
-    <DisplayHighScore
-      gameOverlayDispatch={gameOverlayDispatch}
-      gameState={gameState}
-    />
+  return (
+    <KeyContext.Provider value={{ key, setKey }}>
+      {newHighScore ? (
+        <SubmitHighScore gameDispatch={gameDispatch} gameState={gameState} />
+      ) : (
+        <DisplayHighScore
+          gameOverlayDispatch={gameOverlayDispatch}
+          gameState={gameState}
+        />
+      )}
+    </KeyContext.Provider>
   );
 };
 
