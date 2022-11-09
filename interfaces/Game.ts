@@ -1,12 +1,10 @@
 import { Coworker } from "./CoworkerModel";
 
 export enum GAME_STATES {
-  MENU,
-  MEMORY,
-  PLAY,
-  RESULT,
-
-  STATS,
+  MENU = "MENU",
+  MEMORY = "MEMORY",
+  PLAY = "PLAY",
+  RESULT = "RESULT",
 }
 
 export enum GAME_ACTIONS {
@@ -14,10 +12,23 @@ export enum GAME_ACTIONS {
   START,
   END,
   RESTART,
-  SHOW_STATS,
+
+  SUBMIT_HIGHSCORE,
 }
 
 export type Entry = Coworker & {
   options: string[];
 };
 export type Answer = [string, boolean];
+
+export enum GAME_OVERLAY_STATES {
+  NONE = "NONE",
+  STATS = "STATS",
+  HIGHSCORE = "HIGHSCORE",
+}
+
+export enum GAME_OVERLAY_ACTIONS {
+  SHOW_STATS,
+  SHOW_HIGHSCORE,
+  HIDE,
+}

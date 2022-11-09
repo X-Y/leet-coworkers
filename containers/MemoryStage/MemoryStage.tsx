@@ -5,6 +5,7 @@ import { useContext, useEffect, useState, useRef } from "react";
 
 import type { Coworker } from "../../interfaces/CoworkerModel";
 import { GAME_ACTIONS, Entry } from "../../interfaces/Game";
+import { GameStepProps } from "../../interfaces/GameStepProps";
 
 import { coworkersApi } from "../../lib/frontendApi";
 import { initGameDB } from "../../lib/gameDB";
@@ -32,11 +33,7 @@ const getRegionFilterString = (region: regionType) => {
   }
 };
 
-interface MemoryStageProps {
-  gameState: GameState;
-  gameDispatch: GameDispatch;
-}
-const MemoryStage: React.FC<MemoryStageProps> = ({
+const MemoryStage: React.FC<Omit<GameStepProps, "gameOverlayDispatch">> = ({
   gameState,
   gameDispatch,
 }) => {

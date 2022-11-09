@@ -9,18 +9,25 @@ import {
 } from "@mantine/core";
 import { motion, Variants } from "framer-motion";
 
-import { Entry, GAME_ACTIONS } from "../../interfaces/Game";
-import { Coworker } from "../../interfaces/CoworkerModel";
+import { GAME_ACTIONS, GAME_OVERLAY_ACTIONS } from "../../interfaces/Game";
+import { GameStepProps } from "../../interfaces/GameStepProps";
 
 import type {
-  GameDispatch,
-  GameState,
+  Regions,
   regionType,
 } from "../../reducers/gameReducer/gameReducer";
-import { regionEveryWhere } from "../../reducers/gameReducer/gameReducer";
+import {
+  gameCities,
+  regionEveryWhere,
+} from "../../reducers/gameReducer/gameReducer";
 import { FilterContext } from "../../contexts/FilterContext/FilterContext";
 
 import FlagText from "../../components/FlagText/FlagText";
+
+import {
+  ConfigStageMainButton,
+  ConfigStageSubButton,
+} from "./ConfigStageButton";
 
 const variantsTitle: Variants = {
   enter: {
@@ -52,38 +59,23 @@ const variantsMenu: Variants = {
   },
 };
 
-const gameCities: regionType[] = [
-  "Borlänge",
-  "Helsingborg",
-  "Ljubljana",
-  "Lund",
-  "Stockholm",
-  ["Northen Sweden", "(Borlänge|Stockholm)"],
-  ["Southen Sweden", "(Helsingborg|Lund)"],
-  ["Sweden", "(Borlänge|Stockholm|Helsingborg|Lund)"],
-  regionEveryWhere,
-];
-
 const numberQuizes = [10, 20, 40, 60];
 
 const numberOptions = [2, 3, 4];
 
-interface ConfigStageProps {
-  gameState: GameState;
-  gameDispatch: GameDispatch;
-}
-const ConfigStage: React.FC<ConfigStageProps> = ({
-  gameState,
+const ConfigStage: React.FC<GameStepProps> = ({
   gameDispatch,
+  gameOverlayDispatch,
 }) => {
   const [gameRegion, setGameRegion] = useState<regionType>(regionEveryWhere);
   const numQuizRef = useRef<HTMLInputElement>(null);
   const numOptionsRef = useRef<HTMLInputElement>(null);
 
-  const { setFilterValue } = useContext(FilterContext);
-
   const onShowStatsClick = () => {
-    gameDispatch({ type: GAME_ACTIONS.SHOW_STATS });
+    gameOverlayDispatch({ type: GAME_OVERLAY_ACTIONS.SHOW_STATS });
+  };
+  const onShowHighScoreClick = () => {
+    gameOverlayDispatch({ type: GAME_OVERLAY_ACTIONS.SHOW_HIGHSCORE });
   };
   const onConfigsDoneClick = () => {
     const numQuiz = +(numQuizRef.current?.value || "0");
@@ -135,7 +127,7 @@ const ConfigStage: React.FC<ConfigStageProps> = ({
                     label="Pick a location:"
                     data={data}
                     defaultValue=""
-                    onChange={(value) =>
+                    onChange={(value: Regions) =>
                       setGameRegion(value || regionEveryWhere)
                     }
                     styles={(theme) => ({
@@ -177,28 +169,19 @@ const ConfigStage: React.FC<ConfigStageProps> = ({
             </motion.div>
 
             <motion.div variants={variantsMenu} style={{ textAlign: "center" }}>
-              <MediaQuery largerThan={"xs"} styles={{ maxWidth: "15rem" }}>
-                <Button
-                  color="leetGreen"
-                  sx={{ width: "100%", margin: " auto" }}
-                  size="xl"
-                  onClick={onConfigsDoneClick}
-                >
-                  Start
-                </Button>
-              </MediaQuery>
+              <ConfigStageMainButton onClick={onConfigsDoneClick}>
+                Start
+              </ConfigStageMainButton>
             </motion.div>
             <motion.div variants={variantsMenu} style={{ textAlign: "center" }}>
-              <MediaQuery largerThan={"xs"} styles={{ maxWidth: "10rem" }}>
-                <Button
-                  color="leetGreen.1"
-                  sx={{ width: "100%", margin: " auto" }}
-                  size="sm"
-                  onClick={onShowStatsClick}
-                >
-                  Stats
-                </Button>
-              </MediaQuery>
+              <ConfigStageSubButton onClick={onShowStatsClick}>
+                Stats
+              </ConfigStageSubButton>
+            </motion.div>
+            <motion.div variants={variantsMenu} style={{ textAlign: "center" }}>
+              <ConfigStageSubButton onClick={onShowHighScoreClick}>
+                High Score
+              </ConfigStageSubButton>
             </motion.div>
           </Stack>
         </MediaQuery>
