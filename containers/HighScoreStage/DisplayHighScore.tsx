@@ -1,4 +1,4 @@
-import { Button, Grid, Stack, Flex } from "@mantine/core";
+import { Button, Grid, Stack, Flex, Box } from "@mantine/core";
 import { useList, useListVals } from "react-firebase-hooks/database";
 import { ref } from "firebase/database";
 import React, { Fragment, useContext, useState } from "react";
@@ -125,16 +125,25 @@ const DisplayHighScore: React.FC<Omit<GameStepProps, "gameDispatch">> = ({
                   <Fragment key={id}>
                     {outOfList && <Grid.Col span={12}>...</Grid.Col>}
 
-                    <Grid.Col span={1}>{v.no + 1}</Grid.Col>
-                    <Grid.Col sm={7} span={5}>
-                      {v.name} {isCurrent && "👈"}
-                    </Grid.Col>
-                    <Grid.Col sm={2} span={3}>
-                      {v.score}
-                    </Grid.Col>
-                    <Grid.Col sm={2} span={3}>
-                      {region}
-                    </Grid.Col>
+                    <Box
+                      sx={(theme) => ({
+                        display: "contents",
+                        color: isCurrent
+                          ? theme.colors.leetGreen[6]
+                          : undefined,
+                      })}
+                    >
+                      <Grid.Col span={1}>{v.no + 1}</Grid.Col>
+                      <Grid.Col sm={7} span={5}>
+                        {v.name}
+                      </Grid.Col>
+                      <Grid.Col sm={2} span={3}>
+                        {v.score}
+                      </Grid.Col>
+                      <Grid.Col sm={2} span={3}>
+                        {region}
+                      </Grid.Col>
+                    </Box>
 
                     {outOfList && <Grid.Col span={12}>...</Grid.Col>}
                   </Fragment>
