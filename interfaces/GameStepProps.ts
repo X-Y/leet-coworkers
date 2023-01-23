@@ -4,8 +4,13 @@ import type {
 } from "../reducers/gameReducer/gameReducer";
 import { GameOverlayDispatch } from "../reducers/gameReducer/gameOverlayReducer";
 
-export interface GameStepProps {
+/*export interface GameStepProps {
   gameState: GameState;
   gameDispatch: GameDispatch;
   gameOverlayDispatch: GameOverlayDispatch;
+}*/
+
+export interface GameStepProps {
+  current: any;
+  send: any;
 }

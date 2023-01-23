@@ -27,19 +27,21 @@ import { MainButton } from "../../components/Button/MainMenuButtons";
 import FlagText from "../../components/FlagText/FlagText";
 
 import { KeyContext } from "./HighScoreStage";
+import GameXstateContext from "../../contexts/GameXstateContext/GameXstateContext";
+import { useActor } from "@xstate/react";
 
-const SubmitHighScore: React.FC<Omit<GameStepProps, "gameOverlayDispatch">> = ({
-  gameDispatch,
-  gameState,
-}) => {
+const SubmitHighScore = () => {
+  const gameService = useContext(GameXstateContext);
+  const [current, send] = useActor(gameService.gameService);
+
   const { setKey } = useContext(KeyContext);
   const [name, setName] = useState("");
   const [nameError, setNameError] = useState(false);
 
-  const { region, score } = gameState;
+  const { region, score } = current.context;
 
   const noSubmitHighScore = () => {
-    gameDispatch({ type: GAME_ACTIONS.SUBMIT_HIGHSCORE });
+    send({ type: GAME_ACTIONS.SUBMIT_HIGHSCORE });
   };
   const submitHighScore = () => {
     if (!name) {
@@ -63,7 +65,7 @@ const SubmitHighScore: React.FC<Omit<GameStepProps, "gameOverlayDispatch">> = ({
 
     newKey && setKey(newKey);
 
-    gameDispatch({ type: GAME_ACTIONS.SUBMIT_HIGHSCORE });
+    send({ type: GAME_ACTIONS.SUBMIT_HIGHSCORE });
   };
 
   const onChangeName = (e: ChangeEvent<HTMLInputElement>) => {

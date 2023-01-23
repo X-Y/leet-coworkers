@@ -1,4 +1,4 @@
-import { createContext, useState } from "react";
+import { createContext, useContext, useState } from "react";
 import {
   GameState,
   GameDispatch,
@@ -7,6 +7,8 @@ import { GameOverlayDispatch } from "../../reducers/gameReducer/gameOverlayReduc
 
 import SubmitHighScore from "./SubmitHighScore";
 import DisplayHighScore from "./DisplayHighScore";
+import GameXstateContext from "../../contexts/GameXstateContext/GameXstateContext";
+import { useActor } from "@xstate/react";
 
 export const KeyContext = createContext<{
   key: string;
@@ -22,23 +24,18 @@ interface ResultStageProps {
   gameOverlayDispatch: GameOverlayDispatch;
 }
 
-const HighScoreStage: React.FC<ResultStageProps> = ({
-  gameState,
-  gameDispatch,
-  gameOverlayDispatch,
-}) => {
-  const { newHighScore } = gameState;
+const HighScoreStage = () => {
+  const gameService = useContext(GameXstateContext);
+  const [current] = useActor(gameService.gameService);
+
   const [key, setKey] = useState("");
 
   return (
     <KeyContext.Provider value={{ key, setKey }}>
-      {newHighScore ? (
-        <SubmitHighScore gameDispatch={gameDispatch} gameState={gameState} />
+      {current.matches("overlays.leaderBoardStage.submitPage") ? (
+        <SubmitHighScore />
       ) : (
-        <DisplayHighScore
-          gameOverlayDispatch={gameOverlayDispatch}
-          gameState={gameState}
-        />
+        <DisplayHighScore />
       )}
     </KeyContext.Provider>
   );

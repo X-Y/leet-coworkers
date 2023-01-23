@@ -19,9 +19,11 @@ import GameResultTile from "../../components/GameResultTile/GameResultTile";
 import BottomBar from "../../components/BottomBar/BottomBar";
 import FlagText from "../../components/FlagText/FlagText";
 
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import TitleText from "../../components/TitleText/TitleText";
 import SubmitHighScoreBtn from "./SubmitHighScoreBtn";
+import GameXstateContext from "../../contexts/GameXstateContext/GameXstateContext";
+import { useActor } from "@xstate/react";
 
 enum STAGES {
   DONE,
@@ -35,14 +37,14 @@ const randomConfetti = () => {
   confetti({ origin: { y: 1, x: Math.random() }, startVelocity: 60 });
 };
 
-const ResultStage: React.FC<GameStepProps> = ({
-  gameState,
-  gameDispatch,
-  gameOverlayDispatch,
-}) => {
+const ResultStage = () => {
+  const gameService = useContext(GameXstateContext);
+  const [current, send] = useActor(gameService.gameService);
+
   const confettiTimerRef = useRef<NodeJS.Timeout>();
   const [stage, setStage] = useState<STAGES>(STAGES.DONE);
-  const { entries, answers, score, newHighScore } = gameState;
+  const { entries, answers, score, newHighScore, resultDisplayed } =
+    current.context;
 
   const [testStarter, setTestStarter] = useState(false);
 
@@ -56,7 +58,7 @@ const ResultStage: React.FC<GameStepProps> = ({
     confettiTimerRef.current = tid;
   };
 
-  const isFirstVisit = newHighScore;
+  const isFirstVisit = !resultDisplayed;
 
   useEffect(() => {
     if (!isFirstVisit) {
@@ -75,6 +77,7 @@ const ResultStage: React.FC<GameStepProps> = ({
   useEffect(() => {
     let tid: NodeJS.Timeout;
     if (stage >= STAGES.RESULT_DISPLAY) {
+      send(GAME_ACTIONS.RESULT_DISPLAYED);
       tid = setTimeout(() => {
         clearTimeout(confettiTimerRef.current);
       }, 3000);
@@ -86,16 +89,16 @@ const ResultStage: React.FC<GameStepProps> = ({
   }, [stage]);
 
   const onShowStatsClick = () => {
-    gameOverlayDispatch({ type: GAME_OVERLAY_ACTIONS.SHOW_STATS });
+    send({ type: GAME_ACTIONS.GO_TO_STATS });
   };
   const onGameMenuClick = () => {
-    gameDispatch({ type: GAME_ACTIONS.RESTART });
+    send({ type: GAME_ACTIONS.BACK_TO_MENU });
   };
   const onGameRestartClick = () => {
-    gameDispatch({ type: GAME_ACTIONS.CONFIGS_DONE });
+    send({ type: GAME_ACTIONS.RESTART });
   };
   const onSubmitHighScoreClick = () => {
-    gameOverlayDispatch({ type: GAME_OVERLAY_ACTIONS.SHOW_HIGHSCORE });
+    send({ type: GAME_ACTIONS.GO_TO_LEADER_BOARD });
   };
 
   const motionAppear = {

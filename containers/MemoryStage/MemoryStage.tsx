@@ -24,6 +24,8 @@ import Spinner from "../../components/Spinner/Spinner";
 
 import { filterData } from "../../hooks/useFilter";
 import useAuditGameSet from "./useAuditGameSet";
+import GameXstateContext from "../../contexts/GameXstateContext/GameXstateContext";
+import { useActor } from "@xstate/react";
 
 const getRegionFilterString = (region: regionType) => {
   if (typeof region === "string") {
@@ -33,16 +35,15 @@ const getRegionFilterString = (region: regionType) => {
   }
 };
 
-const MemoryStage: React.FC<Omit<GameStepProps, "gameOverlayDispatch">> = ({
-  gameState,
-  gameDispatch,
-}) => {
+const MemoryStage = () => {
+  const gameService = useContext(GameXstateContext);
+  const [current, send] = useActor(gameService.gameService);
+
   const spinnerTimerIdRef = useRef<NodeJS.Timeout>();
   const [loading, setLoading] = useState(true);
   const [timestamp, setTimestamp] = useState<number>();
-  const [entries, setEntries] = useState<Entry[]>([]);
 
-  const cleanUpGameSet = (brokens: string[]) => {
+  /*const cleanUpGameSet = (brokens: string[]) => {
     setEntries((prev) =>
       prev
         .filter(({ imagePortraitUrl }) => !brokens.includes(imagePortraitUrl))
@@ -54,21 +55,19 @@ const MemoryStage: React.FC<Omit<GameStepProps, "gameOverlayDispatch">> = ({
     }, 1000);
 
     window.scrollTo(0, 0);
-  };
+  };*/
 
-  const {
+  /*const {
     reset,
     audit,
     setAmount: setAuditAmount,
-  } = useAuditGameSet(cleanUpGameSet);
+  } = useAuditGameSet(cleanUpGameSet);*/
 
   const { data } = useQuery<Coworker[]>("getCoworkers", coworkersApi, {
     staleTime: 60000,
   });
 
-  let resData = data;
-
-  const onImageLoadError = (e: Event) => {
+  /*const onImageLoadError = (e: Event) => {
     const target = e.target as HTMLImageElement | null;
     const brokenSrc = target?.src;
     audit(brokenSrc);
@@ -83,8 +82,8 @@ const MemoryStage: React.FC<Omit<GameStepProps, "gameOverlayDispatch">> = ({
     target?.removeEventListener("load", onImageLoadSuccess);
     target?.removeEventListener("error", onImageLoadError);
   };
-
-  const generateGameSet = () => {
+*/
+  /*const generateGameSet = () => {
     const resDataConst = resData;
     if (!resDataConst) return;
 
@@ -129,6 +128,28 @@ const MemoryStage: React.FC<Omit<GameStepProps, "gameOverlayDispatch">> = ({
 
     setTimestamp(Date.now());
     setEntries(entries);
+  };*/
+
+  const generateGameSet = () => {
+    console.log("memeoryStage - generate");
+    if (!data) {
+      throw "no data";
+    }
+    send({
+      type: GAME_ACTIONS.GENERATE,
+      payload: {
+        data,
+      },
+    });
+
+    setTimestamp(Date.now());
+    setLoading(true);
+
+    spinnerTimerIdRef.current = setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+
+    window.scrollTo(0, 0);
   };
 
   useEffect(() => {
@@ -139,11 +160,12 @@ const MemoryStage: React.FC<Omit<GameStepProps, "gameOverlayDispatch">> = ({
   }, []);
 
   const onGameStartClick = () => {
-    gameDispatch({
+    send({
       type: GAME_ACTIONS.START,
-      payload: { entries },
     });
   };
+
+  const { entries } = current.context;
 
   return (
     <motion.div initial="closed" animate="open" exit="closed">

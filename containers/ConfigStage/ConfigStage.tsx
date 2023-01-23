@@ -28,6 +28,8 @@ import {
   ConfigStageMainButton,
   ConfigStageSubButton,
 } from "./ConfigStageButton";
+import GameXstateContext from "../../contexts/GameXstateContext/GameXstateContext";
+import { useActor } from "@xstate/react";
 
 const variantsTitle: Variants = {
   enter: {
@@ -63,25 +65,25 @@ const numberQuizes = [10, 20, 40, 60];
 
 const numberOptions = [2, 3, 4];
 
-const ConfigStage: React.FC<GameStepProps> = ({
-  gameDispatch,
-  gameOverlayDispatch,
-}) => {
+const ConfigStage = () => {
+  const gameService = useContext(GameXstateContext);
+  const [, send] = useActor(gameService.gameService);
+
   const [gameRegion, setGameRegion] = useState<regionType>(regionEveryWhere);
   const numQuizRef = useRef<HTMLInputElement>(null);
   const numOptionsRef = useRef<HTMLInputElement>(null);
 
   const onShowStatsClick = () => {
-    gameOverlayDispatch({ type: GAME_OVERLAY_ACTIONS.SHOW_STATS });
+    send({ type: GAME_ACTIONS.GO_TO_STATS });
   };
   const onShowHighScoreClick = () => {
-    gameOverlayDispatch({ type: GAME_OVERLAY_ACTIONS.SHOW_HIGHSCORE });
+    send({ type: GAME_ACTIONS.GO_TO_LEADER_BOARD });
   };
   const onConfigsDoneClick = () => {
     const numQuiz = +(numQuizRef.current?.value || "0");
     const numOptions = +(numOptionsRef.current?.value || "0");
 
-    gameDispatch({
+    send({
       type: GAME_ACTIONS.CONFIGS_DONE,
       payload: { amount: numQuiz, confusions: numOptions, region: gameRegion },
     });

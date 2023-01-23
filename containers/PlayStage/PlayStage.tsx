@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import {
   Radio,
   Center,
@@ -18,6 +18,8 @@ import { GameStepProps } from "../../interfaces/GameStepProps";
 import { initGameDB } from "../../lib/gameDB";
 
 import Coworker from "../../components/Coworker/Coworker";
+import GameXstateContext from "../../contexts/GameXstateContext/GameXstateContext";
+import { useActor } from "@xstate/react";
 
 const variantsContainer: Record<string, Variant> = {
   center: {
@@ -47,7 +49,7 @@ const variants: Record<string, Variant> = {
     transition: { duration: 0.2, ease: [0.395, 0.005, 1.0, 0.38] },
   },
 };
-
+/*
 const calculateScore = (answersOrig: string[], entries: Entry[]) => {
   let score = 0;
   const result = entries.reduce((prev, curr, idx) => {
@@ -62,21 +64,22 @@ const calculateScore = (answersOrig: string[], entries: Entry[]) => {
   }, [] as Answer[]);
   return [score, result] as [number, Answer[]];
 };
+*/
+const PlayStage = () => {
+  const gameService = useContext(GameXstateContext);
+  const [current, send] = useActor(gameService.gameService);
 
-const PlayStage: React.FC<Omit<GameStepProps, "gameOverlayDispatch">> = ({
-  gameState,
-  gameDispatch,
-}) => {
-  const { entries } = gameState;
+  const { entries } = current.context;
 
   const [answers, setAnswers] = useState([] as string[]);
-  const [current, setCurrent] = useState(0);
+  const [currentEntry, setCurrentEntry] = useState(0);
 
   const setAnswer = (value: string) => {
     setAnswers((prev) => [...prev, value]);
-    setCurrent((prev) => prev + 1);
+    setCurrentEntry((prev) => prev + 1);
   };
 
+  /*
   const saveStats = async (answers: Answer[]) => {
     const db = await initGameDB();
 
@@ -88,29 +91,35 @@ const PlayStage: React.FC<Omit<GameStepProps, "gameOverlayDispatch">> = ({
   const onPlayDone = (answers: string[]) => {
     const [score, correctedAnswers] = calculateScore(
       answers,
-      gameState.entries
+      entries
     );
     saveStats(correctedAnswers);
-    gameDispatch({
+    send({
       type: GAME_ACTIONS.END,
       payload: { score, answers: correctedAnswers },
     });
-  };
+  };*/
 
+  const onPlayDone = (answers: string[]) => {
+    send({
+      type: GAME_ACTIONS.END,
+      payload: { uncorrectedAnswers: answers },
+    });
+  };
   useEffect(() => {
-    if (current >= entries.length) {
+    if (currentEntry >= entries.length) {
       onPlayDone(answers);
     }
-  }, [current]);
+  }, [currentEntry]);
 
   const currentCoworker =
-    current >= entries.length
+    currentEntry >= entries.length
       ? { options: [], imagePortraitUrl: "" }
-      : entries[current];
+      : entries[currentEntry];
   const { options, imagePortraitUrl } = currentCoworker;
   const coworker = { imagePortraitUrl } as CoworkerModel;
 
-  const progress = (current / entries.length) * 100;
+  const progress = (currentEntry / entries.length) * 100;
 
   return (
     <motion.div initial="enter" animate="center" exit="exit">
@@ -140,7 +149,7 @@ const PlayStage: React.FC<Omit<GameStepProps, "gameOverlayDispatch">> = ({
           initial="enter"
           animate="center"
           exit="exit"
-          key={"play_" + current}
+          key={"play_" + currentEntry}
           variants={variantsContainer}
         >
           <Stack
@@ -163,7 +172,7 @@ const PlayStage: React.FC<Omit<GameStepProps, "gameOverlayDispatch">> = ({
 
             <motion.div variants={variants}>
               <Radio.Group
-                key={current}
+                key={currentEntry}
                 orientation="vertical"
                 name="quiz"
                 onChange={setAnswer}
@@ -174,7 +183,7 @@ const PlayStage: React.FC<Omit<GameStepProps, "gameOverlayDispatch">> = ({
               >
                 {options.map((option, idx) => (
                   <Radio
-                    key={current + "_" + idx}
+                    key={currentEntry + "_" + idx}
                     value={option}
                     label={option}
                     styles={(theme) => ({

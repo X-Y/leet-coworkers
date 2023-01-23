@@ -1,7 +1,15 @@
-import { useContext, useEffect, useReducer, useState } from "react";
+import {
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useReducer,
+  useState,
+} from "react";
 import type { NextPage } from "next";
 import { useQuery } from "react-query";
 import { AnimatePresence, motion } from "framer-motion";
+import { useActor, useInterpret, useMachine } from "@xstate/react";
 
 import type { Coworker } from "../interfaces/CoworkerModel";
 import { GAME_STATES, GAME_OVERLAY_STATES } from "../interfaces/Game";
@@ -12,7 +20,10 @@ import {
   FILTER_BY,
   FilterContext,
 } from "../contexts/FilterContext/FilterContext";
+import GameContextProvider from "../contexts/GameXstateContext/GameXstateContextProvider";
+import GameXstateContext from "../contexts/GameXstateContext/GameXstateContext";
 
+import { gameFlowMachine } from "../gameState/gameFlow";
 import {
   gameStateReducer,
   iniGameState,
@@ -31,14 +42,17 @@ import HighScoreStage from "../containers/HighScoreStage/HighScoreStage";
 
 import { useFilter } from "../hooks/useFilter";
 import GameBackground from "../components/GameBackground/GameBackground";
+import { InterpreterFrom } from "xstate";
 
 const Game: NextPage = () => {
   const { setFilterBy } = useContext(FilterContext);
-  const [gameState, gameDispatch] = useReducer(gameStateReducer, iniGameState);
+  /*const [gameState, gameDispatch] = useReducer(gameStateReducer, iniGameState);
   const [gameOverlayState, gameOverlayDispatch] = useReducer(
     gameOverlayStateReducer,
     iniGameOverlayState
-  );
+  );*/
+  const gameService = useContext(GameXstateContext);
+  const [current, send] = useActor(gameService.gameService);
 
   useEffect(() => {
     setFilterBy(FILTER_BY.CITY);
@@ -55,64 +69,52 @@ const Game: NextPage = () => {
   let resData = data;
   resData = useFilter(resData);
 
-  const gameStep =
+  /*const gameStep =
     gameOverlayState.step === GAME_OVERLAY_STATES.NONE
       ? gameState.step
-      : gameOverlayState.step;
+      : gameOverlayState.step;*/
 
   return (
     <GameBackground>
       {!resData && <div style={{ position: "fixed" }}>Loading...</div>}
       <AnimatePresence mode="wait">
-        {gameStep === GAME_STATES.MENU && (
+        {current.matches("mainFlow.configStage") && (
           <motion.div key={GAME_STATES.MENU}>
             <ConfigStage
-              gameDispatch={gameDispatch}
+            /*gameDispatch={gameDispatch}
               gameOverlayDispatch={gameOverlayDispatch}
-              gameState={gameState}
+              gameState={gameState}*/
             />
           </motion.div>
         )}
 
-        {gameStep === GAME_STATES.MEMORY && (
+        {current.matches("mainFlow.memoryStage") && (
           <motion.div key={GAME_STATES.MEMORY}>
-            <MemoryStage gameDispatch={gameDispatch} gameState={gameState} />
+            <MemoryStage />
           </motion.div>
         )}
 
-        {gameStep === GAME_STATES.PLAY && (
+        {current.matches("mainFlow.playStage") && (
           <motion.div key={GAME_STATES.PLAY}>
-            <PlayStage gameDispatch={gameDispatch} gameState={gameState} />
+            <PlayStage />
           </motion.div>
         )}
 
-        {gameStep === GAME_STATES.RESULT && (
+        {current.matches("mainFlow.highScoreStage") && (
           <>
-            <ResultStage
-              gameDispatch={gameDispatch}
-              gameOverlayDispatch={gameOverlayDispatch}
-              gameState={gameState}
-            />
+            <ResultStage />
           </>
         )}
 
-        {gameStep === GAME_OVERLAY_STATES.STATS && (
+        {current.matches("overlays.statsStage") && (
           <>
-            <StatsStage
-              gameDispatch={gameDispatch}
-              gameOverlayDispatch={gameOverlayDispatch}
-              gameState={gameState}
-            />
+            <StatsStage />
           </>
         )}
 
-        {gameStep === GAME_OVERLAY_STATES.HIGHSCORE && (
+        {current.matches("overlays.leaderBoardStage") && (
           <>
-            <HighScoreStage
-              gameDispatch={gameDispatch}
-              gameOverlayDispatch={gameOverlayDispatch}
-              gameState={gameState}
-            />
+            <HighScoreStage />
           </>
         )}
       </AnimatePresence>
@@ -120,4 +122,12 @@ const Game: NextPage = () => {
   );
 };
 
-export default Game;
+const GameWithXstateContext: NextPage = () => {
+  return (
+    <GameContextProvider>
+      <Game />
+    </GameContextProvider>
+  );
+};
+
+export default GameWithXstateContext;

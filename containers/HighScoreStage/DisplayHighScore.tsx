@@ -4,7 +4,7 @@ import { ref } from "firebase/database";
 import React, { Fragment, useContext, useState } from "react";
 
 import { GameStepProps } from "../../interfaces/GameStepProps";
-import { GAME_OVERLAY_ACTIONS } from "../../interfaces/Game";
+import { GAME_ACTIONS, GAME_OVERLAY_ACTIONS } from "../../interfaces/Game";
 
 import { getRealtimeDatabase, getRegionString } from "../../lib/firebase";
 
@@ -14,6 +14,8 @@ import TitleText from "../../components/TitleText/TitleText";
 import BottomBar from "../../components/BottomBar/BottomBar";
 
 import { KeyContext } from "./HighScoreStage";
+import GameXstateContext from "../../contexts/GameXstateContext/GameXstateContext";
+import { useActor } from "@xstate/react";
 
 const HighScoreFilters = ({
   current,
@@ -40,9 +42,10 @@ const HighScoreFilters = ({
   );
 };
 
-const DisplayHighScore: React.FC<Omit<GameStepProps, "gameDispatch">> = ({
-  gameOverlayDispatch,
-}) => {
+const DisplayHighScore = () => {
+  const gameService = useContext(GameXstateContext);
+  const [, send] = useActor(gameService.gameService);
+
   const { key } = useContext(KeyContext);
   const [region, setRegion] = useState<Regions>(Regions.Everywhere);
 
@@ -52,7 +55,7 @@ const DisplayHighScore: React.FC<Omit<GameStepProps, "gameDispatch">> = ({
   );
 
   const onGameBackClick = () => {
-    gameOverlayDispatch({ type: GAME_OVERLAY_ACTIONS.HIDE });
+    send({ type: GAME_ACTIONS.GO_BACK });
   };
 
   const list =

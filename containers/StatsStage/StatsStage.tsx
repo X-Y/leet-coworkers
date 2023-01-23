@@ -11,9 +11,9 @@ import {
 } from "@mantine/core";
 import { motion, MotionConfig, Variants } from "framer-motion";
 import { useQuery } from "react-query";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useContext, useEffect, useMemo, useRef, useState } from "react";
 
-import { GAME_OVERLAY_ACTIONS } from "../../interfaces/Game";
+import { GAME_ACTIONS, GAME_OVERLAY_ACTIONS } from "../../interfaces/Game";
 import { Coworker } from "../../interfaces/CoworkerModel";
 import { GameStepProps } from "../../interfaces/GameStepProps";
 
@@ -23,6 +23,8 @@ import { initGameDB } from "../../lib/gameDB";
 import GameStatsTile from "../../components/GameStatsTile/GameStatsTile";
 import { MotionBottomBar } from "../../components/BottomBar/BottomBar";
 import TitleText from "../../components/TitleText/TitleText";
+import GameXstateContext from "../../contexts/GameXstateContext/GameXstateContext";
+import { useActor } from "@xstate/react";
 
 const itemVariants: Variants = {
   out: {
@@ -33,15 +35,14 @@ const itemVariants: Variants = {
   },
 };
 
-const ResultStage: React.FC<GameStepProps> = ({
-  gameState,
-  gameOverlayDispatch,
-}) => {
-  const { entries, answers, score } = gameState;
+const ResultStage = () => {
+  const gameService = useContext(GameXstateContext);
+  const [, send] = useActor(gameService.gameService);
+
   const [gameStat, setGameStat] = useState<[Coworker, number, number][]>([]);
 
   const onGameBackClick = () => {
-    gameOverlayDispatch({ type: GAME_OVERLAY_ACTIONS.HIDE });
+    send({ type: GAME_ACTIONS.GO_BACK });
   };
 
   const { data } = useQuery<Coworker[]>("getCoworkers", coworkersApi, {
