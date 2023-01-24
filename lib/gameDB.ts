@@ -4,6 +4,10 @@ import { Coworker } from "../interfaces/CoworkerModel";
 import { Answer } from "../interfaces/Game";
 
 interface GameStatsSchema extends DBSchema {
+  settings: {
+    key: string;
+    value: string;
+  };
   coworkers: {
     key: string;
     value: Coworker;
@@ -22,19 +26,32 @@ interface GameStatsSchema extends DBSchema {
   };
 }
 export const initGameDB = async () => {
-  const db = await openDB<GameStatsSchema>("game-stats", 1, {
-    upgrade(db) {
-      db.createObjectStore("coworkers", {
-        keyPath: "email",
-      });
+  const db = await openDB<GameStatsSchema>("game-stats", 2, {
+    upgrade(db, oldVersion, newVersion) {
+      if (oldVersion < 2) {
+        db.createObjectStore("settings");
+      }
 
-      const statsStore = db.createObjectStore("stats", {
-        keyPath: "email",
-      });
-      statsStore.createIndex("by-hits", "hits");
-      statsStore.createIndex("by-misses", "misses");
+      if (oldVersion < 1) {
+        db.createObjectStore("coworkers", {
+          keyPath: "email",
+        });
+
+        const statsStore = db.createObjectStore("stats", {
+          keyPath: "email",
+        });
+        statsStore.createIndex("by-hits", "hits");
+        statsStore.createIndex("by-misses", "misses");
+      }
     },
   });
+
+  const saveSetting = async (name: string, value: string) => {
+    return (await db).put("settings", value, name);
+  };
+  const getSetting = async (name: string) => {
+    return (await db).get("settings", name);
+  };
 
   const saveCoworker = async (coworkers: Coworker[]) => {
     const tx = db.transaction("coworkers", "readwrite");
@@ -70,5 +87,12 @@ export const initGameDB = async () => {
     return db.clear("stats");
   };
 
-  return { saveCoworker, saveResults, getAllMisses, clearStats };
+  return {
+    saveSetting,
+    getSetting,
+    saveCoworker,
+    saveResults,
+    getAllMisses,
+    clearStats,
+  };
 };

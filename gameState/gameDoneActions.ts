@@ -20,7 +20,7 @@ export const calculateScore = (answersOrig: string[], entries: Entry[]) => {
 export const saveStats = async (entries: Entry[], answers: Answer[]) => {
   const db = await initGameDB();
 
-  db.saveResults(entries, answers);
+  await db.saveResults(entries, answers);
 
   console.log("stat saved");
 };
