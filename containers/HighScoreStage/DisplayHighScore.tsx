@@ -155,16 +155,7 @@ const DisplayHighScore = () => {
           </Grid>
         </>
       </Stack>
-      <BottomBar>
-        <Button
-          color="leetPurple"
-          variant="light"
-          size="lg"
-          onClick={onGameBackClick}
-        >
-          Back
-        </Button>
-      </BottomBar>
+      <BottomBar hasBack />
     </div>
   );
 };

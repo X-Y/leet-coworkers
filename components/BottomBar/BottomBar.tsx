@@ -1,17 +1,34 @@
 import { Box, Button, Container, MediaQuery } from "@mantine/core";
 import { useIntersection } from "@mantine/hooks";
 import { motion } from "framer-motion";
-import React, { CSSProperties } from "react";
+import React, { CSSProperties, PropsWithChildren, useContext } from "react";
+import { useActor } from "@xstate/react";
 
-interface Props {
+import { GAME_ACTIONS } from "../../interfaces/Game";
+
+import GameXstateContext from "../../contexts/GameXstateContext/GameXstateContext";
+
+interface Props extends PropsWithChildren {
   motionRef?: React.ForwardedRef<HTMLDivElement>;
-  children: React.ReactNode;
   style?: CSSProperties;
+  hasBack?: boolean;
 }
-const BottomBar: React.FC<Props> = ({ motionRef, style, children }) => {
+const BottomBar: React.FC<Props> = ({
+  motionRef,
+  style,
+  hasBack,
+  children,
+}) => {
+  const gameService = useContext(GameXstateContext);
+  const [, send] = useActor(gameService.gameService);
+
   const { ref: itsRef, entry } = useIntersection({
     threshold: 1,
   });
+
+  const onGameBackClick = () => {
+    send({ type: GAME_ACTIONS.GO_BACK });
+  };
 
   return (
     <>
@@ -54,6 +71,17 @@ const BottomBar: React.FC<Props> = ({ motionRef, style, children }) => {
             })}
           >
             {children}
+
+            {hasBack && (
+              <Button
+                color="leetPurple"
+                variant="light"
+                size="lg"
+                onClick={onGameBackClick}
+              >
+                Back
+              </Button>
+            )}
           </Box>
         </MediaQuery>
       </Box>
@@ -69,6 +97,11 @@ const BottomBar: React.FC<Props> = ({ motionRef, style, children }) => {
 export default BottomBar;
 
 const _BottomBar = React.forwardRef<HTMLDivElement, Props>((props, ref) => {
-  return <BottomBar motionRef={ref}>{props.children}</BottomBar>;
+  const { children, ...otherProps } = props;
+  return (
+    <BottomBar motionRef={ref} {...otherProps}>
+      {children}
+    </BottomBar>
+  );
 });
 export const MotionBottomBar = motion(_BottomBar);

@@ -9,8 +9,7 @@ import {
 } from "@mantine/core";
 import { motion, Variants } from "framer-motion";
 
-import { GAME_ACTIONS, GAME_OVERLAY_ACTIONS } from "../../interfaces/Game";
-import { GameStepProps } from "../../interfaces/GameStepProps";
+import { GAME_ACTIONS } from "../../interfaces/Game";
 
 import type {
   Regions,
@@ -20,7 +19,6 @@ import {
   gameCities,
   regionEveryWhere,
 } from "../../reducers/gameReducer/gameReducer";
-import { FilterContext } from "../../contexts/FilterContext/FilterContext";
 
 import FlagText from "../../components/FlagText/FlagText";
 
@@ -78,6 +76,9 @@ const ConfigStage = () => {
   };
   const onShowHighScoreClick = () => {
     send({ type: GAME_ACTIONS.GO_TO_LEADER_BOARD });
+  };
+  const onSettingsClick = () => {
+    send({ type: GAME_ACTIONS.GO_TO_SETTINGS });
   };
   const onConfigsDoneClick = () => {
     const numQuiz = +(numQuizRef.current?.value || "0");
@@ -174,6 +175,11 @@ const ConfigStage = () => {
               <ConfigStageMainButton onClick={onConfigsDoneClick}>
                 Start
               </ConfigStageMainButton>
+            </motion.div>
+            <motion.div variants={variantsMenu} style={{ textAlign: "center" }}>
+              <ConfigStageSubButton onClick={onSettingsClick}>
+                Settings
+              </ConfigStageSubButton>
             </motion.div>
             <motion.div variants={variantsMenu} style={{ textAlign: "center" }}>
               <ConfigStageSubButton onClick={onShowStatsClick}>

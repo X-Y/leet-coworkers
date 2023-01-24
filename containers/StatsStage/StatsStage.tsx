@@ -36,14 +36,7 @@ const itemVariants: Variants = {
 };
 
 const ResultStage = () => {
-  const gameService = useContext(GameXstateContext);
-  const [, send] = useActor(gameService.gameService);
-
   const [gameStat, setGameStat] = useState<[Coworker, number, number][]>([]);
-
-  const onGameBackClick = () => {
-    send({ type: GAME_ACTIONS.GO_BACK });
-  };
 
   const { data } = useQuery<Coworker[]>("getCoworkers", coworkersApi, {
     staleTime: 60000,
@@ -179,17 +172,13 @@ const ResultStage = () => {
           </motion.div>
         </Stack>
       </MotionConfig>
-      <MotionBottomBar variants={itemVariants} transition={{ delay: 0.4 }}>
+      <MotionBottomBar
+        hasBack
+        variants={itemVariants}
+        transition={{ delay: 0.4 }}
+      >
         <Button color="red" size="lg" onClick={clearStats}>
           Clean Stats
-        </Button>
-        <Button
-          color="leetPurple"
-          variant="light"
-          size="lg"
-          onClick={onGameBackClick}
-        >
-          Back
         </Button>
       </MotionBottomBar>
     </motion.div>

@@ -52,6 +52,9 @@ export const initGameDB = async () => {
   const getSetting = async (name: string) => {
     return (await db).get("settings", name);
   };
+  const getAllSettings = async () => {
+    return (await db).getAll("settings");
+  };
 
   const saveCoworker = async (coworkers: Coworker[]) => {
     const tx = db.transaction("coworkers", "readwrite");
@@ -90,6 +93,7 @@ export const initGameDB = async () => {
   return {
     saveSetting,
     getSetting,
+    getAllSettings,
     saveCoworker,
     saveResults,
     getAllMisses,

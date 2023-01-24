@@ -37,6 +37,7 @@ import PlayStage from "../containers/PlayStage/PlayStage";
 import ResultStage from "../containers/ResultStage/ResultStage";
 import MemoryStage from "../containers/MemoryStage/MemoryStage";
 import ConfigStage from "../containers/ConfigStage/ConfigStage";
+import SettingsPage from "../containers/SettingsPage/SettingsPage";
 import StatsStage from "../containers/StatsStage/StatsStage";
 import HighScoreStage from "../containers/HighScoreStage/HighScoreStage";
 
@@ -78,13 +79,15 @@ const Game: NextPage = () => {
     <GameBackground>
       {!resData && <div style={{ position: "fixed" }}>Loading...</div>}
       <AnimatePresence mode="wait">
-        {current.matches("mainFlow.configStage") && (
+        {current.matches("mainFlow.configStage.main") && (
           <motion.div key={GAME_STATES.MENU}>
-            <ConfigStage
-            /*gameDispatch={gameDispatch}
-              gameOverlayDispatch={gameOverlayDispatch}
-              gameState={gameState}*/
-            />
+            <ConfigStage />
+          </motion.div>
+        )}
+
+        {current.matches("mainFlow.configStage.settings") && (
+          <motion.div key={"settings"}>
+            <SettingsPage />
           </motion.div>
         )}
 

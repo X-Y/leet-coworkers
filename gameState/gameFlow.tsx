@@ -31,6 +31,7 @@ type GameMachineEvents =
   | {
       type: GAME_ACTIONS.RESULT_DISPLAYED;
     }
+  | { type: GAME_ACTIONS.GO_TO_SETTINGS }
   // to Overlays
   | { type: GAME_ACTIONS.GO_TO_LEADER_BOARD }
   | { type: GAME_ACTIONS.GO_TO_STATS }
@@ -69,11 +70,24 @@ export const gameFlowMachine = createMachine<
         initial: "configStage",
         states: {
           configStage: {
+            initial: "main",
             entry: assign({ ...initState }),
             on: {
               CONFIGS_DONE: {
                 target: "memoryStage",
                 actions: "updateConfigs",
+              },
+            },
+            states: {
+              main: {
+                on: {
+                  GO_TO_SETTINGS: "settings",
+                },
+              },
+              settings: {
+                on: {
+                  GO_BACK: "main",
+                },
               },
             },
           },
