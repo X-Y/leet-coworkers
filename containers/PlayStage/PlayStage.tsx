@@ -10,6 +10,7 @@ import {
   ScrollArea,
 } from "@mantine/core";
 import { AnimatePresence, motion, Variant } from "framer-motion";
+import { useActor } from "@xstate/react";
 
 import { Entry, Answer, GAME_ACTIONS } from "../../interfaces/Game";
 import { Coworker as CoworkerModel } from "../../interfaces/CoworkerModel";
@@ -17,9 +18,12 @@ import { GameStepProps } from "../../interfaces/GameStepProps";
 
 import { initGameDB } from "../../lib/gameDB";
 
-import Coworker from "../../components/Coworker/Coworker";
 import GameXstateContext from "../../contexts/GameXstateContext/GameXstateContext";
-import { useActor } from "@xstate/react";
+
+import Coworker from "../../components/Coworker/Coworker";
+
+import { RadioInputAnswers } from "./RadioInputAnswers";
+import { TextInputAnswer } from "./TextInputAnswer";
 
 const variantsContainer: Record<string, Variant> = {
   center: {
@@ -49,28 +53,21 @@ const variants: Record<string, Variant> = {
     transition: { duration: 0.2, ease: [0.395, 0.005, 1.0, 0.38] },
   },
 };
-/*
-const calculateScore = (answersOrig: string[], entries: Entry[]) => {
-  let score = 0;
-  const result = entries.reduce((prev, curr, idx) => {
-    const currentAnswer = answersOrig[idx];
-    let isCorrect = false;
-    if (curr.name === currentAnswer) {
-      score += 1;
-      isCorrect = true;
-    }
 
-    return [...prev, [currentAnswer, isCorrect] as Answer];
-  }, [] as Answer[]);
-  return [score, result] as [number, Answer[]];
+const getTypeNameSetting = async () => {
+  const db = await initGameDB();
+  const dbTypeNames = await db.getSetting("typeNames");
+  console.log(dbTypeNames);
+  return dbTypeNames === "true";
 };
-*/
+
 const PlayStage = () => {
   const gameService = useContext(GameXstateContext);
   const [current, send] = useActor(gameService.gameService);
 
   const { entries } = current.context;
 
+  const [typeNames, setTypeNames] = useState(false);
   const [answers, setAnswers] = useState([] as string[]);
   const [currentEntry, setCurrentEntry] = useState(0);
 
@@ -78,27 +75,6 @@ const PlayStage = () => {
     setAnswers((prev) => [...prev, value]);
     setCurrentEntry((prev) => prev + 1);
   };
-
-  /*
-  const saveStats = async (answers: Answer[]) => {
-    const db = await initGameDB();
-
-    db.saveResults(entries, answers);
-
-    console.log("stat saved");
-  };
-
-  const onPlayDone = (answers: string[]) => {
-    const [score, correctedAnswers] = calculateScore(
-      answers,
-      entries
-    );
-    saveStats(correctedAnswers);
-    send({
-      type: GAME_ACTIONS.END,
-      payload: { score, answers: correctedAnswers },
-    });
-  };*/
 
   const onPlayDone = (answers: string[]) => {
     send({
@@ -112,11 +88,17 @@ const PlayStage = () => {
     }
   }, [currentEntry]);
 
+  useEffect(() => {
+    (async () => {
+      setTypeNames(await getTypeNameSetting());
+    })();
+  }, []);
+
   const currentCoworker =
     currentEntry >= entries.length
-      ? { options: [], imagePortraitUrl: "" }
+      ? { options: [], imagePortraitUrl: "", name: "" }
       : entries[currentEntry];
-  const { options, imagePortraitUrl } = currentCoworker;
+  const { options, imagePortraitUrl, name } = currentCoworker;
   const coworker = { imagePortraitUrl } as CoworkerModel;
 
   const progress = (currentEntry / entries.length) * 100;
@@ -171,29 +153,19 @@ const PlayStage = () => {
             </motion.div>
 
             <motion.div variants={variants}>
-              <Radio.Group
-                key={currentEntry}
-                orientation="vertical"
-                name="quiz"
-                onChange={setAnswer}
-                sx={(theme) => ({
-                  flexGrow: 1,
-                  label: { fontSize: "30px" },
-                })}
-              >
-                {options.map((option, idx) => (
-                  <Radio
-                    key={currentEntry + "_" + idx}
-                    value={option}
-                    label={option}
-                    styles={(theme) => ({
-                      label: {
-                        color: theme.colors.leetPurple[0],
-                      },
-                    })}
-                  />
-                ))}
-              </Radio.Group>
+              {typeNames ? (
+                <TextInputAnswer
+                  key={currentEntry}
+                  name={name}
+                  onComplete={setAnswer}
+                />
+              ) : (
+                <RadioInputAnswers
+                  onChange={setAnswer}
+                  options={options}
+                  key={currentEntry}
+                />
+              )}
             </motion.div>
           </Stack>
         </motion.div>
