@@ -4,7 +4,7 @@ import { Regions, regionType } from "../reducers/gameReducer/gameReducer";
 import { Entry, Answer, GAME_ACTIONS } from "../interfaces/Game";
 import { Coworker } from "../interfaces/CoworkerModel";
 
-import { generateGameSet } from "./gameActions";
+import { generateGameSet } from "./generateGameSetActions";
 import { calculateScore, saveStats } from "./gameDoneActions";
 
 type GameMachineEvents =

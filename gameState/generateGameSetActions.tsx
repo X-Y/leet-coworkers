@@ -39,15 +39,7 @@ export const generateGameSet = (
         const valid = preliminaries.find((one) => one.imagePortraitUrl === src);
         if (!valid) throw "a valid image should always exist";
 
-        let confuses: string[] = [valid.name];
-        while (confuses.length < confusions) {
-          const confuse = data[Math.round(Math.random() * (data.length - 1))];
-          if (confuses.findIndex((name) => name === confuse.name) === -1) {
-            confuses.push(confuse.name);
-          }
-        }
-
-        const options = confuses.sort(() => 0.5 - Math.random());
+        const options = createConfusions(valid, confusions, data);
 
         entries.push({
           ...valid,
@@ -87,4 +79,25 @@ export const generateGameSet = (
       img.addEventListener("load", onImageLoadSuccess);
     });
   });
+};
+
+const createConfusions = (
+  valid: Coworker,
+  numConfusions: number,
+  data: Coworker[]
+) => {
+  const { name, office: validOffice } = valid;
+  let confuses: string[] = [name];
+
+  const filteredData = data.filter(({ office }) => office === validOffice);
+
+  while (confuses.length < numConfusions) {
+    const confuse =
+      filteredData[Math.round(Math.random() * (filteredData.length - 1))];
+    if (confuses.findIndex((name) => name === confuse.name) === -1) {
+      confuses.push(confuse.name);
+    }
+  }
+
+  return confuses.sort(() => 0.5 - Math.random());
 };
