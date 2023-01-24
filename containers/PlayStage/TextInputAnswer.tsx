@@ -1,12 +1,6 @@
-import React, {
-  useEffect,
-  useRef,
-  useState,
-  DetailedHTMLProps,
-  InputHTMLAttributes,
-} from "react";
+import React, { useEffect, useRef, useState } from "react";
 
-import { Input, Box, InputProps } from "@mantine/core";
+import { Input, Box } from "@mantine/core";
 
 interface TextInputAnswerProps {
   name: string;
