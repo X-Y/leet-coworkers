@@ -7,7 +7,7 @@ export const calculateScore = (answersOrig: string[], entries: Entry[]) => {
   const result = entries.reduce((prev, curr, idx) => {
     const currentAnswer = answersOrig[idx];
     let isCorrect = false;
-    if (curr.name === currentAnswer) {
+    if (curr.name.toLowerCase() === currentAnswer.toLowerCase()) {
       score += 1;
       isCorrect = true;
     }
