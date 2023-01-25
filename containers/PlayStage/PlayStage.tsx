@@ -23,7 +23,7 @@ import GameXstateContext from "../../contexts/GameXstateContext/GameXstateContex
 import Coworker from "../../components/Coworker/Coworker";
 
 import { RadioInputAnswers } from "./RadioInputAnswers";
-import { TextInputAnswer } from "./TextInputAnswer";
+import { TextInputAnswer } from "./TextInputAnswerAlt";
 
 const variantsContainer: Record<string, Variant> = {
   center: {
