@@ -36,16 +36,20 @@ export const TextInputAnswer = ({ name, onComplete }: TextInputAnswerProps) => {
     id: number
   ) => {
     const value = e.nativeEvent.data;
+    console.log(value);
     const newInputs = [...inputs];
-    newInputs[id] = value === null ? "_" : value.charAt(value.length - 1);
+    const inputVal = value === null ? "_" : value.charAt(value.length - 1);
+    newInputs[id] = inputVal;
 
     setInputs(newInputs);
+    if (!"`´¨^~".includes(inputVal)) e.currentTarget.value = inputVal;
 
+    // Backspace pressed
     if (value === null) {
       const next = Math.max(id - 1, 0);
       setEndReached(false);
       letterInputs.current[next]?.focus();
-      letterInputs.current[next]?.select();
+      //letterInputs.current[next]?.select();
 
       return;
     }
@@ -66,6 +70,7 @@ export const TextInputAnswer = ({ name, onComplete }: TextInputAnswerProps) => {
     e: React.KeyboardEvent<HTMLInputElement>,
     id: number
   ) => {
+    // See comments in keyDownHandler about longPressRef
     if (longPressRef.current >= 2) {
       longPressRef.current = 0;
       return;
@@ -73,22 +78,31 @@ export const TextInputAnswer = ({ name, onComplete }: TextInputAnswerProps) => {
     longPressRef.current = 0;
 
     const value = e.key;
+
     // key will be "Shift", "Dead" etc if it's a control/accent key
-    if (value.length > 1) return;
+    // In Firefox the accent keys are fired as they are
+    if (value.length > 1 || "`´¨^~".includes(value)) return;
 
     const next = id + 1;
     if (next < letterInputs.current.length) {
       setEndReached(false);
 
       letterInputs.current[next]?.focus();
-      letterInputs.current[next]?.select();
+      //letterInputs.current[next]?.select();
     } else {
       setEndReached(true);
     }
   };
 
   return (
-    <div style={{ display: "flex", position: "relative" }}>
+    <div
+      style={{
+        display: "flex",
+        flexWrap: "wrap",
+        justifyContent: "center",
+        margin: "0 1rem",
+      }}
+    >
       {inputs.map((one, idx) => (
         <Input
           sx={(theme) => ({
@@ -102,13 +116,13 @@ export const TextInputAnswer = ({ name, onComplete }: TextInputAnswerProps) => {
               height: "5rem",
               border: "none",
               background: "transparent",
-              marginRight: "1rem",
               textAlign: "center",
             },
           })}
           key={"input-" + idx}
           ref={(elm: HTMLInputElement) => (letterInputs.current[idx] = elm)}
-          value={one}
+          //value={one}
+          defaultValue={"_"}
           onInput={(e: SyntheticEvent<HTMLInputElement, InputEvent>) =>
             inputChangeHandler(e, idx)
           }
@@ -123,12 +137,10 @@ export const TextInputAnswer = ({ name, onComplete }: TextInputAnswerProps) => {
 
       <Box
         sx={(theme) => ({
-          color: theme.colors.leetGreen[6],
+          color: endReached ? theme.colors.leetGreen[6] : "transparent",
           fontSize: "4rem",
-          position: "absolute",
-          right: "-5rem",
+          width: "0",
         })}
-        hidden={!endReached}
       >
         ↵
       </Box>
