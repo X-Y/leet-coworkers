@@ -26,7 +26,7 @@ export const TextInputAnswer = ({ name, onComplete }: TextInputAnswerProps) => {
   }, []);
   useEffect(() => {
     const onSubmit = (e: KeyboardEvent) => {
-      if (e.key === "Enter") {
+      if (e.key === "Enter" && endReached) {
         onComplete(`${input} ${lastNames.join(" ")}`);
       }
     };
