@@ -16,7 +16,7 @@ export const TextInputAnswer = ({ name, onComplete }: TextInputAnswerProps) => {
 
   useEffect(() => {
     letterInputs.current[0]?.focus();
-    letterInputs.current[0]?.select();
+    letterInputs.current[0]?.setSelectionRange(0, 0);
   }, []);
 
   useEffect(() => {
@@ -36,7 +36,6 @@ export const TextInputAnswer = ({ name, onComplete }: TextInputAnswerProps) => {
     id: number
   ) => {
     const value = e.nativeEvent.data;
-    console.log(value);
     const newInputs = [...inputs];
     const inputVal = value === null ? "_" : value.charAt(value.length - 1);
     newInputs[id] = inputVal;
@@ -49,8 +48,7 @@ export const TextInputAnswer = ({ name, onComplete }: TextInputAnswerProps) => {
       const next = Math.max(id - 1, 0);
       setEndReached(false);
       letterInputs.current[next]?.focus();
-      //letterInputs.current[next]?.select();
-
+      letterInputs.current[0]?.setSelectionRange(1, 1);
       return;
     }
   };
@@ -59,7 +57,7 @@ export const TextInputAnswer = ({ name, onComplete }: TextInputAnswerProps) => {
     id: number
   ) => {
     const value = e.key;
-    if ("aeious".includes(value)) {
+    if ("aeious".includes(value.toLowerCase())) {
       // When a key is long pressed, it will keep firing keydown events. The 2nd event
       // indicates that it is being held down, which conveniently fires up the accent menu
       longPressRef.current++;
@@ -88,7 +86,6 @@ export const TextInputAnswer = ({ name, onComplete }: TextInputAnswerProps) => {
       setEndReached(false);
 
       letterInputs.current[next]?.focus();
-      //letterInputs.current[next]?.select();
     } else {
       setEndReached(true);
     }
