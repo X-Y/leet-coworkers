@@ -21,8 +21,10 @@ export const TextInputAnswer = ({ name, onComplete }: TextInputAnswerProps) => {
   const [endReached, setEndReached] = useState(false);
 
   useEffect(() => {
-    letterInput.current?.focus();
-    letterInput.current?.setSelectionRange(0, 0);
+    if (!("ontouchstart" in document.documentElement)) {
+      letterInput.current?.focus();
+      letterInput.current?.setSelectionRange(0, 0);
+    }
   }, []);
   useEffect(() => {
     const onSubmit = (e: KeyboardEvent) => {
@@ -84,29 +86,52 @@ export const TextInputAnswer = ({ name, onComplete }: TextInputAnswerProps) => {
     }
   };
 
+  //Fontsize range
+  const fsMa = 3.3;
+  const fsMi = 1.6;
+  //Number of character range
+  const numMi = 5;
+  const numMa = 10;
+  //Scale range
+  const scMi = 1;
+  const scMa = 1.6;
+  // viewPort range
+  const vpMi = 400;
+  const vpMa = 1000;
+
+  const vp = window.innerWidth;
+  const len = firstName.length;
+  const scale = Math.max(
+    Math.min((vp * (scMa - scMi)) / (vpMa - vpMi), scMa),
+    scMi
+  );
+  const fontSizeBase = ((len - numMi) / (numMa - numMi)) * (fsMi - fsMa) + fsMa;
+  const fontSize = Math.max(Math.min(fontSizeBase, fsMa), fsMi) * scale;
+
   return (
     <div
       style={{
         display: "flex",
         flexWrap: "wrap",
         justifyContent: "center",
-        maxWidth: "80vw",
       }}
     >
       <Input
-        sx={(theme) => ({
+        styles={(theme) => ({
           wrapper: {
             display: "inline",
           },
           input: {
             color: theme.colors.leetGreen[6],
-            fontSize: "4rem",
-            height: "5rem",
+            fontSize: fontSize + "rem",
+            height: "2em",
             border: "none",
-            width: firstName.length * 4 + "rem",
+            width: len * 1.4 + "ch",
             background: "transparent",
             textAlign: "center",
-            letterSpacing: "1rem",
+            letterSpacing: "0.4ch",
+            marginRight: "-0.4ch",
+            padding: "0",
           },
         })}
         ref={letterInput}
@@ -118,8 +143,10 @@ export const TextInputAnswer = ({ name, onComplete }: TextInputAnswerProps) => {
       <Box
         sx={(theme) => ({
           color: endReached ? theme.colors.leetGreen[6] : "transparent",
-          fontSize: "4rem",
+          display: "inline-block",
+          fontSize: fontSize + "rem",
           width: "0",
+          lineHeight: "2.5em",
         })}
       >
         ↵
