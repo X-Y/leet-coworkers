@@ -86,7 +86,7 @@ const generatePic = (url: string, name: string) => {
       try {
         response.pipe(sharpStream);
         result.then((data) => {
-          cacheData.put(outputPath, data, 24 * 1000 * 60 * 60);
+          cacheData.put(outputPath, name, 24 * 1000 * 60 * 60);
           resolve(name);
         });
       } catch (err) {
