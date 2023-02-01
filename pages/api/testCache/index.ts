@@ -1,8 +1,9 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from "next";
-import cacheData from "memory-cache";
+
+import headImageCache from "../../../lib/headImgCache";
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
-  const data = cacheData.keys();
+  const data = headImageCache.keys();
   res.status(200).json(data);
 }
