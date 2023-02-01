@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import cacheData from "memory-cache";
 
 import { HEAD_IMG_CACHE_TAG } from "../../../lib/getHeadPics";
+import headImgCache from "../../../lib/headImgCache";
 
 export default function handler(
   req: NextApiRequest,
@@ -13,7 +13,7 @@ export default function handler(
     return;
   }
 
-  const bufferData = cacheData.get(HEAD_IMG_CACHE_TAG + name) as Buffer;
+  const bufferData = headImgCache.get(name) as Buffer;
 
   if (!bufferData) {
     res.status(500).end();
@@ -22,7 +22,7 @@ export default function handler(
 
   res
     .writeHead(200, {
-      "Content-Type": "text/plain",
+      "Content-Type": "image/png",
       "Content-Length": bufferData.length,
     })
     .end(bufferData);

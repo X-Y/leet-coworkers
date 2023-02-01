@@ -1,11 +1,12 @@
 import https from "https";
 import fs from "fs";
-import cacheData from "memory-cache";
 import sharp from "sharp";
+import cacheData from "memory-cache";
 
 import { Coworker } from "../interfaces/CoworkerModel";
 
 import makeSilhouette from "./makeSilhouette";
+import headImgCache from "./headImgCache";
 
 const API_URL = process.env.API_URL;
 const ENDPOINT = process.env.API_ENDPOINT_EMPLOYEE;
@@ -15,14 +16,15 @@ const cache_num = 15;
 
 export const HEAD_IMG_CACHE_TAG = "head-img-cache/";
 
-const getCachedFiles = async () => {
+const getCachedFiles = () => {
   try {
-    return cacheData.keys().reduce((prev, curr: string) => {
+    /*return cacheData.keys().reduce((prev, curr: string) => {
       if (curr.startsWith(HEAD_IMG_CACHE_TAG)) {
         return [...prev, curr.split("/")[1]];
       }
       return prev;
-    }, [] as string[]);
+    }, [] as string[]);*/
+    return headImgCache.keys();
   } catch (err) {
     console.error("Error occurred while reading Buffer!", err);
   }
@@ -86,7 +88,7 @@ const generatePic = (url: string, name: string) => {
       try {
         response.pipe(sharpStream);
         result.then((data) => {
-          cacheData.put(outputPath, name, 24 * 1000 * 60 * 60);
+          headImgCache.set(name, data, 24 * 1000 * 60 * 60);
           resolve(name);
         });
       } catch (err) {
@@ -98,7 +100,7 @@ const generatePic = (url: string, name: string) => {
 };
 
 export const getHeadPics = async () => {
-  const files = (await getCachedFiles()) || [];
+  const files = getCachedFiles() || [];
   if (files.length > cache_num) {
     const picks = pickRandoms(files, num);
     console.info("using cached images");
