@@ -92,13 +92,13 @@ export const getHeadPics = async () => {
   const files = (await getCachedFiles()) || [];
   if (files.length > cache_num) {
     const picks = pickRandoms(files, num);
-    console.log("using cached images");
+    console.info("using cached images");
     return picks;
   }
 
   const randomSet = getRandomFromCache();
   const results = await generatePics(randomSet);
 
-  console.log("using newly generated images");
+  console.info("using newly generated images");
   return results;
 };
