@@ -9,14 +9,14 @@ export default function handler(
 ) {
   const name = req.query["name"];
   if (typeof name !== "string") {
-    res.status(500);
+    res.status(500).end("Not a string");
     return;
   }
 
   const bufferData = headImgCache.get(name) as Buffer;
 
   if (!bufferData) {
-    res.status(500).end();
+    res.status(500).end("no data");
     return;
   }
 
