@@ -2,7 +2,7 @@ import sharp from "sharp";
 
 const makeSilhouette = async (
   input: string | sharp.Sharp,
-  outputPath: string,
+  outputPath?: string,
   {
     fgColor = "#1E1E9D" as sharp.Color,
     bgColor = "#0c0c91" as sharp.Color,
@@ -68,11 +68,15 @@ const makeSilhouette = async (
     .removeAlpha()
     .toBuffer();
 
-  const fgbgWithMask = sharp(fgbgNoAlpha)
-    .joinChannel(bgMask)
-    .toFile(outputPath);
+  const fgbgWithMask = sharp(fgbgNoAlpha).joinChannel(bgMask);
 
-  return fgbgWithMask;
+  // if(outputPath) {
+  //   fgbgWithMask.toFile(outputPath);
+  // } else {
+  //
+  // }
+
+  return fgbgWithMask.toBuffer();
 };
 
 export default makeSilhouette;

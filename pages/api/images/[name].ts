@@ -1,11 +1,23 @@
-export const config = {
-  api: { externalResolver: true },
-};
+import { NextApiRequest, NextApiResponse } from "next";
+import cacheData from "memory-cache";
 
-import express from "express";
-const handler = express();
+import { HEAD_IMG_CACHE_TAG } from "../../../lib/getHeadPics";
 
-const serveFiles = express.static("/tmp/leet-coworkers/out");
-handler.use(["/api/images"], serveFiles);
+export default function handler(
+  req: NextApiRequest,
+  res: NextApiResponse<Buffer>
+) {
+  const name = req.query["name"];
+  if (typeof name !== "string") {
+    res.status(500);
+    return;
+  }
 
-export default handler;
+  const bufferData = cacheData.get(HEAD_IMG_CACHE_TAG + name) as Buffer;
+  res
+    .writeHead(200, {
+      "Content-Type": "image/png",
+      "Content-Length": bufferData.length,
+    })
+    .end(bufferData);
+}

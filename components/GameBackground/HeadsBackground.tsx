@@ -50,7 +50,6 @@ const HeadsRow = ({ rowNum, numHeads, push }: HeadsRowProps) => {
   );
 };
 
-interface HeadsGridProps {}
 const HeadsGrid = () => {
   const width = window.innerWidth;
   const height = window.innerHeight;

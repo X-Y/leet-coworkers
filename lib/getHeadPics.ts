@@ -4,23 +4,27 @@ import cacheData from "memory-cache";
 import sharp from "sharp";
 
 import { Coworker } from "../interfaces/CoworkerModel";
+
 import makeSilhouette from "./makeSilhouette";
 
 const API_URL = process.env.API_URL;
 const ENDPOINT = process.env.API_ENDPOINT_EMPLOYEE;
 
-const TEMP_PROCESSED = "/tmp/leet-coworkers/out";
-
 const num = 5;
 const cache_num = 15;
 
-const getProcessedFilePath = (name: string) => TEMP_PROCESSED + "/" + name;
+export const HEAD_IMG_CACHE_TAG = "head-img-cache/";
 
 const getCachedFiles = async () => {
   try {
-    return await fs.promises.readdir(TEMP_PROCESSED);
+    return cacheData.keys().reduce((prev, curr: string) => {
+      if (curr.startsWith(HEAD_IMG_CACHE_TAG)) {
+        return [...prev, curr.split("/")[1]];
+      }
+      return prev;
+    }, [] as string[]);
   } catch (err) {
-    console.error("Error occurred while reading directory!", err);
+    console.error("Error occurred while reading Buffer!", err);
   }
 };
 
@@ -38,7 +42,11 @@ const pickRandoms = <T>(arr: T[], num: number) => {
 
 const getRandomFromCache = () => {
   const leetCoworkerUrl: URL = new URL(ENDPOINT || "", API_URL || "");
-  const stringData = cacheData.get(leetCoworkerUrl);
+  const stringData: string | undefined = cacheData.get(leetCoworkerUrl);
+  if (!stringData) {
+    throw "Coworker data not cached yet";
+  }
+
   const jsonData: Coworker[] = JSON.parse(stringData);
 
   const resSet: Set<Coworker> = new Set();
@@ -70,16 +78,17 @@ const generatePics = async (coworkers: Coworker[]) => {
   return Promise.all(jobs);
 };
 const generatePic = (url: string, name: string) => {
-  fs.mkdirSync(TEMP_PROCESSED, { recursive: true });
-
-  const outputPath = getProcessedFilePath(name);
+  const outputPath = HEAD_IMG_CACHE_TAG + name;
   const sharpStream = sharp();
-  const result = makeSilhouette(sharpStream, outputPath);
+  const result = makeSilhouette(sharpStream, "");
   return new Promise<string>((resolve, reject) => {
     https.get(url, (response) => {
       try {
         response.pipe(sharpStream);
-        result.then(() => resolve(name));
+        result.then((data) => {
+          cacheData.put(outputPath, data, 24 * 1000 * 60 * 60);
+          resolve(name);
+        });
       } catch (err) {
         console.error(err);
         reject(err);
@@ -96,9 +105,14 @@ export const getHeadPics = async () => {
     return picks;
   }
 
-  const randomSet = getRandomFromCache();
-  const results = await generatePics(randomSet);
+  try {
+    const randomSet = getRandomFromCache();
+    const results = await generatePics(randomSet);
 
-  console.info("using newly generated images");
-  return results;
+    console.info("using newly generated images");
+    return results;
+  } catch (e) {
+    console.error(e);
+    return [];
+  }
 };
