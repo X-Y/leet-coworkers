@@ -57,8 +57,9 @@ const GameBackground: React.FC<Props> = ({ children }) => {
   return (
     <div style={{ position: "relative" }}>
       <AnimatedBackground />
-      <HeadsBackground />
-
+      {/*
+        <HeadsBackground />
+*/}
       <Box
         sx={(theme) => ({
           minHeight: "100vh",
