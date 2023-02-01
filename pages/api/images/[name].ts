@@ -22,7 +22,7 @@ export default function handler(
 
   res
     .writeHead(200, {
-      "Content-Type": "image/png",
+      "Content-Type": "text/plain",
       "Content-Length": bufferData.length,
     })
     .end(bufferData);
