@@ -79,4 +79,22 @@ const makeSilhouette = async (
   return fgbgWithMask.toBuffer();
 };
 
-export default makeSilhouette;
+const makeSilhouetteMock = async (
+  input: string | sharp.Sharp,
+  outputPath?: string,
+  {
+    fgColor = "#1E1E9D" as sharp.Color,
+    bgColor = "#0c0c91" as sharp.Color,
+    size = 100,
+    bgThreshold = 15,
+    fgThreshold = 128,
+  } = {}
+) => {
+  if (typeof input === "string") {
+    return new Buffer(input);
+  } else {
+    return new Buffer("buffer");
+  }
+};
+
+export default makeSilhouetteMock;
