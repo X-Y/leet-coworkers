@@ -1,5 +1,6 @@
 import { Box } from "@mantine/core";
 import { useEffect, useRef } from "react";
+import { HeadsBackground } from "./HeadsBackground";
 
 const bgMoveVector = Math.sqrt((25 * 25) / 2);
 const period = 3000;
@@ -56,6 +57,7 @@ const GameBackground: React.FC<Props> = ({ children }) => {
   return (
     <div style={{ position: "relative" }}>
       <AnimatedBackground />
+      <HeadsBackground />
 
       <Box
         sx={(theme) => ({
