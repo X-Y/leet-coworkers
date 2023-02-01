@@ -3,6 +3,6 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import cacheData from "memory-cache";
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
-  const data = cacheData.exportJson();
+  const data = cacheData.keys();
   res.status(200).json(data);
 }
