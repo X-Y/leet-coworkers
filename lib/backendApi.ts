@@ -8,7 +8,7 @@ const API_URL = process.env.API_URL || "";
 const ENDPOINT = process.env.API_ENDPOINT_EMPLOYEE || "";
 const AUTH_TOKEN = process.env.API_KEY || "";
 
-export const fetchCoworkersApi = async () => {
+export const fetchCoworkersApi1 = async () => {
   const leetCoworkerUrl: string = API_URL + ENDPOINT;
 
   console.log(leetCoworkerUrl);
@@ -22,7 +22,7 @@ export const fetchCoworkersApi = async () => {
   return data;
 };
 
-export const fetchCoworkersApi0 = async () => {
+export const fetchCoworkersApi = async () => {
   const leetCoworkerUrl: URL = new URL(ENDPOINT || "", API_URL || "");
 
   const cacheHours = 24;
