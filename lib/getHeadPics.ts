@@ -6,7 +6,7 @@ import { Coworker } from "../interfaces/CoworkerModel";
 
 import makeSilhouette from "./makeSilhouette";
 import { saveImg, listImgs, getImgUrl } from "./cloudFlareR2";
-import { coworkersApi } from "./frontendApi";
+import { fetchCoworkersApi } from "./backendApi";
 
 const num = 5;
 const cache_num = 15;
@@ -36,7 +36,7 @@ const pickRandoms = <T>(arr: T[], num: number) => {
 };
 
 const getRandomFromCache = async () => {
-  const { data } = await axios.get("/api/getCoworkers");
+  const data = await fetchCoworkersApi();
   if (!data) {
     throw "Coworker data not cached yet";
   }
