@@ -2,25 +2,10 @@ import cacheData from "memory-cache";
 import { Coworker } from "../interfaces/CoworkerModel";
 import { ClientRequest } from "http";
 import https from "https";
-import axios from "axios";
 
 const API_URL = process.env.API_URL || "";
 const ENDPOINT = process.env.API_ENDPOINT_EMPLOYEE || "";
 const AUTH_TOKEN = process.env.API_KEY || "";
-
-export const fetchCoworkersApi1 = async () => {
-  const leetCoworkerUrl: string = API_URL + ENDPOINT;
-
-  console.log(leetCoworkerUrl);
-
-  const { data } = await axios.get(leetCoworkerUrl, {
-    headers: {
-      Authorization: AUTH_TOKEN,
-    },
-  });
-
-  return data;
-};
 
 export const fetchCoworkersApi = async () => {
   const leetCoworkerUrl: URL = new URL(ENDPOINT || "", API_URL || "");

@@ -3,6 +3,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { Coworker } from "../../interfaces/CoworkerModel";
 
 import { fetchCoworkersApi } from "../../lib/backendApi";
+
 const { USE_MOCK_API_DATA, MOCK_API_DATA } = process.env;
 
 export default async function handler(
