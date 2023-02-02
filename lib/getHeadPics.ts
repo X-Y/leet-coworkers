@@ -1,14 +1,11 @@
 import https from "https";
 import sharp from "sharp";
-import cacheData from "memory-cache";
+import axios from "axios";
 
 import { Coworker } from "../interfaces/CoworkerModel";
 
 import makeSilhouette from "./makeSilhouette";
 import { saveImg, listImgs, getImgUrl } from "./cloudFlareR2";
-
-const API_URL = process.env.API_URL;
-const ENDPOINT = process.env.API_ENDPOINT_EMPLOYEE;
 
 const num = 5;
 const cache_num = 15;
@@ -37,9 +34,8 @@ const pickRandoms = <T>(arr: T[], num: number) => {
   return Array.from(resSet.values());
 };
 
-const getRandomFromCache = () => {
-  const leetCoworkerUrl: URL = new URL(ENDPOINT || "", API_URL || "");
-  const stringData: string | undefined = cacheData.get(leetCoworkerUrl);
+const getRandomFromCache = async () => {
+  const stringData = axios.get("/api/getCoworkers");
   if (!stringData) {
     throw "Coworker data not cached yet";
   }
