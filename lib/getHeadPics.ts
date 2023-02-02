@@ -1,12 +1,11 @@
 import https from "https";
-import fs from "fs";
 import sharp from "sharp";
 import cacheData from "memory-cache";
 
 import { Coworker } from "../interfaces/CoworkerModel";
 
 import makeSilhouette from "./makeSilhouette";
-import headImgCache from "./headImgCache";
+import { saveImg, listImgs, getImgUrl } from "./cloudFlareR2";
 
 const API_URL = process.env.API_URL;
 const ENDPOINT = process.env.API_ENDPOINT_EMPLOYEE;
@@ -16,15 +15,11 @@ const cache_num = 15;
 
 export const HEAD_IMG_CACHE_TAG = "head-img-cache/";
 
-const getCachedFiles = () => {
+const getCachedFiles = async () => {
   try {
-    /*return cacheData.keys().reduce((prev, curr: string) => {
-      if (curr.startsWith(HEAD_IMG_CACHE_TAG)) {
-        return [...prev, curr.split("/")[1]];
-      }
-      return prev;
-    }, [] as string[]);*/
-    return headImgCache.keys();
+    const imgs = await listImgs();
+    const names = imgs.Contents?.map(({ Key }) => Key as string);
+    return names;
   } catch (err) {
     console.error("Error occurred while reading Buffer!", err);
   }
@@ -84,13 +79,12 @@ const generatePic = (url: string, name: string) => {
   const sharpStream = sharp();
   const result = makeSilhouette(sharpStream, "");
   return new Promise<string>((resolve, reject) => {
-    https.get(url, (response) => {
+    https.get(url, async (response) => {
       try {
         response.pipe(sharpStream);
-        result.then((data) => {
-          headImgCache.set(name, name, 24 * 1000 * 60 * 60);
-          resolve(name);
-        });
+        const data = await result;
+        const sendResp = await saveImg(name, data);
+        resolve(name);
       } catch (err) {
         console.error(err);
         reject(err);
@@ -100,21 +94,24 @@ const generatePic = (url: string, name: string) => {
 };
 
 export const getHeadPics = async () => {
-  const files = getCachedFiles() || [];
+  const files = (await getCachedFiles()) || [];
+  let picks: string[] = [];
   if (files.length > cache_num) {
-    const picks = pickRandoms(files, num);
+    picks = pickRandoms(files, num);
     console.info("using cached images");
-    return picks;
+  } else {
+    try {
+      const randomSet = getRandomFromCache();
+      picks = await generatePics(randomSet);
+
+      console.info("using newly generated images");
+    } catch (e) {
+      console.error(e);
+    }
   }
 
-  try {
-    const randomSet = getRandomFromCache();
-    const results = await generatePics(randomSet);
+  const signedUrlsPromise = picks.map((one) => getImgUrl(one));
+  const signedUrls = Promise.all(signedUrlsPromise);
 
-    console.info("using newly generated images");
-    return results;
-  } catch (e) {
-    console.error(e);
-    return [];
-  }
+  return signedUrls;
 };

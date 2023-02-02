@@ -7,7 +7,6 @@ export default async function handler(
   res: NextApiResponse
 ) {
   const files = (await getHeadPics()) || [];
-  const filesPaths = files.map((one) => "/api/images/" + one);
-  res.status(200).json(filesPaths);
+  res.status(200).json(files);
   return;
 }
