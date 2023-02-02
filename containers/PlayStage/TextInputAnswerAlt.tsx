@@ -41,7 +41,6 @@ export const TextInputAnswer = ({ name, onComplete }: TextInputAnswerProps) => {
   const onChange = (e: ChangeEvent<HTMLInputElement>) => {
     let value = e.target.value;
     let selectionStart = e.target.selectionStart || 0;
-    //if(!selectionStart) throw 'no selection'
 
     let newValue = "";
     if (value.length >= input.length) {
@@ -74,7 +73,6 @@ export const TextInputAnswer = ({ name, onComplete }: TextInputAnswerProps) => {
         "_".repeat(deleted) +
         value.substring(selectionStart, value.length);
     }
-    console.log("newVal", newValue);
     setInput(newValue);
     e.target.value = newValue;
     e.target.setSelectionRange(selectionStart, selectionStart);
@@ -135,7 +133,6 @@ export const TextInputAnswer = ({ name, onComplete }: TextInputAnswerProps) => {
           },
         })}
         ref={letterInput}
-        //value={one}
         defaultValue={input}
         onChange={onChange}
       />
