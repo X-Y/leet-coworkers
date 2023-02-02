@@ -6,6 +6,7 @@ import { Coworker } from "../interfaces/CoworkerModel";
 
 import makeSilhouette from "./makeSilhouette";
 import { saveImg, listImgs, getImgUrl } from "./cloudFlareR2";
+import { coworkersApi } from "./frontendApi";
 
 const num = 5;
 const cache_num = 15;
@@ -35,18 +36,16 @@ const pickRandoms = <T>(arr: T[], num: number) => {
 };
 
 const getRandomFromCache = async () => {
-  const stringData = axios.get("/api/getCoworkers");
-  if (!stringData) {
+  const { data } = await axios.get("http://localhost:3000/api/getCoworkers");
+  if (!data) {
     throw "Coworker data not cached yet";
   }
-
-  const jsonData: Coworker[] = JSON.parse(stringData);
 
   const resSet: Set<Coworker> = new Set();
 
   while (resSet.size < num) {
-    const randomIdx = ~~(Math.random() * jsonData.length);
-    const item = jsonData[randomIdx];
+    const randomIdx = ~~(Math.random() * data.length);
+    const item = data[randomIdx];
     resSet.add(item);
   }
 
@@ -97,7 +96,7 @@ export const getHeadPics = async () => {
     console.info("using cached images");
   } else {
     try {
-      const randomSet = getRandomFromCache();
+      const randomSet = await getRandomFromCache();
       picks = await generatePics(randomSet);
 
       console.info("using newly generated images");
