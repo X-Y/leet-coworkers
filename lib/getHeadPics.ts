@@ -36,7 +36,7 @@ const pickRandoms = <T>(arr: T[], num: number) => {
 };
 
 const getRandomFromCache = async () => {
-  const { data } = await axios.get("http://localhost:3000/api/getCoworkers");
+  const { data } = await axios.get("/api/getCoworkers");
   if (!data) {
     throw "Coworker data not cached yet";
   }
