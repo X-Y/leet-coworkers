@@ -17,6 +17,7 @@
     "@mantine/core": "^5.7.1",
     "@mantine/hooks": "^5.7.1",
     "@mantine/next": "^5.7.1",
+    "@react-oauth/google": "^0.6.1",
     "@types/node-cache": "^4.2.5",
     "@xstate/react": "^3.0.2",
     "axios": "^0.27.2",
