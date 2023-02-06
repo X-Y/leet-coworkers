@@ -83,17 +83,22 @@ export const SettingsPage = () => {
     });
   };
 
+  const isDev =
+    window?.location.origin !== process.env["NEXT_PUBLIC_PROD_HOSTS"];
+
   return (
     <div
       style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}
     >
       <Stack style={{ flexGrow: 1, marginLeft: "2rem" }}>
         <TitleText align={"left"}>Settings</TitleText>
-        <SettingCheckbox
-          checked={state[GAME_SETTINGS.DISABLE_OAUTH]}
-          label={"Disable OAuth"}
-          onChange={() => checkBoxChanged(GAME_SETTINGS.DISABLE_OAUTH)}
-        />
+        {isDev && (
+          <SettingCheckbox
+            checked={state[GAME_SETTINGS.DISABLE_OAUTH]}
+            label={"Disable OAuth"}
+            onChange={() => checkBoxChanged(GAME_SETTINGS.DISABLE_OAUTH)}
+          />
+        )}
         <SettingCheckbox
           checked={state[GAME_SETTINGS.TYPE_NAMES]}
           label={"During play, names must be typed out"}
