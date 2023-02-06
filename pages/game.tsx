@@ -44,8 +44,10 @@ import HighScoreStage from "../containers/HighScoreStage/HighScoreStage";
 import { useFilter } from "../hooks/useFilter";
 import GameBackground from "../components/GameBackground/GameBackground";
 import { InterpreterFrom } from "xstate";
+import { GlobalStoreContext } from "../contexts/GlobalStoreContext/GlobalStoreContext";
 
 const Game: NextPage = () => {
+  const { oAuthCredential } = useContext(GlobalStoreContext);
   const { setFilterBy } = useContext(FilterContext);
   /*const [gameState, gameDispatch] = useReducer(gameStateReducer, iniGameState);
   const [gameOverlayState, gameOverlayDispatch] = useReducer(
@@ -59,13 +61,18 @@ const Game: NextPage = () => {
     setFilterBy(FILTER_BY.CITY);
   }, []);
 
-  const { status, data, error, isFetching } = useQuery<Coworker[]>(
+  const { status, data, error, isFetching, remove } = useQuery<Coworker[]>(
     "getCoworkers",
     coworkersApi,
     {
       staleTime: 60000,
+      enabled: !!oAuthCredential,
     }
   );
+
+  if (!oAuthCredential) {
+    remove();
+  }
 
   let resData = data;
   resData = useFilter(resData);
