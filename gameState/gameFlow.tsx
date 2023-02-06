@@ -217,7 +217,7 @@ export const gameFlowMachine = createMachine<
 
       resetResults: assign({
         score: 0,
-        resultDisplayed: gfalse,
+        resultDisplayed: false,
         newHighScore: false,
         entries: [] as Entry[],
         answers: [] as Answer[],
