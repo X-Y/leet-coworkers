@@ -2,12 +2,10 @@ import { QueryClient, QueryClientProvider } from "react-query";
 import type { AppProps } from "next/app";
 import Head from "next/head";
 import { MantineProvider } from "@mantine/core";
-import { GoogleOAuthProvider } from "@react-oauth/google";
 
 import "../styles/globals.css";
 import SortContextProvider from "../contexts/SortContext/SortContextProvider";
 import FilterContextProvider from "../contexts/FilterContext/FilterContextProvider";
-import { GoogleIdentity } from "../components/GoogleIdentity/GoogleIdentity";
 import { GlobalStoreContextProvider } from "../contexts/GlobalStoreContext/GlobalStoreContextProvider";
 
 const queryClient = new QueryClient();
@@ -64,14 +62,7 @@ function MyApp({ Component, pageProps }: AppProps) {
                   },
                 }}
               >
-                <GoogleOAuthProvider
-                  clientId={
-                    process.env.NEXT_PUBLIC_GOOGLE_OAUTH_CLIENT_ID || ""
-                  }
-                >
-                  <Component {...pageProps} />
-                </GoogleOAuthProvider>
-                ;
+                <Component {...pageProps} />
               </MantineProvider>
             </FilterContextProvider>
           </SortContextProvider>

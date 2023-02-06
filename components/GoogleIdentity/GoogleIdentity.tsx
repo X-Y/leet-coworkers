@@ -1,30 +1,44 @@
-import { GoogleLogin, googleLogout } from "@react-oauth/google";
-import { useContext } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 
 import { GlobalStoreContext } from "../../contexts/GlobalStoreContext/GlobalStoreContext";
+import Script from "next/script";
 
 export const GoogleIdentity = () => {
   const { oAuthCredential, setOAuthCredential } =
     useContext(GlobalStoreContext);
 
-  const onLogoutClick = () => {
-    googleLogout();
-    setOAuthCredential("");
+  const [scriptLoaded, setScriptLoaded] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const handleCredentialResponse = (credentialResponse: {
+    credential: string;
+  }) => {
+    setOAuthCredential(credentialResponse.credential || "");
   };
-  if (oAuthCredential) {
-    return (
-      <div>
-        <button onClick={onLogoutClick}>logout</button>
-      </div>
-    );
-  }
+  useEffect(() => {
+    if (!scriptLoaded) return;
+    if (!containerRef.current) throw "googleIdentity div not initialized";
+    window.google.accounts.id.initialize({
+      client_id: process.env.NEXT_PUBLIC_GOOGLE_OAUTH_CLIENT_ID || "",
+      auto_select: true,
+      callback: handleCredentialResponse,
+    });
+    window.google.accounts.id.renderButton(containerRef.current, {
+      type: "standard",
+      theme: "outline",
+    });
+    window.google.accounts.id.prompt();
+  }, [scriptLoaded]);
+
   return (
-    <GoogleLogin
-      useOneTap
-      auto_select={true}
-      onSuccess={(credentialResponse) => {
-        setOAuthCredential(credentialResponse.credential || "");
-      }}
-    />
+    <>
+      <Script
+        src="https://accounts.google.com/gsi/client"
+        async
+        defer
+        onLoad={() => setScriptLoaded(true)}
+      />
+      <div ref={containerRef} />
+    </>
   );
 };
