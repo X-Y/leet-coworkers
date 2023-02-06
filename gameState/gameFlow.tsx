@@ -32,6 +32,7 @@ type GameMachineEvents =
       type: GAME_ACTIONS.RESULT_DISPLAYED;
     }
   | { type: GAME_ACTIONS.GO_TO_SETTINGS }
+  | { type: GAME_ACTIONS.GO_TO_MODES }
   // to Overlays
   | { type: GAME_ACTIONS.GO_TO_LEADER_BOARD }
   | { type: GAME_ACTIONS.GO_TO_STATS }
@@ -81,7 +82,13 @@ export const gameFlowMachine = createMachine<
             states: {
               main: {
                 on: {
+                  GO_TO_MODES: "modes",
                   GO_TO_SETTINGS: "settings",
+                },
+              },
+              modes: {
+                on: {
+                  GO_BACK: "main",
                 },
               },
               settings: {
