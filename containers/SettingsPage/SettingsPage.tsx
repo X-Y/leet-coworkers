@@ -22,12 +22,14 @@ const SettingCheckbox = (props: CheckboxProps) => {
 };
 
 enum GAME_SETTINGS {
+  DISABLE_OAUTH = "disableOAuth",
   TYPE_NAMES = "typeNames",
   REVEAL_OPTIONS = "revealOptions",
 }
 
 const initialSettings = {
   [GAME_SETTINGS.TYPE_NAMES]: false,
+  [GAME_SETTINGS.DISABLE_OAUTH]: false,
   [GAME_SETTINGS.REVEAL_OPTIONS]: false,
 };
 
@@ -87,6 +89,11 @@ export const SettingsPage = () => {
     >
       <Stack style={{ flexGrow: 1, marginLeft: "2rem" }}>
         <TitleText align={"left"}>Settings</TitleText>
+        <SettingCheckbox
+          checked={state[GAME_SETTINGS.DISABLE_OAUTH]}
+          label={"Disable OAuth"}
+          onChange={() => checkBoxChanged(GAME_SETTINGS.DISABLE_OAUTH)}
+        />
         <SettingCheckbox
           checked={state[GAME_SETTINGS.TYPE_NAMES]}
           label={"During play, names must be typed out"}

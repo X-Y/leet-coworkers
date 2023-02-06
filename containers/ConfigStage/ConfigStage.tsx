@@ -30,6 +30,7 @@ import GameXstateContext from "../../contexts/GameXstateContext/GameXstateContex
 import { useActor } from "@xstate/react";
 import { GlobalStoreContext } from "../../contexts/GlobalStoreContext/GlobalStoreContext";
 import ConfigStageLogin from "./ConfigStageLogin";
+import { useIdbGameSetting } from "../../hooks/useIdbGameSetting";
 
 const variantsTitle: Variants = {
   enter: {
@@ -69,6 +70,7 @@ const ConfigStage = () => {
   const { oAuthCredential } = useContext(GlobalStoreContext);
   const gameService = useContext(GameXstateContext);
   const [, send] = useActor(gameService.gameService);
+  const disableOAuth = useIdbGameSetting("disableOAuth");
 
   const [gameRegion, setGameRegion] = useState<regionType>(regionEveryWhere);
   const numQuizRef = useRef<HTMLInputElement>(null);
@@ -102,7 +104,8 @@ const ConfigStage = () => {
     }
   });
 
-  if (!oAuthCredential) {
+  const isAuthenticated = disableOAuth || !!oAuthCredential;
+  if (!isAuthenticated) {
     return <ConfigStageLogin />;
   }
 

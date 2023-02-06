@@ -12,11 +12,8 @@ import {
 import { AnimatePresence, motion, Variant } from "framer-motion";
 import { useActor } from "@xstate/react";
 
-import { Entry, Answer, GAME_ACTIONS } from "../../interfaces/Game";
+import { GAME_ACTIONS } from "../../interfaces/Game";
 import { Coworker as CoworkerModel } from "../../interfaces/CoworkerModel";
-import { GameStepProps } from "../../interfaces/GameStepProps";
-
-import { initGameDB } from "../../lib/gameDB";
 
 import GameXstateContext from "../../contexts/GameXstateContext/GameXstateContext";
 
@@ -27,6 +24,7 @@ import {
   RadioInputAnswersWithReveal,
 } from "./RadioInputAnswers";
 import { TextInputAnswer } from "./TextInputAnswerAlt";
+import { useIdbGameSetting } from "../../hooks/useIdbGameSetting";
 
 const variantsContainer: Record<string, Variant> = {
   center: {
@@ -57,19 +55,12 @@ const variants: Record<string, Variant> = {
   },
 };
 
-const getTypeNameSetting = async () => {
-  const db = await initGameDB();
-  const dbTypeNames = await db.getSetting("typeNames");
-  return dbTypeNames === "true";
-};
-
 const PlayStage = () => {
   const gameService = useContext(GameXstateContext);
   const [current, send] = useActor(gameService.gameService);
 
   const { entries, revealByClick } = current.context;
 
-  const [typeNames, setTypeNames] = useState(false);
   const [answers, setAnswers] = useState([] as string[]);
   const [currentEntry, setCurrentEntry] = useState(0);
 
@@ -90,11 +81,7 @@ const PlayStage = () => {
     }
   }, [currentEntry]);
 
-  useEffect(() => {
-    (async () => {
-      setTypeNames(await getTypeNameSetting());
-    })();
-  }, []);
+  const typeNames = useIdbGameSetting("typeNames");
 
   const answerMode = typeNames
     ? "typeNames"
