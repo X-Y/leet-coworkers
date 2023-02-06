@@ -97,8 +97,14 @@ const Game: NextPage = () => {
           </motion.div>
         )}
 
+        {current.matches("mainFlow.configStage.mode") && (
+          <motion.div key={"mainFlow.configStage.mode"}>
+            <ConfigStage />
+          </motion.div>
+        )}
+
         {current.matches("mainFlow.configStage.settings") && (
-          <motion.div key={"settings"}>
+          <motion.div key={"mainFlow.configStage.settings"}>
             <SettingsPage />
           </motion.div>
         )}

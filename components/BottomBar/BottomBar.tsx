@@ -11,24 +11,11 @@ import GameXstateContext from "../../contexts/GameXstateContext/GameXstateContex
 interface Props extends PropsWithChildren {
   motionRef?: React.ForwardedRef<HTMLDivElement>;
   style?: CSSProperties;
-  hasBack?: boolean;
 }
-const BottomBar: React.FC<Props> = ({
-  motionRef,
-  style,
-  hasBack,
-  children,
-}) => {
-  const gameService = useContext(GameXstateContext);
-  const [, send] = useActor(gameService.gameService);
-
+const BottomBar: React.FC<Props> = ({ motionRef, style, children }) => {
   const { ref: itsRef, entry } = useIntersection({
     threshold: 1,
   });
-
-  const onGameBackClick = () => {
-    send({ type: GAME_ACTIONS.GO_BACK });
-  };
 
   return (
     <>
@@ -71,17 +58,6 @@ const BottomBar: React.FC<Props> = ({
             })}
           >
             {children}
-
-            {hasBack && (
-              <Button
-                color="leetPurple"
-                variant="light"
-                size="lg"
-                onClick={onGameBackClick}
-              >
-                Back
-              </Button>
-            )}
           </Box>
         </MediaQuery>
       </Box>

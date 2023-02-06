@@ -1,8 +1,6 @@
 import { Stack, Checkbox, CheckboxProps } from "@mantine/core";
-
-import BottomBar from "../../components/BottomBar/BottomBar";
-import TitleText from "../../components/TitleText/TitleText";
-import {
+import { useActor } from "@xstate/react";
+import React, {
   ChangeEvent,
   useContext,
   useEffect,
@@ -10,10 +8,16 @@ import {
   useRef,
   useState,
 } from "react";
-import { initGameDB } from "../../lib/gameDB";
-import GameXstateContext from "../../contexts/GameXstateContext/GameXstateContext";
-import { useActor } from "@xstate/react";
+
 import { GAME_ACTIONS } from "../../interfaces/Game";
+
+import { initGameDB } from "../../lib/gameDB";
+
+import GameXstateContext from "../../contexts/GameXstateContext/GameXstateContext";
+
+import BottomBar from "../../components/BottomBar/BottomBar";
+import TitleText from "../../components/TitleText/TitleText";
+import BackButton from "../../components/BottomBar/BackButton";
 
 const SettingCheckbox = (props: CheckboxProps) => {
   return (
@@ -110,7 +114,9 @@ export const SettingsPage = () => {
           onChange={revealByClickChanged}
         />
       </Stack>
-      <BottomBar hasBack />
+      <BottomBar>
+        <BackButton />
+      </BottomBar>
     </div>
   );
 };
