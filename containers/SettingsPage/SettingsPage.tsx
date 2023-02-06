@@ -2,8 +2,18 @@ import { Stack, Checkbox, CheckboxProps } from "@mantine/core";
 
 import BottomBar from "../../components/BottomBar/BottomBar";
 import TitleText from "../../components/TitleText/TitleText";
-import { useEffect, useReducer, useRef, useState } from "react";
+import {
+  ChangeEvent,
+  useContext,
+  useEffect,
+  useReducer,
+  useRef,
+  useState,
+} from "react";
 import { initGameDB } from "../../lib/gameDB";
+import GameXstateContext from "../../contexts/GameXstateContext/GameXstateContext";
+import { useActor } from "@xstate/react";
+import { GAME_ACTIONS } from "../../interfaces/Game";
 
 const SettingCheckbox = (props: CheckboxProps) => {
   return (
@@ -37,6 +47,11 @@ const reducer = (
 };
 
 export const SettingsPage = () => {
+  const gameService = useContext(GameXstateContext);
+  const [current, send] = useActor(gameService.gameService);
+
+  const { revealByClick } = current.context;
+
   const dbRef = useRef<Awaited<ReturnType<typeof initGameDB>>>();
 
   const [state, dispatch] = useReducer(reducer, initialSettings);
@@ -59,6 +74,13 @@ export const SettingsPage = () => {
     dbRef.current.saveSetting(key, "" + newVal);
   };
 
+  const revealByClickChanged = (e: ChangeEvent<HTMLInputElement>) => {
+    send({
+      type: GAME_ACTIONS.SET_REVEAL_BY_CLICK,
+      payload: { value: e.target.checked },
+    });
+  };
+
   return (
     <div
       style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}
@@ -71,10 +93,9 @@ export const SettingsPage = () => {
           onChange={() => checkBoxChanged(GAME_SETTINGS.TYPE_NAMES)}
         />
         <SettingCheckbox
-          disabled={true}
-          checked={state[GAME_SETTINGS.REVEAL_OPTIONS]}
+          checked={revealByClick}
           label={"During play, options will be revealed after a click"}
-          onChange={() => checkBoxChanged(GAME_SETTINGS.REVEAL_OPTIONS)}
+          onChange={revealByClickChanged}
         />
       </Stack>
       <BottomBar hasBack />
