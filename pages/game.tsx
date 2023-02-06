@@ -45,6 +45,7 @@ import { useFilter } from "../hooks/useFilter";
 import GameBackground from "../components/GameBackground/GameBackground";
 import { GlobalStoreContext } from "../contexts/GlobalStoreContext/GlobalStoreContext";
 import { useIdbGameSetting } from "../hooks/useIdbGameSetting";
+import LoginStage from "../containers/LoginStage/LoginStage";
 
 const Game: NextPage = () => {
   const { oAuthCredential } = useContext(GlobalStoreContext);
@@ -84,6 +85,12 @@ const Game: NextPage = () => {
     <GameBackground>
       {!resData && <div style={{ position: "fixed" }}>Loading...</div>}
       <AnimatePresence mode="wait">
+        {current.matches("login") && (
+          <motion.div key={GAME_STATES.MENU}>
+            <LoginStage />
+          </motion.div>
+        )}
+
         {current.matches("mainFlow.configStage.main") && (
           <motion.div key={GAME_STATES.MENU}>
             <ConfigStage />

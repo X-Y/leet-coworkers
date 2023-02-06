@@ -8,6 +8,8 @@ import { generateGameSet } from "./generateGameSetActions";
 import { calculateScore, saveStats } from "./gameDoneActions";
 
 type GameMachineEvents =
+  // Login
+  | { type: GAME_ACTIONS.LOGGED_IN }
   // MainFlow
   | {
       type: GAME_ACTIONS.CONFIGS_DONE;
@@ -63,13 +65,18 @@ export const gameFlowMachine = createMachine<
   {
     predictableActionArguments: true,
     id: "game",
-    initial: "mainFlow",
+    initial: "login",
     context: { ...initState },
     on: {
       GO_TO_LEADER_BOARD: "overlays.leaderBoardStage",
       GO_TO_STATS: "overlays.statsStage",
     },
     states: {
+      login: {
+        on: {
+          LOGGED_IN: "mainFlow",
+        },
+      },
       mainFlow: {
         initial: "configStage",
         states: {

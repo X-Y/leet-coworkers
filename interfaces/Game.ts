@@ -8,6 +8,8 @@ export enum GAME_STATES {
 }
 
 export enum GAME_ACTIONS {
+  LOGGED_IN = "LOGGED_IN",
+
   CONFIGS_DONE = "CONFIGS_DONE",
   START = "START",
   END = "END",

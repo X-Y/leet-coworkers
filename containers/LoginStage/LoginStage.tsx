@@ -1,15 +1,15 @@
 import { motion, Variants } from "framer-motion";
 import { Center, MediaQuery, Select, Stack } from "@mantine/core";
+import { useCallback, useContext, useEffect } from "react";
+import { useActor } from "@xstate/react";
+
+import GameXstateContext from "../../contexts/GameXstateContext/GameXstateContext";
+
 import FlagText from "../../components/FlagText/FlagText";
-import {
-  regionEveryWhere,
-  Regions,
-} from "../../reducers/gameReducer/gameReducer";
-import {
-  ConfigStageMainButton,
-  ConfigStageSubButton,
-} from "./ConfigStageButton";
 import { GoogleIdentity } from "../../components/GoogleIdentity/GoogleIdentity";
+
+import { useIdbGameSetting } from "../../hooks/useIdbGameSetting";
+import { GAME_ACTIONS } from "../../interfaces/Game";
 
 const variantsTitle: Variants = {
   enter: {
@@ -26,7 +26,21 @@ const variantsTitle: Variants = {
   },
 };
 
-export const ConfigStageLogin = () => {
+export const LoginStage = () => {
+  const gameService = useContext(GameXstateContext);
+  const [, send] = useActor(gameService.gameService);
+  const disableOAuth = useIdbGameSetting("disableOAuth");
+
+  const loggedIn = useCallback(() => {
+    send({ type: GAME_ACTIONS.LOGGED_IN });
+  }, [send]);
+
+  useEffect(() => {
+    if (disableOAuth) {
+      loggedIn();
+    }
+  }, [disableOAuth, loggedIn]);
+
   return (
     <Center>
       <motion.div
@@ -51,7 +65,7 @@ export const ConfigStageLogin = () => {
                 THE GUESSING GAME
               </FlagText>
               <Center>
-                <GoogleIdentity />
+                <GoogleIdentity onSuccess={loggedIn} />
               </Center>
             </motion.div>
           </Stack>
@@ -61,4 +75,4 @@ export const ConfigStageLogin = () => {
   );
 };
 
-export default ConfigStageLogin;
+export default LoginStage;

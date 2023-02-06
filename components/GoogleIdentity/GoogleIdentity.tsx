@@ -3,7 +3,11 @@ import { useContext, useEffect, useRef, useState } from "react";
 import { GlobalStoreContext } from "../../contexts/GlobalStoreContext/GlobalStoreContext";
 import Script from "next/script";
 
-export const GoogleIdentity = () => {
+interface GoogleIdentityProps {
+  onSuccess: () => void;
+}
+
+export const GoogleIdentity = ({ onSuccess }: GoogleIdentityProps) => {
   const { oAuthCredential, setOAuthCredential } =
     useContext(GlobalStoreContext);
 
@@ -14,6 +18,7 @@ export const GoogleIdentity = () => {
     credential: string;
   }) => {
     setOAuthCredential(credentialResponse.credential || "");
+    onSuccess();
   };
   useEffect(() => {
     if (!scriptLoaded) return;
