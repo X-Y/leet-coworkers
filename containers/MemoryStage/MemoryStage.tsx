@@ -43,92 +43,9 @@ const MemoryStage = () => {
   const [loading, setLoading] = useState(true);
   const [timestamp, setTimestamp] = useState<number>();
 
-  /*const cleanUpGameSet = (brokens: string[]) => {
-    setEntries((prev) =>
-      prev
-        .filter(({ imagePortraitUrl }) => !brokens.includes(imagePortraitUrl))
-        .slice(0, gameState.amount)
-    );
-
-    spinnerTimerIdRef.current = setTimeout(() => {
-      setLoading(false);
-    }, 1000);
-
-    window.scrollTo(0, 0);
-  };*/
-
-  /*const {
-    reset,
-    audit,
-    setAmount: setAuditAmount,
-  } = useAuditGameSet(cleanUpGameSet);*/
-
   const { data } = useQuery<Coworker[]>("getCoworkers", coworkersApi, {
     staleTime: 60000,
   });
-
-  /*const onImageLoadError = (e: Event) => {
-    const target = e.target as HTMLImageElement | null;
-    const brokenSrc = target?.src;
-    audit(brokenSrc);
-
-    target?.removeEventListener("load", onImageLoadSuccess);
-    target?.removeEventListener("error", onImageLoadError);
-  };
-  const onImageLoadSuccess = (e: Event) => {
-    const target = e.target as HTMLImageElement | null;
-    audit();
-
-    target?.removeEventListener("load", onImageLoadSuccess);
-    target?.removeEventListener("error", onImageLoadError);
-  };
-*/
-  /*const generateGameSet = () => {
-    const resDataConst = resData;
-    if (!resDataConst) return;
-
-    reset();
-    setLoading(true);
-    const { amount, confusions, region } = gameState;
-
-    const regionFilterString = getRegionFilterString(region);
-    const entries: Entry[] = (
-      filterData(resDataConst, FILTER_BY.CITY, regionFilterString) || []
-    )
-      .filter((one) => !!one.imagePortraitUrl)
-      .sort(() => 0.5 - Math.random())
-      // Add some backups for broken images
-      .slice(0, amount + Math.min(amount * 0.1, 2))
-      .map((one) => {
-        const { imagePortraitUrl } = one;
-        const img = new Image();
-        img.src = imagePortraitUrl;
-
-        img.addEventListener("error", onImageLoadError);
-        img.addEventListener("load", onImageLoadSuccess);
-
-        let confuses: string[] = [one.name];
-        while (confuses.length < confusions) {
-          const confuse =
-            resDataConst[Math.round(Math.random() * (resDataConst.length - 1))];
-          if (confuses.findIndex((name) => name === confuse.name) === -1) {
-            confuses.push(confuse.name);
-          }
-        }
-
-        const options = confuses.sort(() => 0.5 - Math.random());
-
-        return {
-          ...one,
-          options,
-        };
-      });
-
-    setAuditAmount(entries.length);
-
-    setTimestamp(Date.now());
-    setEntries(entries);
-  };*/
 
   const generateGameSet = () => {
     console.log("memeoryStage - generate");
@@ -145,19 +62,26 @@ const MemoryStage = () => {
     setTimestamp(Date.now());
     setLoading(true);
 
-    spinnerTimerIdRef.current = setTimeout(() => {
-      setLoading(false);
-    }, 1000);
+    // spinnerTimerIdRef.current = setTimeout(() => {
+    //   setLoading(false);
+    // }, 1000);
 
     window.scrollTo(0, 0);
   };
 
   useEffect(() => {
     generateGameSet();
-    return () => {
-      clearTimeout(spinnerTimerIdRef.current);
-    };
+    // return () => {
+    //   clearTimeout(spinnerTimerIdRef.current);
+    // };
   }, []);
+
+  useEffect(() => {
+    if (current.context.entries.length) {
+      console.log(current.context.entries);
+      setLoading(false);
+    }
+  }, [current.context.entries]);
 
   const onGameStartClick = () => {
     send({
