@@ -4,7 +4,7 @@ import { GlobalStoreContext } from "../../contexts/GlobalStoreContext/GlobalStor
 import Script from "next/script";
 
 interface GoogleIdentityProps {
-  onSuccess: () => void;
+  onSuccess?: () => void;
 }
 
 export const GoogleIdentity = ({ onSuccess }: GoogleIdentityProps) => {
@@ -18,7 +18,7 @@ export const GoogleIdentity = ({ onSuccess }: GoogleIdentityProps) => {
     credential: string;
   }) => {
     setOAuthCredential(credentialResponse.credential || "");
-    onSuccess();
+    onSuccess && onSuccess();
   };
   useEffect(() => {
     if (!scriptLoaded) return;
