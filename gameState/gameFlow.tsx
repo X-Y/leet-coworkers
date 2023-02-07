@@ -11,18 +11,33 @@ type GameMachineEvents =
   // Login
   | { type: GAME_ACTIONS.LOGGED_IN }
   // MainFlow
-  | {
-      type: GAME_ACTIONS.CONFIGS_DONE;
-      payload?: {
-        amount: number;
-        confusions: number;
-        region: regionType;
-      };
-    }
+  | { type: GAME_ACTIONS.CONFIGS_DONE }
   | { type: GAME_ACTIONS.START }
   | { type: GAME_ACTIONS.END; payload: { uncorrectedAnswers: string[] } }
   | { type: GAME_ACTIONS.RESTART }
   | { type: GAME_ACTIONS.BACK_TO_MENU }
+  // MainFlow - configs
+  | {
+      type: GAME_ACTIONS.GO_TO_MODES;
+      payload: {
+        amount: number;
+        region: regionType;
+      };
+    }
+  | {
+      type: GAME_ACTIONS.MODE_SELECTED;
+      payload: {
+        gameMode: "options";
+        confusions: number;
+        revealByClick: boolean;
+      };
+    }
+  | {
+      type: GAME_ACTIONS.MODE_SELECTED;
+      payload: {
+        gameMode: "type";
+      };
+    }
   // mainFlow - sub events
   | {
       type: GAME_ACTIONS.GENERATE;
@@ -34,7 +49,6 @@ type GameMachineEvents =
       type: GAME_ACTIONS.RESULT_DISPLAYED;
     }
   | { type: GAME_ACTIONS.GO_TO_SETTINGS }
-  | { type: GAME_ACTIONS.GO_TO_MODES }
   | { type: GAME_ACTIONS.SET_REVEAL_BY_CLICK; payload: { value: boolean } }
   // to Overlays
   | { type: GAME_ACTIONS.GO_TO_LEADER_BOARD }
@@ -46,7 +60,6 @@ type GameMachineEvents =
 
 const initState = {
   amount: 10,
-  confusions: 2,
   region: Regions.Everywhere as regionType,
 
   score: 0,
@@ -55,6 +68,8 @@ const initState = {
   entries: [] as Entry[],
   answers: [] as Answer[],
 
+  gameMode: "options" as "options" | "type",
+  confusions: 2,
   revealByClick: false,
 };
 
@@ -86,18 +101,23 @@ export const gameFlowMachine = createMachine<
             on: {
               CONFIGS_DONE: {
                 target: "memoryStage",
-                actions: "updateConfigs",
               },
             },
             states: {
               main: {
                 on: {
-                  GO_TO_MODES: "modes",
+                  GO_TO_MODES: {
+                    target: "modes",
+                    actions: "updateConfigs",
+                  },
                   GO_TO_SETTINGS: "settings",
                 },
               },
               modes: {
                 on: {
+                  MODE_SELECTED: {
+                    actions: "updateMode",
+                  },
                   GO_BACK: "main",
                 },
               },
@@ -193,18 +213,30 @@ export const gameFlowMachine = createMachine<
   {
     actions: {
       updateConfigs: assign((context, event) => {
-        if (event.type !== GAME_ACTIONS.CONFIGS_DONE) throw null;
+        if (event.type !== GAME_ACTIONS.GO_TO_MODES) throw "updateConfigs";
         if (!event.payload) return {};
 
-        const { amount, confusions, region } = event.payload;
-        return { amount, confusions, region };
+        const { amount, region } = event.payload;
+        return { amount, region };
+      }),
+      updateMode: assign((context, event) => {
+        if (event.type !== GAME_ACTIONS.MODE_SELECTED) throw "updateMode";
+        const { gameMode } = event.payload;
+        if (gameMode === "options") {
+          const { revealByClick, confusions } = event.payload;
+          return { revealByClick, confusions, gameMode };
+        } else if (gameMode === "type") {
+          return { gameMode };
+        }
+        throw "no more modes";
       }),
       setRevealByClick: assign((context, event) => {
-        if (event.type !== GAME_ACTIONS.SET_REVEAL_BY_CLICK) throw null;
+        if (event.type !== GAME_ACTIONS.SET_REVEAL_BY_CLICK)
+          throw "setRevealByClick";
         return { revealByClick: event.payload.value };
       }),
       calculateScore: assign((context, event) => {
-        if (event.type !== GAME_ACTIONS.END) throw null;
+        if (event.type !== GAME_ACTIONS.END) throw "calculateScore";
         const { uncorrectedAnswers } = event.payload;
         const [score, correctedAnswers] = calculateScore(
           uncorrectedAnswers,

@@ -69,7 +69,6 @@ const ConfigStage = () => {
 
   const [gameRegion, setGameRegion] = useState<regionType>(regionEveryWhere);
   const numQuizRef = useRef<HTMLInputElement>(null);
-  const numOptionsRef = useRef<HTMLInputElement>(null);
 
   const onShowStatsClick = () => {
     send({ type: GAME_ACTIONS.GO_TO_STATS });
@@ -82,11 +81,10 @@ const ConfigStage = () => {
   };
   const onConfigsDoneClick = () => {
     const numQuiz = +(numQuizRef.current?.value || "0");
-    const numOptions = +(numOptionsRef.current?.value || "0");
 
     send({
-      type: GAME_ACTIONS.CONFIGS_DONE,
-      payload: { amount: numQuiz, confusions: numOptions, region: gameRegion },
+      type: GAME_ACTIONS.GO_TO_MODES,
+      payload: { amount: numQuiz, region: gameRegion },
     });
   };
 
@@ -148,20 +146,6 @@ const ConfigStage = () => {
                       label: "" + one,
                     }))}
                     defaultValue="10"
-                    styles={(theme) => ({
-                      label: {
-                        color: theme.colors.leetPurple[0],
-                      },
-                    })}
-                  />
-                  <Select
-                    label="How many choices:"
-                    ref={numOptionsRef}
-                    data={numberOptions.map((one) => ({
-                      value: "" + one,
-                      label: "" + one,
-                    }))}
-                    defaultValue="4"
                     styles={(theme) => ({
                       label: {
                         color: theme.colors.leetPurple[0],

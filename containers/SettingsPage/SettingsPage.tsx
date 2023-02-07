@@ -96,22 +96,11 @@ export const SettingsPage = () => {
     >
       <Stack style={{ flexGrow: 1, marginLeft: "2rem" }}>
         <TitleText align={"left"}>Settings</TitleText>
-        {isDev && (
-          <SettingCheckbox
-            checked={state[GAME_SETTINGS.DISABLE_OAUTH]}
-            label={"Disable OAuth"}
-            onChange={() => checkBoxChanged(GAME_SETTINGS.DISABLE_OAUTH)}
-          />
-        )}
         <SettingCheckbox
-          checked={state[GAME_SETTINGS.TYPE_NAMES]}
-          label={"During play, names must be typed out"}
-          onChange={() => checkBoxChanged(GAME_SETTINGS.TYPE_NAMES)}
-        />
-        <SettingCheckbox
-          checked={revealByClick}
-          label={"During play, options will be revealed after a click"}
-          onChange={revealByClickChanged}
+          disabled={!isDev}
+          checked={state[GAME_SETTINGS.DISABLE_OAUTH]}
+          label={"Disable OAuth"}
+          onChange={() => checkBoxChanged(GAME_SETTINGS.DISABLE_OAUTH)}
         />
       </Stack>
       <BottomBar>

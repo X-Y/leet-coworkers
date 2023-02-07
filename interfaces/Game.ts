@@ -21,6 +21,7 @@ export enum GAME_ACTIONS {
 
   GO_TO_SETTINGS = "GO_TO_SETTINGS",
   GO_TO_MODES = "GO_TO_MODES",
+  MODE_SELECTED = "MODE_SELECTED",
   SET_REVEAL_BY_CLICK = "SET_REVEAL_BY_CLICK",
 
   GO_TO_LEADER_BOARD = "GO_TO_LEADER_BOARD",
@@ -48,3 +49,5 @@ export enum GAME_OVERLAY_ACTIONS {
   SHOW_HIGHSCORE,
   HIDE,
 }
+
+export type GameMode = "options" | "type";

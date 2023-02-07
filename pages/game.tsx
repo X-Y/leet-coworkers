@@ -46,6 +46,7 @@ import GameBackground from "../components/GameBackground/GameBackground";
 import { GlobalStoreContext } from "../contexts/GlobalStoreContext/GlobalStoreContext";
 import { useIdbGameSetting } from "../hooks/useIdbGameSetting";
 import LoginStage from "../containers/LoginStage/LoginStage";
+import ModeSelectPage from "../containers/ModeSelectPage/ModeSelectPage";
 
 const Game: NextPage = () => {
   const { oAuthCredential } = useContext(GlobalStoreContext);
@@ -97,9 +98,9 @@ const Game: NextPage = () => {
           </motion.div>
         )}
 
-        {current.matches("mainFlow.configStage.mode") && (
-          <motion.div key={"mainFlow.configStage.mode"}>
-            <ConfigStage />
+        {current.matches("mainFlow.configStage.modes") && (
+          <motion.div key={"mainFlow.configStage.modes"}>
+            <ModeSelectPage />
           </motion.div>
         )}
 
