@@ -2,20 +2,21 @@ import { Button, Grid, Stack, Flex, Box } from "@mantine/core";
 import { useList, useListVals } from "react-firebase-hooks/database";
 import { ref } from "firebase/database";
 import React, { Fragment, useContext, useState } from "react";
+import { useActor } from "@xstate/react";
 
-import { GameStepProps } from "../../interfaces/GameStepProps";
-import { GAME_ACTIONS, GAME_OVERLAY_ACTIONS } from "../../interfaces/Game";
+import { GAME_ACTIONS } from "../../interfaces/Game";
 
 import { getRealtimeDatabase, getRegionString } from "../../lib/firebase";
 
 import { Regions } from "../../reducers/gameReducer/gameReducer";
 
+import GameXstateContext from "../../contexts/GameXstateContext/GameXstateContext";
+
 import TitleText from "../../components/TitleText/TitleText";
 import BottomBar from "../../components/BottomBar/BottomBar";
+import BackButton from "../../components/BottomBar/BackButton";
 
 import { KeyContext } from "./HighScoreStage";
-import GameXstateContext from "../../contexts/GameXstateContext/GameXstateContext";
-import { useActor } from "@xstate/react";
 
 const HighScoreFilters = ({
   current,
@@ -155,7 +156,9 @@ const DisplayHighScore = () => {
           </Grid>
         </>
       </Stack>
-      <BottomBar hasBack />
+      <BottomBar>
+        <BackButton />
+      </BottomBar>
     </div>
   );
 };

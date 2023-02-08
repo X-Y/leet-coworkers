@@ -12,18 +12,19 @@ import {
 import { AnimatePresence, motion, Variant } from "framer-motion";
 import { useActor } from "@xstate/react";
 
-import { Entry, Answer, GAME_ACTIONS } from "../../interfaces/Game";
+import { GAME_ACTIONS } from "../../interfaces/Game";
 import { Coworker as CoworkerModel } from "../../interfaces/CoworkerModel";
-import { GameStepProps } from "../../interfaces/GameStepProps";
-
-import { initGameDB } from "../../lib/gameDB";
 
 import GameXstateContext from "../../contexts/GameXstateContext/GameXstateContext";
 
 import Coworker from "../../components/Coworker/Coworker";
 
-import { RadioInputAnswers } from "./RadioInputAnswers";
+import {
+  RadioInputAnswers,
+  RadioInputAnswersWithReveal,
+} from "./RadioInputAnswers";
 import { TextInputAnswer } from "./TextInputAnswerAlt";
+import { useIdbGameSetting } from "../../hooks/useIdbGameSetting";
 
 const variantsContainer: Record<string, Variant> = {
   center: {
@@ -54,20 +55,12 @@ const variants: Record<string, Variant> = {
   },
 };
 
-const getTypeNameSetting = async () => {
-  const db = await initGameDB();
-  const dbTypeNames = await db.getSetting("typeNames");
-  console.log(dbTypeNames);
-  return dbTypeNames === "true";
-};
-
 const PlayStage = () => {
   const gameService = useContext(GameXstateContext);
   const [current, send] = useActor(gameService.gameService);
 
-  const { entries } = current.context;
+  const { entries, revealByClick } = current.context;
 
-  const [typeNames, setTypeNames] = useState(false);
   const [answers, setAnswers] = useState([] as string[]);
   const [currentEntry, setCurrentEntry] = useState(0);
 
@@ -88,11 +81,13 @@ const PlayStage = () => {
     }
   }, [currentEntry]);
 
-  useEffect(() => {
-    (async () => {
-      setTypeNames(await getTypeNameSetting());
-    })();
-  }, []);
+  const typeNames = useIdbGameSetting("typeNames");
+
+  const answerMode = typeNames
+    ? "typeNames"
+    : revealByClick
+    ? "radioWithReveal"
+    : "radio";
 
   const currentCoworker =
     currentEntry >= entries.length
@@ -153,13 +148,21 @@ const PlayStage = () => {
             </motion.div>
 
             <motion.div variants={variants}>
-              {typeNames ? (
+              {answerMode === "typeNames" && (
                 <TextInputAnswer
                   key={currentEntry}
                   name={name}
                   onComplete={setAnswer}
                 />
-              ) : (
+              )}
+              {answerMode === "radioWithReveal" && (
+                <RadioInputAnswersWithReveal
+                  onChange={setAnswer}
+                  options={options}
+                  key={currentEntry}
+                />
+              )}
+              {answerMode === "radio" && (
                 <RadioInputAnswers
                   onChange={setAnswer}
                   options={options}

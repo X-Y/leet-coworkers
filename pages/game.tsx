@@ -43,34 +43,33 @@ import HighScoreStage from "../containers/HighScoreStage/HighScoreStage";
 
 import { useFilter } from "../hooks/useFilter";
 import GameBackground from "../components/GameBackground/GameBackground";
-import { InterpreterFrom } from "xstate";
 import { GlobalStoreContext } from "../contexts/GlobalStoreContext/GlobalStoreContext";
+import { useIdbGameSetting } from "../hooks/useIdbGameSetting";
+import LoginStage from "../containers/LoginStage/LoginStage";
 
 const Game: NextPage = () => {
   const { oAuthCredential } = useContext(GlobalStoreContext);
   const { setFilterBy } = useContext(FilterContext);
-  /*const [gameState, gameDispatch] = useReducer(gameStateReducer, iniGameState);
-  const [gameOverlayState, gameOverlayDispatch] = useReducer(
-    gameOverlayStateReducer,
-    iniGameOverlayState
-  );*/
   const gameService = useContext(GameXstateContext);
   const [current, send] = useActor(gameService.gameService);
+  const disableOAuth = useIdbGameSetting("disableOAuth");
 
   useEffect(() => {
     setFilterBy(FILTER_BY.CITY);
   }, []);
+
+  const isAuthenticated = disableOAuth || !!oAuthCredential;
 
   const { status, data, error, isFetching, remove } = useQuery<Coworker[]>(
     "getCoworkers",
     coworkersApi,
     {
       staleTime: 60000,
-      enabled: !!oAuthCredential,
+      enabled: isAuthenticated,
     }
   );
 
-  if (!oAuthCredential) {
+  if (!isAuthenticated) {
     remove();
   }
 
@@ -86,14 +85,26 @@ const Game: NextPage = () => {
     <GameBackground>
       {!resData && <div style={{ position: "fixed" }}>Loading...</div>}
       <AnimatePresence mode="wait">
+        {current.matches("login") && (
+          <motion.div key={GAME_STATES.MENU}>
+            <LoginStage />
+          </motion.div>
+        )}
+
         {current.matches("mainFlow.configStage.main") && (
           <motion.div key={GAME_STATES.MENU}>
             <ConfigStage />
           </motion.div>
         )}
 
+        {current.matches("mainFlow.configStage.mode") && (
+          <motion.div key={"mainFlow.configStage.mode"}>
+            <ConfigStage />
+          </motion.div>
+        )}
+
         {current.matches("mainFlow.configStage.settings") && (
-          <motion.div key={"settings"}>
+          <motion.div key={"mainFlow.configStage.settings"}>
             <SettingsPage />
           </motion.div>
         )}

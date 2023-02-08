@@ -11,7 +11,7 @@ import {
 } from "@mantine/core";
 import { motion, MotionConfig, Variants } from "framer-motion";
 import { useQuery } from "react-query";
-import { useContext, useEffect, useMemo, useRef, useState } from "react";
+import React, { useContext, useEffect, useMemo, useRef, useState } from "react";
 
 import { GAME_ACTIONS, GAME_OVERLAY_ACTIONS } from "../../interfaces/Game";
 import { Coworker } from "../../interfaces/CoworkerModel";
@@ -25,6 +25,7 @@ import { MotionBottomBar } from "../../components/BottomBar/BottomBar";
 import TitleText from "../../components/TitleText/TitleText";
 import GameXstateContext from "../../contexts/GameXstateContext/GameXstateContext";
 import { useActor } from "@xstate/react";
+import BackButton from "../../components/BottomBar/BackButton";
 
 const itemVariants: Variants = {
   out: {
@@ -172,14 +173,11 @@ const ResultStage = () => {
           </motion.div>
         </Stack>
       </MotionConfig>
-      <MotionBottomBar
-        hasBack
-        variants={itemVariants}
-        transition={{ delay: 0.4 }}
-      >
+      <MotionBottomBar variants={itemVariants} transition={{ delay: 0.4 }}>
         <Button color="red" size="lg" onClick={clearStats}>
           Clean Stats
         </Button>
+        <BackButton />
       </MotionBottomBar>
     </motion.div>
   );

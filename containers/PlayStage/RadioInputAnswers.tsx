@@ -1,4 +1,6 @@
 import { Radio } from "@mantine/core";
+import { useEffect, useState } from "react";
+import FlagText from "../../components/FlagText/FlagText";
 
 interface RadioInputAnswersProps {
   onChange: (value: string) => void;
@@ -32,4 +34,26 @@ export const RadioInputAnswers = ({
       ))}
     </Radio.Group>
   );
+};
+
+export const RadioInputAnswersWithReveal = (props: RadioInputAnswersProps) => {
+  const [isRevealed, setIsRevealed] = useState(false);
+
+  const reveal = () => {
+    setIsRevealed(true);
+    window.removeEventListener("click", reveal);
+  };
+
+  useEffect(() => {
+    window.addEventListener("click", reveal);
+    return () => {
+      window.removeEventListener("click", reveal);
+    };
+  }, []);
+
+  if (!isRevealed) {
+    return <FlagText>Ready?</FlagText>;
+  }
+
+  return <RadioInputAnswers {...props} />;
 };

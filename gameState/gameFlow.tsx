@@ -8,6 +8,8 @@ import { generateGameSet } from "./generateGameSetActions";
 import { calculateScore, saveStats } from "./gameDoneActions";
 
 type GameMachineEvents =
+  // Login
+  | { type: GAME_ACTIONS.LOGGED_IN }
   // MainFlow
   | {
       type: GAME_ACTIONS.CONFIGS_DONE;
@@ -32,6 +34,8 @@ type GameMachineEvents =
       type: GAME_ACTIONS.RESULT_DISPLAYED;
     }
   | { type: GAME_ACTIONS.GO_TO_SETTINGS }
+  | { type: GAME_ACTIONS.GO_TO_MODES }
+  | { type: GAME_ACTIONS.SET_REVEAL_BY_CLICK; payload: { value: boolean } }
   // to Overlays
   | { type: GAME_ACTIONS.GO_TO_LEADER_BOARD }
   | { type: GAME_ACTIONS.GO_TO_STATS }
@@ -50,6 +54,8 @@ const initState = {
   newHighScore: false,
   entries: [] as Entry[],
   answers: [] as Answer[],
+
+  revealByClick: false,
 };
 
 export const gameFlowMachine = createMachine<
@@ -59,13 +65,18 @@ export const gameFlowMachine = createMachine<
   {
     predictableActionArguments: true,
     id: "game",
-    initial: "mainFlow",
+    initial: "login",
     context: { ...initState },
     on: {
       GO_TO_LEADER_BOARD: "overlays.leaderBoardStage",
       GO_TO_STATS: "overlays.statsStage",
     },
     states: {
+      login: {
+        on: {
+          LOGGED_IN: "mainFlow",
+        },
+      },
       mainFlow: {
         initial: "configStage",
         states: {
@@ -81,11 +92,20 @@ export const gameFlowMachine = createMachine<
             states: {
               main: {
                 on: {
+                  GO_TO_MODES: "modes",
                   GO_TO_SETTINGS: "settings",
+                },
+              },
+              modes: {
+                on: {
+                  GO_BACK: "main",
                 },
               },
               settings: {
                 on: {
+                  SET_REVEAL_BY_CLICK: {
+                    actions: "setRevealByClick",
+                  },
                   GO_BACK: "main",
                 },
               },
@@ -178,6 +198,10 @@ export const gameFlowMachine = createMachine<
 
         const { amount, confusions, region } = event.payload;
         return { amount, confusions, region };
+      }),
+      setRevealByClick: assign((context, event) => {
+        if (event.type !== GAME_ACTIONS.SET_REVEAL_BY_CLICK) throw null;
+        return { revealByClick: event.payload.value };
       }),
       calculateScore: assign((context, event) => {
         if (event.type !== GAME_ACTIONS.END) throw null;

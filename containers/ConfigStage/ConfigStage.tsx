@@ -28,8 +28,6 @@ import {
 } from "./ConfigStageButton";
 import GameXstateContext from "../../contexts/GameXstateContext/GameXstateContext";
 import { useActor } from "@xstate/react";
-import { GlobalStoreContext } from "../../contexts/GlobalStoreContext/GlobalStoreContext";
-import ConfigStageLogin from "./ConfigStageLogin";
 
 const variantsTitle: Variants = {
   enter: {
@@ -66,7 +64,6 @@ const numberQuizes = [10, 20, 40, 60];
 const numberOptions = [2, 3, 4];
 
 const ConfigStage = () => {
-  const { oAuthCredential } = useContext(GlobalStoreContext);
   const gameService = useContext(GameXstateContext);
   const [, send] = useActor(gameService.gameService);
 
@@ -101,10 +98,6 @@ const ConfigStage = () => {
       return { value, label, group: "Regions" };
     }
   });
-
-  if (!oAuthCredential) {
-    return <ConfigStageLogin />;
-  }
 
   return (
     <Center>
