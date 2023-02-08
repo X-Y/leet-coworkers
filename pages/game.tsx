@@ -46,6 +46,7 @@ import GameBackground from "../components/GameBackground/GameBackground";
 import { GlobalStoreContext } from "../contexts/GlobalStoreContext/GlobalStoreContext";
 import { useIdbGameSetting } from "../hooks/useIdbGameSetting";
 import LoginStage from "../containers/LoginStage/LoginStage";
+import ModeSelectPage from "../containers/ModeSelectPage/ModeSelectPage";
 
 const Game: NextPage = () => {
   const { oAuthCredential } = useContext(GlobalStoreContext);
@@ -85,27 +86,21 @@ const Game: NextPage = () => {
     <GameBackground>
       {!resData && <div style={{ position: "fixed" }}>Loading...</div>}
       <AnimatePresence mode="wait">
-        {current.matches("login") && (
-          <motion.div key={GAME_STATES.MENU}>
+        {current.matches("mainFlow.login") && (
+          <motion.div key={"mainFlow.login"}>
             <LoginStage />
           </motion.div>
         )}
 
         {current.matches("mainFlow.configStage.main") && (
-          <motion.div key={GAME_STATES.MENU}>
+          <motion.div key={"mainFlow.configStage.main"}>
             <ConfigStage />
           </motion.div>
         )}
 
-        {current.matches("mainFlow.configStage.mode") && (
-          <motion.div key={"mainFlow.configStage.mode"}>
-            <ConfigStage />
-          </motion.div>
-        )}
-
-        {current.matches("mainFlow.configStage.settings") && (
-          <motion.div key={"mainFlow.configStage.settings"}>
-            <SettingsPage />
+        {current.matches("mainFlow.configStage.modes") && (
+          <motion.div key={"mainFlow.configStage.modes"}>
+            <ModeSelectPage />
           </motion.div>
         )}
 
@@ -125,6 +120,12 @@ const Game: NextPage = () => {
           <>
             <ResultStage />
           </>
+        )}
+
+        {current.matches("overlays.settings") && (
+          <motion.div key={"overlays.settings"}>
+            <SettingsPage />
+          </motion.div>
         )}
 
         {current.matches("overlays.statsStage") && (

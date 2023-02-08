@@ -3,13 +3,15 @@ import { Center, MediaQuery, Select, Stack } from "@mantine/core";
 import { useCallback, useContext, useEffect } from "react";
 import { useActor } from "@xstate/react";
 
+import { GAME_ACTIONS } from "../../interfaces/Game";
+
+import { useIdbGameSetting } from "../../hooks/useIdbGameSetting";
+
 import GameXstateContext from "../../contexts/GameXstateContext/GameXstateContext";
 
 import FlagText from "../../components/FlagText/FlagText";
 import { GoogleIdentity } from "../../components/GoogleIdentity/GoogleIdentity";
-
-import { useIdbGameSetting } from "../../hooks/useIdbGameSetting";
-import { GAME_ACTIONS } from "../../interfaces/Game";
+import { ConfigStageSubButton } from "../../components/ConfigStageButton/ConfigStageButton";
 
 const variantsTitle: Variants = {
   enter: {
@@ -25,7 +27,20 @@ const variantsTitle: Variants = {
     opacity: 0,
   },
 };
-
+const variantsMenu: Variants = {
+  enter: {
+    x: 200,
+    opacity: 0,
+  },
+  ready: {
+    x: 0,
+    opacity: 1,
+  },
+  exit: {
+    x: -200,
+    opacity: 0,
+  },
+};
 export const LoginStage = () => {
   const gameService = useContext(GameXstateContext);
   const [, send] = useActor(gameService.gameService);
@@ -34,6 +49,10 @@ export const LoginStage = () => {
   const loggedIn = useCallback(() => {
     send({ type: GAME_ACTIONS.LOGGED_IN });
   }, [send]);
+
+  const onSettingsClick = () => {
+    send({ type: GAME_ACTIONS.GO_TO_SETTINGS });
+  };
 
   useEffect(() => {
     if (disableOAuth) {
@@ -67,6 +86,11 @@ export const LoginStage = () => {
               <Center>
                 <GoogleIdentity onSuccess={loggedIn} />
               </Center>
+            </motion.div>
+            <motion.div variants={variantsMenu} style={{ textAlign: "center" }}>
+              <ConfigStageSubButton onClick={onSettingsClick}>
+                Settings
+              </ConfigStageSubButton>
             </motion.div>
           </Stack>
         </MediaQuery>

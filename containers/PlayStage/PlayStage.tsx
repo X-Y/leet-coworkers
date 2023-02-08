@@ -59,7 +59,7 @@ const PlayStage = () => {
   const gameService = useContext(GameXstateContext);
   const [current, send] = useActor(gameService.gameService);
 
-  const { entries, revealByClick } = current.context;
+  const { entries, revealByClick, gameMode } = current.context;
 
   const [answers, setAnswers] = useState([] as string[]);
   const [currentEntry, setCurrentEntry] = useState(0);
@@ -81,13 +81,12 @@ const PlayStage = () => {
     }
   }, [currentEntry]);
 
-  const typeNames = useIdbGameSetting("typeNames");
-
-  const answerMode = typeNames
-    ? "typeNames"
-    : revealByClick
-    ? "radioWithReveal"
-    : "radio";
+  const answerMode =
+    gameMode === "type"
+      ? "typeNames"
+      : revealByClick
+      ? "radioWithReveal"
+      : "radio";
 
   const currentCoworker =
     currentEntry >= entries.length

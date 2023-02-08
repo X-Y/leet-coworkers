@@ -1,7 +1,7 @@
 import { Button, ButtonProps, MediaQuery } from "@mantine/core";
 import type { PolymorphicComponentProps } from "@mantine/utils";
 
-import { MainButton, SubButton } from "../../components/Button/MainMenuButtons";
+import { MainButton, SubButton } from "../Button/MainMenuButtons";
 
 export const ConfigStageMainButton: React.FC<
   PolymorphicComponentProps<"button", ButtonProps>

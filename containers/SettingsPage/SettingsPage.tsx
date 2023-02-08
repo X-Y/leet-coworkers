@@ -1,19 +1,7 @@
 import { Stack, Checkbox, CheckboxProps } from "@mantine/core";
-import { useActor } from "@xstate/react";
-import React, {
-  ChangeEvent,
-  useContext,
-  useEffect,
-  useReducer,
-  useRef,
-  useState,
-} from "react";
-
-import { GAME_ACTIONS } from "../../interfaces/Game";
+import React, { useEffect, useReducer, useRef } from "react";
 
 import { initGameDB } from "../../lib/gameDB";
-
-import GameXstateContext from "../../contexts/GameXstateContext/GameXstateContext";
 
 import BottomBar from "../../components/BottomBar/BottomBar";
 import TitleText from "../../components/TitleText/TitleText";
@@ -27,14 +15,10 @@ const SettingCheckbox = (props: CheckboxProps) => {
 
 enum GAME_SETTINGS {
   DISABLE_OAUTH = "disableOAuth",
-  TYPE_NAMES = "typeNames",
-  REVEAL_OPTIONS = "revealOptions",
 }
 
 const initialSettings = {
-  [GAME_SETTINGS.TYPE_NAMES]: false,
   [GAME_SETTINGS.DISABLE_OAUTH]: false,
-  [GAME_SETTINGS.REVEAL_OPTIONS]: false,
 };
 
 interface SettingsReducerAction {
@@ -53,11 +37,6 @@ const reducer = (
 };
 
 export const SettingsPage = () => {
-  const gameService = useContext(GameXstateContext);
-  const [current, send] = useActor(gameService.gameService);
-
-  const { revealByClick } = current.context;
-
   const dbRef = useRef<Awaited<ReturnType<typeof initGameDB>>>();
 
   const [state, dispatch] = useReducer(reducer, initialSettings);
@@ -80,13 +59,6 @@ export const SettingsPage = () => {
     dbRef.current.saveSetting(key, "" + newVal);
   };
 
-  const revealByClickChanged = (e: ChangeEvent<HTMLInputElement>) => {
-    send({
-      type: GAME_ACTIONS.SET_REVEAL_BY_CLICK,
-      payload: { value: e.target.checked },
-    });
-  };
-
   const isDev =
     window?.location.origin !== process.env["NEXT_PUBLIC_PROD_HOSTS"];
 
@@ -96,22 +68,11 @@ export const SettingsPage = () => {
     >
       <Stack style={{ flexGrow: 1, marginLeft: "2rem" }}>
         <TitleText align={"left"}>Settings</TitleText>
-        {isDev && (
-          <SettingCheckbox
-            checked={state[GAME_SETTINGS.DISABLE_OAUTH]}
-            label={"Disable OAuth"}
-            onChange={() => checkBoxChanged(GAME_SETTINGS.DISABLE_OAUTH)}
-          />
-        )}
         <SettingCheckbox
-          checked={state[GAME_SETTINGS.TYPE_NAMES]}
-          label={"During play, names must be typed out"}
-          onChange={() => checkBoxChanged(GAME_SETTINGS.TYPE_NAMES)}
-        />
-        <SettingCheckbox
-          checked={revealByClick}
-          label={"During play, options will be revealed after a click"}
-          onChange={revealByClickChanged}
+          disabled={!isDev}
+          checked={state[GAME_SETTINGS.DISABLE_OAUTH]}
+          label={"Disable OAuth(Dev mode only)"}
+          onChange={() => checkBoxChanged(GAME_SETTINGS.DISABLE_OAUTH)}
         />
       </Stack>
       <BottomBar>
