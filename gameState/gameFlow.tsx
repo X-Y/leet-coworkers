@@ -1,6 +1,6 @@
 import { createMachine, assign } from "xstate";
 
-import { Regions, regionType } from "../reducers/gameReducer/gameReducer";
+import { Regions } from "../reducers/gameReducer/gameReducer";
 import { Entry, Answer, GAME_ACTIONS, GAME_MODE } from "../interfaces/Game";
 import { Coworker } from "../interfaces/CoworkerModel";
 
@@ -19,7 +19,7 @@ type GameMachineEvents =
       type: GAME_ACTIONS.GO_TO_MODES;
       payload: {
         amount: number;
-        region: regionType;
+        region: Regions;
       };
     }
   | {
@@ -58,7 +58,7 @@ type GameMachineEvents =
 
 const initState = {
   amount: 10,
-  region: Regions.Everywhere as regionType,
+  region: Regions.Everywhere,
 
   score: 0,
   resultDisplayed: false,

@@ -18,8 +18,6 @@ export enum Regions {
   Sweden = "Sweden",
   Everywhere = "Everywhere",
 }
-export type regionType = Regions | [Regions, string];
-export const regionEveryWhere: regionType = [Regions.Everywhere, ""];
 
 export const iniGameState = {
   step: GAME_STATES.MENU,
@@ -27,7 +25,7 @@ export const iniGameState = {
   amount: 10,
   confusions: 2,
   newHighScore: false,
-  region: regionEveryWhere as regionType,
+  region: Regions.Everywhere,
   entries: [] as Entry[],
   answers: [] as Answer[],
 };
@@ -35,7 +33,7 @@ export const iniGameState = {
 export type GameAction =
   | {
       type: GAME_ACTIONS.CONFIGS_DONE;
-      payload?: { amount: number; confusions: number; region: regionType };
+      payload?: { amount: number; confusions: number; region: Regions };
     }
   | { type: GAME_ACTIONS.START; payload: { entries: Entry[] } }
   | { type: GAME_ACTIONS.END; payload: { answers: Answer[]; score: number } }
@@ -79,16 +77,17 @@ export const gameStateReducer = (
   }
 };
 
-export const gameCities: regionType[] = [
-  Regions.Borlänge,
-  Regions.Helsingborg,
-  Regions.Ljubljana,
-  Regions.Lund,
-  Regions.Stockholm,
-  [Regions.NorthenSweden, "(Borlänge|Stockholm)"],
-  [Regions.SouthenSweden, "(Helsingborg|Lund)"],
-  [Regions.Sweden, "(Borlänge|Stockholm|Helsingborg|Lund)"],
-  regionEveryWhere,
+//[label, search_string, is_region]
+export const gameCities: [Regions, string, boolean][] = [
+  [Regions.Borlänge, "Borlänge", false],
+  [Regions.Helsingborg, "Helsingborg", false],
+  [Regions.Ljubljana, "Ljubljana", false],
+  [Regions.Lund, "Lund", false],
+  [Regions.Stockholm, "Stockholm", false],
+  [Regions.NorthenSweden, "(Borlänge|Stockholm)", true],
+  [Regions.SouthenSweden, "(Helsingborg|Lund)", true],
+  [Regions.Sweden, "(Borlänge|Stockholm|Helsingborg|Lund)", true],
+  [Regions.Everywhere, "", true],
 ];
 
 export type GameState = typeof iniGameState;
