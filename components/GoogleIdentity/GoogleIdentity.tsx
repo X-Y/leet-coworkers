@@ -8,8 +8,7 @@ interface GoogleIdentityProps {
 }
 
 export const GoogleIdentity = ({ onSuccess }: GoogleIdentityProps) => {
-  const { oAuthCredential, setOAuthCredential } =
-    useContext(GlobalStoreContext);
+  const { setOAuthCredential } = useContext(GlobalStoreContext);
 
   const [scriptLoaded, setScriptLoaded] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);

@@ -1,24 +1,10 @@
-import { Dispatch, useContext, useRef, useState } from "react";
-import {
-  Button,
-  Select,
-  Title,
-  Stack,
-  Center,
-  MediaQuery,
-} from "@mantine/core";
+import { useContext, useRef, useState } from "react";
+import { Center, MediaQuery, Select, Stack } from "@mantine/core";
 import { motion, Variants } from "framer-motion";
 
 import { GAME_ACTIONS } from "../../interfaces/Game";
 
-import type {
-  Regions,
-  regionType,
-} from "../../reducers/gameReducer/gameReducer";
-import {
-  gameCities,
-  regionEveryWhere,
-} from "../../reducers/gameReducer/gameReducer";
+import { Regions, gameCities } from "../../reducers/gameReducer/gameReducer";
 
 import FlagText from "../../components/FlagText/FlagText";
 
@@ -61,13 +47,11 @@ const variantsMenu: Variants = {
 
 const numberQuizes = [10, 20, 40, 60];
 
-const numberOptions = [2, 3, 4];
-
 const ConfigStage = () => {
   const gameService = useContext(GameXstateContext);
   const [, send] = useActor(gameService.gameService);
 
-  const [gameRegion, setGameRegion] = useState<regionType>(regionEveryWhere);
+  const [gameRegion, setGameRegion] = useState(Regions.Everywhere);
   const numQuizRef = useRef<HTMLInputElement>(null);
 
   const onShowStatsClick = () => {
@@ -89,12 +73,8 @@ const ConfigStage = () => {
   };
 
   const data = gameCities.map((one) => {
-    if (typeof one === "string") {
-      return { value: one, label: one, group: "Cities" };
-    } else {
-      const [label, value] = one;
-      return { value, label, group: "Regions" };
-    }
+    const [label, value, isRegion] = one;
+    return { value: label, label, group: isRegion ? "Regions" : "Cities" };
   });
 
   return (
@@ -128,9 +108,9 @@ const ConfigStage = () => {
                   <Select
                     label="Pick a location:"
                     data={data}
-                    defaultValue=""
+                    defaultValue="Everywhere"
                     onChange={(value: Regions) =>
-                      setGameRegion(value || regionEveryWhere)
+                      setGameRegion(value || Regions.Everywhere)
                     }
                     styles={(theme) => ({
                       label: {

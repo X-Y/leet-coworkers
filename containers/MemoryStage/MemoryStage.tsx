@@ -13,7 +13,7 @@ import { initGameDB } from "../../lib/gameDB";
 import type {
   GameDispatch,
   GameState,
-  regionType,
+  Regions,
 } from "../../reducers/gameReducer/gameReducer";
 
 import { FILTER_BY } from "../../contexts/FilterContext/FilterContext";
@@ -27,7 +27,7 @@ import useAuditGameSet from "./useAuditGameSet";
 import GameXstateContext from "../../contexts/GameXstateContext/GameXstateContext";
 import { useActor } from "@xstate/react";
 
-const getRegionFilterString = (region: regionType) => {
+const getRegionFilterString = (region: Regions) => {
   if (typeof region === "string") {
     return region;
   } else {

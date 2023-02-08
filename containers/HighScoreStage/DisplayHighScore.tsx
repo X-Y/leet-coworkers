@@ -4,8 +4,6 @@ import { ref } from "firebase/database";
 import React, { Fragment, useContext, useState } from "react";
 import { useActor } from "@xstate/react";
 
-import { GAME_ACTIONS } from "../../interfaces/Game";
-
 import { getRealtimeDatabase, getRegionString } from "../../lib/firebase";
 
 import { Regions } from "../../reducers/gameReducer/gameReducer";
@@ -45,19 +43,17 @@ const HighScoreFilters = ({
 
 const DisplayHighScore = () => {
   const gameService = useContext(GameXstateContext);
-  const [, send] = useActor(gameService.gameService);
+  const [current, send] = useActor(gameService.gameService);
+
+  const { region: gameRegion = Regions.Everywhere } = current.context;
 
   const { key } = useContext(KeyContext);
-  const [region, setRegion] = useState<Regions>(Regions.Everywhere);
+  const [region, setRegion] = useState<Regions>(gameRegion);
 
   const database = getRealtimeDatabase();
   const [values, loading, error] = useList(
     ref(database, "highscore/" + getRegionString(region))
   );
-
-  const onGameBackClick = () => {
-    send({ type: GAME_ACTIONS.GO_BACK });
-  };
 
   const list =
     values &&

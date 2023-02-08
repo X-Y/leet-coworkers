@@ -12,6 +12,7 @@ import GameXstateContext from "../../contexts/GameXstateContext/GameXstateContex
 import FlagText from "../../components/FlagText/FlagText";
 import { GoogleIdentity } from "../../components/GoogleIdentity/GoogleIdentity";
 import { ConfigStageSubButton } from "../../components/ConfigStageButton/ConfigStageButton";
+import { GlobalStoreContext } from "../../contexts/GlobalStoreContext/GlobalStoreContext";
 
 const variantsTitle: Variants = {
   enter: {
@@ -44,7 +45,9 @@ const variantsMenu: Variants = {
 export const LoginStage = () => {
   const gameService = useContext(GameXstateContext);
   const [, send] = useActor(gameService.gameService);
+
   const disableOAuth = useIdbGameSetting("disableOAuth");
+  const { oAuthCredential } = useContext(GlobalStoreContext);
 
   const loggedIn = useCallback(() => {
     send({ type: GAME_ACTIONS.LOGGED_IN });
@@ -55,10 +58,10 @@ export const LoginStage = () => {
   };
 
   useEffect(() => {
-    if (disableOAuth) {
+    if (disableOAuth || oAuthCredential) {
       loggedIn();
     }
-  }, [disableOAuth, loggedIn]);
+  }, [disableOAuth, loggedIn, oAuthCredential]);
 
   return (
     <Center>

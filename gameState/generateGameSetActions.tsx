@@ -1,25 +1,24 @@
 import { Coworker } from "../interfaces/CoworkerModel";
 import { Entry } from "../interfaces/Game";
 
-import { regionType } from "../reducers/gameReducer/gameReducer";
+import { Regions, gameCities } from "../reducers/gameReducer/gameReducer";
 
 import { filterData } from "../hooks/useFilter";
 
 import { FILTER_BY } from "../contexts/FilterContext/FilterContext";
 
-const getRegionFilterString = (region: regionType) => {
-  if (typeof region === "string") {
-    return region;
-  } else {
-    return region[1];
-  }
+const getRegionFilterString = (region: Regions) => {
+  const regionData = gameCities.find(([label]) => region === label);
+  if (!regionData) throw "unknown region" + region;
+
+  return regionData[1];
 };
 
 export const generateGameSet = (
   data: Coworker[],
   amount: number,
   confusions: number,
-  region: regionType
+  region: Regions
 ) => {
   let entries: Entry[] = [];
   let audited: number = 0;
@@ -34,6 +33,7 @@ export const generateGameSet = (
     .slice(0, amount + Math.min(amount * 0.1, 2));
 
   return new Promise<Entry[]>((resolve, reject) => {
+    let auditDone = false;
     const audit = (src?: string) => {
       if (src) {
         const valid = preliminaries.find((one) => one.imagePortraitUrl === src);
@@ -48,7 +48,8 @@ export const generateGameSet = (
       }
 
       audited++;
-      if (audited >= Math.min(preliminaries.length, amount)) {
+      if (!auditDone && audited >= Math.min(preliminaries.length, amount)) {
+        auditDone = true;
         resolve(entries);
       }
     };
