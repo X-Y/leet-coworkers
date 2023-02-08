@@ -1,7 +1,8 @@
 import {
   Stack,
   Checkbox,
-  CheckboxProps,
+  Radio,
+  RadioProps,
   Select,
   Flex,
   Space,
@@ -33,19 +34,19 @@ const initialState = {
   revealByClick: false,
 };
 
-interface ModeCheckBoxProps extends CheckboxProps {
+interface ModeRadioProps extends RadioProps {
   currentMode: GameMode;
   dispatch: Dispatch<{ mode: GameMode }>;
   mode: GameMode;
 }
-const ModeCheckBox = ({
+const ModeRadio = ({
   currentMode,
   dispatch,
   mode,
   ...otherProps
-}: ModeCheckBoxProps) => {
+}: ModeRadioProps) => {
   return (
-    <Checkbox
+    <Radio
       size="lg"
       styles={{ label: { color: "white" } }}
       label={"Options Mode"}
@@ -94,18 +95,22 @@ export const ModeSelectPage = () => {
     <div
       style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}
     >
-      <Stack style={{ flexGrow: 1, marginLeft: "2rem" }}>
-        <TitleText align={"left"}>Game Mode</TitleText>
+      <Stack style={{ flexGrow: 1, margin: "2rem" }}>
+        <TitleText order={2} size={40} align={"left"}>
+          Game Mode
+        </TitleText>
         <Flex gap={"lg"}>
-          <ModeCheckBox
+          <ModeRadio
             currentMode={mode}
             mode={"options"}
+            value={"options"}
             dispatch={dispatch}
             label={"Options Mode"}
           />
-          <ModeCheckBox
+          <ModeRadio
             currentMode={mode}
             mode={"type"}
+            value={"type"}
             dispatch={dispatch}
             label={"Type out Mode"}
           />
@@ -146,7 +151,7 @@ export const ModeSelectPage = () => {
       <BottomBar>
         <BackButton />
         <Button color="leetPurple" size="lg" onClick={onNextClick}>
-          Next
+          Start!
         </Button>
       </BottomBar>
     </div>
