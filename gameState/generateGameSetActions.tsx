@@ -33,6 +33,7 @@ export const generateGameSet = (
     .slice(0, amount + Math.min(amount * 0.1, 2));
 
   return new Promise<Entry[]>((resolve, reject) => {
+    let auditDone = false;
     const audit = (src?: string) => {
       if (src) {
         const valid = preliminaries.find((one) => one.imagePortraitUrl === src);
@@ -47,7 +48,8 @@ export const generateGameSet = (
       }
 
       audited++;
-      if (audited >= Math.min(preliminaries.length, amount)) {
+      if (!auditDone && audited >= Math.min(preliminaries.length, amount)) {
+        auditDone = true;
         resolve(entries);
       }
     };
