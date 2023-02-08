@@ -38,7 +38,7 @@ const SubmitHighScore = () => {
   const [name, setName] = useState("");
   const [nameError, setNameError] = useState(false);
 
-  const { region, score } = current.context;
+  const { region, score, gameMode } = current.context;
 
   const noSubmitHighScore = () => {
     send({ type: GAME_ACTIONS.SUBMIT_HIGHSCORE });
@@ -52,6 +52,7 @@ const SubmitHighScore = () => {
     const highScoreValue = {
       name,
       score,
+      gameMode,
     };
 
     const database = getRealtimeDatabase();
