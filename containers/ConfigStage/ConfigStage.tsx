@@ -25,7 +25,7 @@ import FlagText from "../../components/FlagText/FlagText";
 import {
   ConfigStageMainButton,
   ConfigStageSubButton,
-} from "./ConfigStageButton";
+} from "../../components/ConfigStageButton/ConfigStageButton";
 import GameXstateContext from "../../contexts/GameXstateContext/GameXstateContext";
 import { useActor } from "@xstate/react";
 

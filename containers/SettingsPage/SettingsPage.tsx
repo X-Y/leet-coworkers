@@ -71,7 +71,7 @@ export const SettingsPage = () => {
         <SettingCheckbox
           disabled={!isDev}
           checked={state[GAME_SETTINGS.DISABLE_OAUTH]}
-          label={"Disable OAuth"}
+          label={"Disable OAuth(Dev mode only)"}
           onChange={() => checkBoxChanged(GAME_SETTINGS.DISABLE_OAUTH)}
         />
       </Stack>

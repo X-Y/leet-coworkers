@@ -8,9 +8,8 @@ import { generateGameSet } from "./generateGameSetActions";
 import { calculateScore, saveStats } from "./gameDoneActions";
 
 type GameMachineEvents =
-  // Login
-  | { type: GAME_ACTIONS.LOGGED_IN }
   // MainFlow
+  | { type: GAME_ACTIONS.LOGGED_IN }
   | { type: GAME_ACTIONS.START }
   | { type: GAME_ACTIONS.END; payload: { uncorrectedAnswers: string[] } }
   | { type: GAME_ACTIONS.RESTART }
@@ -79,21 +78,22 @@ export const gameFlowMachine = createMachine<
   {
     predictableActionArguments: true,
     id: "game",
-    initial: "login",
+    initial: "mainFlow",
     context: { ...initState },
     on: {
       GO_TO_LEADER_BOARD: "overlays.leaderBoardStage",
       GO_TO_STATS: "overlays.statsStage",
+      GO_TO_SETTINGS: "overlays.settings",
     },
     states: {
-      login: {
-        on: {
-          LOGGED_IN: "mainFlow",
-        },
-      },
       mainFlow: {
-        initial: "configStage",
+        initial: "login",
         states: {
+          login: {
+            on: {
+              LOGGED_IN: "configStage",
+            },
+          },
           configStage: {
             initial: "main",
             entry: assign({ ...initState }),
@@ -105,7 +105,6 @@ export const gameFlowMachine = createMachine<
                     target: "modes",
                     actions: "updateConfigs",
                   },
-                  GO_TO_SETTINGS: "settings",
                 },
               },
               modes: {
@@ -119,12 +118,6 @@ export const gameFlowMachine = createMachine<
               },
               configDone: {
                 type: "final",
-              },
-
-              settings: {
-                on: {
-                  GO_BACK: "main",
-                },
               },
             },
           },
@@ -202,6 +195,7 @@ export const gameFlowMachine = createMachine<
             },
           },
           statsStage: {},
+          settings: {},
         },
       },
     },
