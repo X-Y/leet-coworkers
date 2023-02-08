@@ -1,5 +1,5 @@
-import { Button, Grid, Stack, Flex, Box } from "@mantine/core";
-import { useList, useListVals } from "react-firebase-hooks/database";
+import { Box, Button, Flex, Grid, Stack, Switch } from "@mantine/core";
+import { useList } from "react-firebase-hooks/database";
 import { ref } from "firebase/database";
 import React, { Fragment, useContext, useState } from "react";
 import { useActor } from "@xstate/react";
@@ -15,6 +15,7 @@ import BottomBar from "../../components/BottomBar/BottomBar";
 import BackButton from "../../components/BottomBar/BackButton";
 
 import { KeyContext } from "./HighScoreStage";
+import { GAME_MODE } from "../../interfaces/Game";
 
 const HighScoreFilters = ({
   current,
@@ -41,6 +42,38 @@ const HighScoreFilters = ({
   );
 };
 
+const GameModeSwitch = ({
+  mode,
+  setMode,
+}: {
+  mode: GAME_MODE;
+  setMode: (val: GAME_MODE) => void;
+}) => {
+  return (
+    <Switch
+      color={"leetPurple.3"}
+      size={"lg"}
+      checked={mode === GAME_MODE.TYPE}
+      label={"Game Mode"}
+      onLabel={"type"}
+      offLabel={"opts"}
+      onChange={(e) => {
+        setMode(e.currentTarget.checked ? GAME_MODE.TYPE : GAME_MODE.OPTIONS);
+      }}
+      styles={(theme) => ({
+        root: {
+          display: "flex",
+          alignItems: "center",
+        },
+        label: {
+          color: theme.colors.leetPurple[6],
+          fontSize: "0.8rem",
+        },
+      })}
+    />
+  );
+};
+
 const DisplayHighScore = () => {
   const gameService = useContext(GameXstateContext);
   const [current, send] = useActor(gameService.gameService);
@@ -49,6 +82,8 @@ const DisplayHighScore = () => {
 
   const { key } = useContext(KeyContext);
   const [region, setRegion] = useState<Regions>(gameRegion);
+
+  const [mode, setMode] = useState(GAME_MODE.TYPE);
 
   const database = getRealtimeDatabase();
   const [values, loading, error] = useList(
@@ -62,6 +97,7 @@ const DisplayHighScore = () => {
         const values: {
           name: string;
           score: number;
+          gameMode: GAME_MODE;
         } = one.val();
         return {
           key: one.key,
@@ -73,6 +109,7 @@ const DisplayHighScore = () => {
         ...one,
         no: idx,
       }))
+      .filter(({ gameMode }) => (gameMode || GAME_MODE.OPTIONS) === mode)
       .filter(({ no, key: iKey }) => no < 10 || iKey === key);
 
   return (
@@ -91,7 +128,7 @@ const DisplayHighScore = () => {
             sx={(theme) => ({
               width: "90vw",
               maxWidth: "60rem",
-              color: "white",
+              color: mode === GAME_MODE.TYPE ? "gold" : "white",
               fontSize: theme.fontSizes.xl,
               fontWeight: 600,
               overflow: "hidden",
@@ -99,11 +136,14 @@ const DisplayHighScore = () => {
             })}
           >
             <Grid.Col span={1}>#</Grid.Col>
-            <Grid.Col sm={7} span={5}>
+            <Grid.Col sm={5} span={4}>
               Name
             </Grid.Col>
-            <Grid.Col sm={2} span={3}>
+            <Grid.Col sm={2} span={2}>
               Score
+            </Grid.Col>
+            <Grid.Col sm={2} span={2}>
+              Mode
             </Grid.Col>
             <Grid.Col sm={2} span={3}>
               Region
@@ -134,11 +174,14 @@ const DisplayHighScore = () => {
                       })}
                     >
                       <Grid.Col span={1}>{v.no + 1}</Grid.Col>
-                      <Grid.Col sm={7} span={5}>
+                      <Grid.Col sm={5} span={4}>
                         {v.name}
                       </Grid.Col>
-                      <Grid.Col sm={2} span={3}>
+                      <Grid.Col sm={2} span={2}>
                         {v.score}
+                      </Grid.Col>
+                      <Grid.Col sm={2} span={2}>
+                        {v.gameMode}
                       </Grid.Col>
                       <Grid.Col sm={2} span={3}>
                         {region}
@@ -153,6 +196,7 @@ const DisplayHighScore = () => {
         </>
       </Stack>
       <BottomBar>
+        <GameModeSwitch mode={mode} setMode={setMode} />
         <BackButton />
       </BottomBar>
     </div>
