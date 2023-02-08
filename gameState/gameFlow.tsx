@@ -1,7 +1,7 @@
 import { createMachine, assign } from "xstate";
 
 import { Regions, regionType } from "../reducers/gameReducer/gameReducer";
-import { Entry, Answer, GAME_ACTIONS } from "../interfaces/Game";
+import { Entry, Answer, GAME_ACTIONS, GAME_MODE } from "../interfaces/Game";
 import { Coworker } from "../interfaces/CoworkerModel";
 
 import { generateGameSet } from "./generateGameSetActions";
@@ -11,7 +11,6 @@ type GameMachineEvents =
   // Login
   | { type: GAME_ACTIONS.LOGGED_IN }
   // MainFlow
-  | { type: GAME_ACTIONS.CONFIGS_DONE }
   | { type: GAME_ACTIONS.START }
   | { type: GAME_ACTIONS.END; payload: { uncorrectedAnswers: string[] } }
   | { type: GAME_ACTIONS.RESTART }
@@ -27,7 +26,7 @@ type GameMachineEvents =
   | {
       type: GAME_ACTIONS.MODE_SELECTED;
       payload: {
-        gameMode: "options";
+        gameMode: GAME_MODE.OPTIONS;
         confusions: number;
         revealByClick: boolean;
       };
@@ -35,9 +34,11 @@ type GameMachineEvents =
   | {
       type: GAME_ACTIONS.MODE_SELECTED;
       payload: {
-        gameMode: "type";
+        gameMode: GAME_MODE.TYPE;
       };
     }
+  | { type: GAME_ACTIONS.GO_TO_SETTINGS }
+
   // mainFlow - sub events
   | {
       type: GAME_ACTIONS.GENERATE;
@@ -48,8 +49,6 @@ type GameMachineEvents =
   | {
       type: GAME_ACTIONS.RESULT_DISPLAYED;
     }
-  | { type: GAME_ACTIONS.GO_TO_SETTINGS }
-  | { type: GAME_ACTIONS.SET_REVEAL_BY_CLICK; payload: { value: boolean } }
   // to Overlays
   | { type: GAME_ACTIONS.GO_TO_LEADER_BOARD }
   | { type: GAME_ACTIONS.GO_TO_STATS }
@@ -68,7 +67,7 @@ const initState = {
   entries: [] as Entry[],
   answers: [] as Answer[],
 
-  gameMode: "options" as "options" | "type",
+  gameMode: "options" as GAME_MODE,
   confusions: 2,
   revealByClick: false,
 };
@@ -98,11 +97,7 @@ export const gameFlowMachine = createMachine<
           configStage: {
             initial: "main",
             entry: assign({ ...initState }),
-            on: {
-              CONFIGS_DONE: {
-                target: "memoryStage",
-              },
-            },
+            onDone: "memoryStage",
             states: {
               main: {
                 on: {
@@ -116,16 +111,18 @@ export const gameFlowMachine = createMachine<
               modes: {
                 on: {
                   MODE_SELECTED: {
+                    target: "configDone",
                     actions: "updateMode",
                   },
                   GO_BACK: "main",
                 },
               },
+              configDone: {
+                type: "final",
+              },
+
               settings: {
                 on: {
-                  SET_REVEAL_BY_CLICK: {
-                    actions: "setRevealByClick",
-                  },
                   GO_BACK: "main",
                 },
               },
@@ -136,7 +133,7 @@ export const gameFlowMachine = createMachine<
             entry: "resetResults",
             on: {
               START: "playStage",
-              GENERATE: ".generating", //{actions: 'makeNewGame'},
+              GENERATE: ".generating",
             },
             states: {
               idle: {},
@@ -213,30 +210,28 @@ export const gameFlowMachine = createMachine<
   {
     actions: {
       updateConfigs: assign((context, event) => {
-        if (event.type !== GAME_ACTIONS.GO_TO_MODES) throw "updateConfigs";
+        if (event.type !== GAME_ACTIONS.GO_TO_MODES)
+          throw event.type + "in updateConfigs";
         if (!event.payload) return {};
 
         const { amount, region } = event.payload;
         return { amount, region };
       }),
       updateMode: assign((context, event) => {
-        if (event.type !== GAME_ACTIONS.MODE_SELECTED) throw "updateMode";
+        if (event.type !== GAME_ACTIONS.MODE_SELECTED)
+          throw event.type + "in updateMode";
         const { gameMode } = event.payload;
-        if (gameMode === "options") {
+        if (gameMode === GAME_MODE.OPTIONS) {
           const { revealByClick, confusions } = event.payload;
           return { revealByClick, confusions, gameMode };
-        } else if (gameMode === "type") {
+        } else if (gameMode === GAME_MODE.TYPE) {
           return { gameMode };
         }
         throw "no more modes";
       }),
-      setRevealByClick: assign((context, event) => {
-        if (event.type !== GAME_ACTIONS.SET_REVEAL_BY_CLICK)
-          throw "setRevealByClick";
-        return { revealByClick: event.payload.value };
-      }),
       calculateScore: assign((context, event) => {
-        if (event.type !== GAME_ACTIONS.END) throw "calculateScore";
+        if (event.type !== GAME_ACTIONS.END)
+          throw event.type + "in calculateScore";
         const { uncorrectedAnswers } = event.payload;
         const [score, correctedAnswers] = calculateScore(
           uncorrectedAnswers,
@@ -264,7 +259,8 @@ export const gameFlowMachine = createMachine<
     },
     services: {
       makeNewGame: (context, event) => {
-        if (event.type !== GAME_ACTIONS.GENERATE) throw null;
+        if (event.type !== GAME_ACTIONS.GENERATE)
+          throw event.type + "in makeNewGame";
         const { data } = event.payload;
         const { amount, confusions, region } = context;
         return generateGameSet(data, amount, confusions, region);

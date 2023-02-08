@@ -1,43 +1,34 @@
 import {
-  Stack,
+  Button,
   Checkbox,
+  Flex,
   Radio,
   RadioProps,
   Select,
-  Flex,
   Space,
-  Button,
+  Stack,
 } from "@mantine/core";
-import React, {
-  ChangeEvent,
-  useContext,
-  useEffect,
-  useReducer,
-  useRef,
-  useState,
-  Dispatch,
-} from "react";
+import React, { Dispatch, useContext, useReducer } from "react";
 import { useActor } from "@xstate/react";
 
-import { initGameDB } from "../../lib/gameDB";
+import { GAME_ACTIONS, GAME_MODE } from "../../interfaces/Game";
 
 import GameXstateContext from "../../contexts/GameXstateContext/GameXstateContext";
 
 import BottomBar from "../../components/BottomBar/BottomBar";
 import BackButton from "../../components/BottomBar/BackButton";
 import TitleText from "../../components/TitleText/TitleText";
-import { GAME_ACTIONS, GameMode } from "../../interfaces/Game";
 
 const initialState = {
-  mode: "options" as GameMode,
+  mode: "options" as GAME_MODE,
   confusions: 4,
   revealByClick: false,
 };
 
 interface ModeRadioProps extends RadioProps {
-  currentMode: GameMode;
-  dispatch: Dispatch<{ mode: GameMode }>;
-  mode: GameMode;
+  currentMode: GAME_MODE;
+  dispatch: Dispatch<{ mode: GAME_MODE }>;
+  mode: GAME_MODE;
 }
 const ModeRadio = ({
   currentMode,
@@ -69,24 +60,21 @@ const numberOptions = [2, 3, 4];
 export const ModeSelectPage = () => {
   const [state, dispatch] = useReducer(reducer, initialState);
   const gameService = useContext(GameXstateContext);
-  const [current, send] = useActor(gameService.gameService);
+  const [_, send] = useActor(gameService.gameService);
 
   const { mode, confusions, revealByClick } = state;
 
   const onNextClick = () => {
-    if (mode === "options") {
-      send([
-        {
-          type: GAME_ACTIONS.MODE_SELECTED,
-          payload: { gameMode: "options", confusions, revealByClick },
-        },
-        { type: GAME_ACTIONS.CONFIGS_DONE },
-      ]);
-    } else if (mode === "type") {
-      send([
-        { type: GAME_ACTIONS.MODE_SELECTED, payload: { gameMode: "type" } },
-        { type: GAME_ACTIONS.CONFIGS_DONE },
-      ]);
+    if (mode === GAME_MODE.OPTIONS) {
+      send({
+        type: GAME_ACTIONS.MODE_SELECTED,
+        payload: { gameMode: GAME_MODE.OPTIONS, confusions, revealByClick },
+      });
+    } else if (mode === GAME_MODE.TYPE) {
+      send({
+        type: GAME_ACTIONS.MODE_SELECTED,
+        payload: { gameMode: GAME_MODE.TYPE },
+      });
     } else {
       throw `game mode ${mode} does not exist`;
     }
@@ -102,14 +90,14 @@ export const ModeSelectPage = () => {
         <Flex gap={"lg"}>
           <ModeRadio
             currentMode={mode}
-            mode={"options"}
+            mode={GAME_MODE.OPTIONS}
             value={"options"}
             dispatch={dispatch}
             label={"Options Mode"}
           />
           <ModeRadio
             currentMode={mode}
-            mode={"type"}
+            mode={GAME_MODE.TYPE}
             value={"type"}
             dispatch={dispatch}
             label={"Type out Mode"}
@@ -151,7 +139,7 @@ export const ModeSelectPage = () => {
       <BottomBar>
         <BackButton />
         <Button color="leetPurple" size="lg" onClick={onNextClick}>
-          Start!
+          Done
         </Button>
       </BottomBar>
     </div>

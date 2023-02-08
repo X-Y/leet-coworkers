@@ -50,4 +50,7 @@ export enum GAME_OVERLAY_ACTIONS {
   HIDE,
 }
 
-export type GameMode = "options" | "type";
+export enum GAME_MODE {
+  OPTIONS = "options",
+  TYPE = "type",
+}

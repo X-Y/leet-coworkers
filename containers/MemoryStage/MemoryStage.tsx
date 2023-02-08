@@ -48,7 +48,6 @@ const MemoryStage = () => {
   });
 
   const generateGameSet = () => {
-    console.log("memeoryStage - generate");
     if (!data) {
       throw "no data";
     }
@@ -78,7 +77,6 @@ const MemoryStage = () => {
 
   useEffect(() => {
     if (current.context.entries.length) {
-      console.log(current.context.entries);
       setLoading(false);
     }
   }, [current.context.entries]);

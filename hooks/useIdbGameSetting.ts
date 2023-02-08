@@ -13,7 +13,6 @@ export const useIdbGameSetting = (name: nameType) => {
   const [setting, setSetting] = useState(false);
 
   useEffect(() => {
-    console.log("useIdbGameSetting", name);
     (async () => {
       setSetting(await getSetting(name));
     })();
