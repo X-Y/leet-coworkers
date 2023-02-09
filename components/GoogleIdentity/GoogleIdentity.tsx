@@ -1,48 +1,24 @@
-import { useContext, useEffect, useRef, useState } from "react";
+import { useEffect } from "react";
+import { signIn, signOut, useSession } from "next-auth/react";
 
-import { GlobalStoreContext } from "../../contexts/GlobalStoreContext/GlobalStoreContext";
-import Script from "next/script";
+import { MainButton } from "../Button/MainMenuButtons";
 
 interface GoogleIdentityProps {
   onSuccess?: () => void;
 }
 
 export const GoogleIdentity = ({ onSuccess }: GoogleIdentityProps) => {
-  const { setOAuthCredential } = useContext(GlobalStoreContext);
+  const { data: session } = useSession();
 
-  const [scriptLoaded, setScriptLoaded] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  const handleCredentialResponse = (credentialResponse: {
-    credential: string;
-  }) => {
-    setOAuthCredential(credentialResponse.credential || "");
-    onSuccess && onSuccess();
-  };
   useEffect(() => {
-    if (!scriptLoaded) return;
-    if (!containerRef.current) throw "googleIdentity div not initialized";
-    window.google.accounts.id.initialize({
-      client_id: process.env.NEXT_PUBLIC_GOOGLE_OAUTH_CLIENT_ID || "",
-      auto_select: true,
-      callback: handleCredentialResponse,
-    });
-    window.google.accounts.id.renderButton(containerRef.current, {
-      type: "standard",
-      theme: "outline",
-    });
-    window.google.accounts.id.prompt();
-  }, [scriptLoaded]);
+    if (session) {
+      onSuccess && onSuccess();
+    }
+  }, [session, onSuccess]);
 
   return (
-    <>
-      <Script
-        src="https://accounts.google.com/gsi/client"
-        async
-        defer
-        onLoad={() => setScriptLoaded(true)}
-      />
-      <div ref={containerRef} />
-    </>
+    <MainButton onClick={() => (session ? signOut() : signIn())}>
+      Sign {session ? "out" : "in"}
+    </MainButton>
   );
 };

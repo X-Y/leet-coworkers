@@ -16,20 +16,21 @@ import { useSort } from "../hooks/useSort";
 import { useFilter } from "../hooks/useFilter";
 import { GlobalStoreContext } from "../contexts/GlobalStoreContext/GlobalStoreContext";
 import { GoogleIdentity } from "../components/GoogleIdentity/GoogleIdentity";
+import { useSession } from "next-auth/react";
 
 const Home: NextPage = () => {
-  const { oAuthCredential } = useContext(GlobalStoreContext);
+  const { data: session } = useSession();
   const [amount, setAmount] = useState(20);
   const { status, data, error, isFetching, remove } = useQuery<Coworker[]>(
     "getCoworkers",
     coworkersApi,
     {
       staleTime: 60000,
-      enabled: !!oAuthCredential,
+      enabled: !!session,
     }
   );
 
-  if (!oAuthCredential) {
+  if (!session) {
     remove();
   }
 

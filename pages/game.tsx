@@ -1,18 +1,11 @@
-import {
-  createContext,
-  ReactNode,
-  useContext,
-  useEffect,
-  useReducer,
-  useState,
-} from "react";
+import { useContext, useEffect } from "react";
 import type { NextPage } from "next";
 import { useQuery } from "react-query";
 import { AnimatePresence, motion } from "framer-motion";
-import { useActor, useInterpret, useMachine } from "@xstate/react";
+import { useActor } from "@xstate/react";
 
 import type { Coworker } from "../interfaces/CoworkerModel";
-import { GAME_STATES, GAME_OVERLAY_STATES } from "../interfaces/Game";
+import { GAME_STATES } from "../interfaces/Game";
 
 import { coworkersApi } from "../lib/frontendApi";
 
@@ -22,16 +15,6 @@ import {
 } from "../contexts/FilterContext/FilterContext";
 import GameContextProvider from "../contexts/GameXstateContext/GameXstateContextProvider";
 import GameXstateContext from "../contexts/GameXstateContext/GameXstateContext";
-
-import { gameFlowMachine } from "../gameState/gameFlow";
-import {
-  gameStateReducer,
-  iniGameState,
-} from "../reducers/gameReducer/gameReducer";
-import {
-  gameOverlayStateReducer,
-  iniGameOverlayState,
-} from "../reducers/gameReducer/gameOverlayReducer";
 
 import PlayStage from "../containers/PlayStage/PlayStage";
 import ResultStage from "../containers/ResultStage/ResultStage";
@@ -47,9 +30,10 @@ import { GlobalStoreContext } from "../contexts/GlobalStoreContext/GlobalStoreCo
 import { useIdbGameSetting } from "../hooks/useIdbGameSetting";
 import LoginStage from "../containers/LoginStage/LoginStage";
 import ModeSelectPage from "../containers/ModeSelectPage/ModeSelectPage";
+import { useSession } from "next-auth/react";
 
 const Game: NextPage = () => {
-  const { oAuthCredential } = useContext(GlobalStoreContext);
+  const { data: session } = useSession();
   const { setFilterBy } = useContext(FilterContext);
   const gameService = useContext(GameXstateContext);
   const [current, send] = useActor(gameService.gameService);
@@ -59,7 +43,7 @@ const Game: NextPage = () => {
     setFilterBy(FILTER_BY.CITY);
   }, []);
 
-  const isAuthenticated = disableOAuth || !!oAuthCredential;
+  const isAuthenticated = disableOAuth || !!session;
 
   const { status, data, error, isFetching, remove } = useQuery<Coworker[]>(
     "getCoworkers",
@@ -76,11 +60,6 @@ const Game: NextPage = () => {
 
   let resData = data;
   resData = useFilter(resData);
-
-  /*const gameStep =
-    gameOverlayState.step === GAME_OVERLAY_STATES.NONE
-      ? gameState.step
-      : gameOverlayState.step;*/
 
   return (
     <GameBackground>
