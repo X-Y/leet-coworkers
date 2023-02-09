@@ -86,9 +86,9 @@ export const LoginStage = () => {
               <FlagText size={60} weight={900}>
                 THE GUESSING GAME
               </FlagText>
-              <Center>
-                <GoogleIdentity onSuccess={loggedIn} />
-              </Center>
+            </motion.div>
+            <motion.div variants={variantsMenu} style={{ textAlign: "center" }}>
+              <GoogleIdentity onSuccess={loggedIn} />
             </motion.div>
             <motion.div variants={variantsMenu} style={{ textAlign: "center" }}>
               <ConfigStageSubButton onClick={onSettingsClick}>

@@ -1,4 +1,4 @@
-import { Stack, Checkbox, CheckboxProps } from "@mantine/core";
+import { Stack, Checkbox, Box, CheckboxProps } from "@mantine/core";
 import React, { useEffect, useReducer, useRef } from "react";
 
 import { initGameDB } from "../../lib/gameDB";
@@ -6,6 +6,7 @@ import { initGameDB } from "../../lib/gameDB";
 import BottomBar from "../../components/BottomBar/BottomBar";
 import TitleText from "../../components/TitleText/TitleText";
 import BackButton from "../../components/BottomBar/BackButton";
+import { SettingsID } from "./SettingsID";
 
 const SettingCheckbox = (props: CheckboxProps) => {
   return (
@@ -68,6 +69,9 @@ export const SettingsPage = () => {
     >
       <Stack style={{ flexGrow: 1, marginLeft: "2rem" }}>
         <TitleText align={"left"}>Settings</TitleText>
+        <Box>
+          <SettingsID />
+        </Box>
         <SettingCheckbox
           disabled={!isDev}
           checked={state[GAME_SETTINGS.DISABLE_OAUTH]}
