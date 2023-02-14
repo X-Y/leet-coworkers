@@ -17,7 +17,7 @@ export const GoogleIdentity = ({ onSuccess }: GoogleIdentityProps) => {
   }, [session, onSuccess]);
 
   return (
-    <MainButton onClick={() => (session ? signOut() : signIn())}>
+    <MainButton onClick={() => (session ? signOut() : signIn("google"))}>
       Sign {session ? "out" : "in"}
     </MainButton>
   );
