@@ -22,6 +22,8 @@ export const generateGameSet = (
 ) => {
   let entries: Entry[] = [];
   let audited: number = 0;
+  // Add some backups for potential broken images
+  const amountPlus = amount + Math.max(amount * 0.1, 2);
 
   const regionFilterString = getRegionFilterString(region);
   const preliminaries: Coworker[] = (
@@ -29,12 +31,13 @@ export const generateGameSet = (
   )
     .filter((one) => !!one.imagePortraitUrl)
     .sort(() => 0.5 - Math.random())
-    // Add some backups for potential broken images
-    .slice(0, amount + Math.min(amount * 0.1, 2));
+    .slice(0, amountPlus);
 
   return new Promise<Entry[]>((resolve, reject) => {
     let auditDone = false;
     const audit = (src?: string) => {
+      if (auditDone) return;
+
       if (src) {
         const valid = preliminaries.find((one) => one.imagePortraitUrl === src);
         if (!valid) throw "a valid image should always exist";
@@ -48,7 +51,10 @@ export const generateGameSet = (
       }
 
       audited++;
-      if (!auditDone && audited >= Math.min(preliminaries.length, amount)) {
+      if (
+        audited >= amountPlus ||
+        entries.length >= Math.min(preliminaries.length, amount)
+      ) {
         auditDone = true;
         resolve(entries);
       }
