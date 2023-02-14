@@ -1,4 +1,12 @@
-import { Box, Button, Flex, Grid, Stack, Switch } from "@mantine/core";
+import {
+  Box,
+  Button,
+  CSSObject,
+  Flex,
+  MantineTheme,
+  Stack,
+  Switch,
+} from "@mantine/core";
 import { useList } from "react-firebase-hooks/database";
 import { ref } from "firebase/database";
 import React, { Fragment, useContext, useState } from "react";
@@ -16,6 +24,16 @@ import BackButton from "../../components/BottomBar/BackButton";
 
 import { KeyContext } from "./HighScoreStage";
 import { GAME_MODE } from "../../interfaces/Game";
+
+const sxHideUltraSmall = (theme: MantineTheme) =>
+  ({
+    minWidth: "0",
+    visibility: "hidden",
+    [`@media (min-width: 400px)`]: {
+      minWidth: "auto",
+      visibility: "visible",
+    },
+  } as CSSObject);
 
 const HighScoreFilters = ({
   current,
@@ -78,12 +96,12 @@ const DisplayHighScore = () => {
   const gameService = useContext(GameXstateContext);
   const [current, send] = useActor(gameService.gameService);
 
-  const { region: gameRegion = Regions.Everywhere } = current.context;
+  const { region: gameRegion = Regions.Everywhere, gameMode } = current.context;
 
   const { key } = useContext(KeyContext);
   const [region, setRegion] = useState<Regions>(gameRegion);
 
-  const [mode, setMode] = useState(GAME_MODE.TYPE);
+  const [mode, setMode] = useState(gameMode);
 
   const database = getRealtimeDatabase();
   const [values, loading, error] = useList(
@@ -105,11 +123,11 @@ const DisplayHighScore = () => {
         };
       })
       .sort((a, b) => b.score - a.score)
+      .filter(({ gameMode }) => (gameMode || GAME_MODE.OPTIONS) === mode)
       .map((one, idx) => ({
         ...one,
         no: idx,
       }))
-      .filter(({ gameMode }) => (gameMode || GAME_MODE.OPTIONS) === mode)
       .filter(({ no, key: iKey }) => no < 10 || iKey === key);
 
   return (
@@ -123,37 +141,41 @@ const DisplayHighScore = () => {
             current={region}
             onSelect={setRegion as (val: string) => void}
           />
-          <Grid
-            justify={"center"}
+          <Box
             sx={(theme) => ({
               width: "90vw",
               maxWidth: "60rem",
               color: mode === GAME_MODE.TYPE ? "gold" : "white",
-              fontSize: theme.fontSizes.xl,
+              fontSize: theme.fontSizes.md,
               fontWeight: 600,
               overflow: "hidden",
               marginBottom: "4rem",
+              display: "grid",
+              columnGap: "0.5rem",
+              gridTemplateColumns: "0.5fr 9.5fr .5fr 0 0",
+
+              [`@media (min-width: 400px)`]: {
+                gridTemplateColumns: "0.5fr 9.5fr .5fr .5fr 1fr",
+              },
+
+              [`@media (min-width: ${theme.breakpoints.xs}px)`]: {
+                fontSize: theme.fontSizes.xl,
+                gridTemplateColumns: "0.5fr 6.5fr 1.5fr 1.5fr 2fr",
+              },
             })}
           >
-            <Grid.Col span={1}>#</Grid.Col>
-            <Grid.Col sm={5} span={4}>
-              Name
-            </Grid.Col>
-            <Grid.Col sm={2} span={2}>
-              Score
-            </Grid.Col>
-            <Grid.Col sm={2} span={2}>
-              Mode
-            </Grid.Col>
-            <Grid.Col sm={2} span={3}>
-              Region
-            </Grid.Col>
+            <Box>#</Box>
+            <Box>Name</Box>
+            <Box>Score</Box>
+            <Box sx={sxHideUltraSmall}>Mode</Box>
+            <Box sx={sxHideUltraSmall}>Region</Box>
 
             {(error || loading) && (
-              <Grid.Col span={12} style={{ textAlign: "center" }}>
+              <Box sx={{ textAlign: "center", gridColumn: "1 / -1" }}>
+                loading...
                 {error && "Error!"}
                 {loading && "Loading..."}
-              </Grid.Col>
+              </Box>
             )}
 
             {!loading &&
@@ -163,7 +185,7 @@ const DisplayHighScore = () => {
                 const isCurrent = v.key === key;
                 return (
                   <Fragment key={id}>
-                    {outOfList && <Grid.Col span={12}>...</Grid.Col>}
+                    {outOfList && <Box sx={{ gridColumn: "1 / -1" }}>...</Box>}
 
                     <Box
                       sx={(theme) => ({
@@ -173,26 +195,18 @@ const DisplayHighScore = () => {
                           : undefined,
                       })}
                     >
-                      <Grid.Col span={1}>{v.no + 1}</Grid.Col>
-                      <Grid.Col sm={5} span={4}>
-                        {v.name}
-                      </Grid.Col>
-                      <Grid.Col sm={2} span={2}>
-                        {v.score}
-                      </Grid.Col>
-                      <Grid.Col sm={2} span={2}>
-                        {v.gameMode}
-                      </Grid.Col>
-                      <Grid.Col sm={2} span={3}>
-                        {region}
-                      </Grid.Col>
+                      <Box>{v.no + 1}</Box>
+                      <Box>{v.name}</Box>
+                      <Box>{v.score}</Box>
+                      <Box sx={sxHideUltraSmall}>{v.gameMode}</Box>
+                      <Box sx={sxHideUltraSmall}>{region}</Box>
                     </Box>
 
-                    {outOfList && <Grid.Col span={12}>...</Grid.Col>}
+                    {outOfList && <Box sx={{ gridColumn: "1 / -1" }}>...</Box>}
                   </Fragment>
                 );
               })}
-          </Grid>
+          </Box>
         </>
       </Stack>
       <BottomBar>
