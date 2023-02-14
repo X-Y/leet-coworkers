@@ -52,7 +52,7 @@ export const generateGameSet = (
 
       audited++;
       if (
-        audited >= amountPlus ||
+        audited >= preliminaries.length ||
         entries.length >= Math.min(preliminaries.length, amount)
       ) {
         auditDone = true;
