@@ -11,7 +11,7 @@ export const GoogleIdentity = ({ onSuccess }: GoogleIdentityProps) => {
   const { data: session } = useSession();
 
   useEffect(() => {
-    if (session) {
+    if (session?.user) {
       onSuccess && onSuccess();
     }
   }, [session, onSuccess]);

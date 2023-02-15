@@ -1,7 +1,7 @@
-import NextAuth, { CallbacksOptions } from "next-auth";
-import GoogleProvider, { GoogleProfile } from "next-auth/providers/google";
+import NextAuth, { AuthOptions } from "next-auth";
+import GoogleProvider from "next-auth/providers/google";
 
-export default NextAuth({
+export const authOptions: AuthOptions = {
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_OAUTH_CLIENT_ID || "",
@@ -27,4 +27,6 @@ export default NextAuth({
       return;
     },
   },
-});
+};
+
+export default NextAuth(authOptions);

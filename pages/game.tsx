@@ -1,13 +1,18 @@
 import { useContext, useEffect } from "react";
-import type { NextPage } from "next";
+import type { NextPage, GetServerSideProps } from "next";
 import { useQuery } from "react-query";
 import { AnimatePresence, motion } from "framer-motion";
 import { useActor } from "@xstate/react";
+import { getServerSession } from "next-auth";
+import { useSession } from "next-auth/react";
 
 import type { Coworker } from "../interfaces/CoworkerModel";
 import { GAME_STATES } from "../interfaces/Game";
 
 import { coworkersApi } from "../lib/frontendApi";
+
+import { useFilter } from "../hooks/useFilter";
+import { useIdbGameSetting } from "../hooks/useIdbGameSetting";
 
 import {
   FILTER_BY,
@@ -23,14 +28,12 @@ import ConfigStage from "../containers/ConfigStage/ConfigStage";
 import SettingsPage from "../containers/SettingsPage/SettingsPage";
 import StatsStage from "../containers/StatsStage/StatsStage";
 import HighScoreStage from "../containers/HighScoreStage/HighScoreStage";
-
-import { useFilter } from "../hooks/useFilter";
-import GameBackground from "../components/GameBackground/GameBackground";
-import { GlobalStoreContext } from "../contexts/GlobalStoreContext/GlobalStoreContext";
-import { useIdbGameSetting } from "../hooks/useIdbGameSetting";
 import LoginStage from "../containers/LoginStage/LoginStage";
 import ModeSelectPage from "../containers/ModeSelectPage/ModeSelectPage";
-import { useSession } from "next-auth/react";
+
+import GameBackground from "../components/GameBackground/GameBackground";
+
+import { authOptions } from "./api/auth/[...nextauth]";
 
 const Game: NextPage = () => {
   const { data: session } = useSession();
@@ -132,3 +135,10 @@ const GameWithXstateContext: NextPage = () => {
 };
 
 export default GameWithXstateContext;
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const session =
+    (await getServerSession(context.req, context.res, authOptions)) || {};
+
+  return { props: { session } };
+};
