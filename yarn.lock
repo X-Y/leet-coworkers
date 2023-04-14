@@ -2194,10 +2194,10 @@
     "@typescript-eslint/types" "5.30.0"
     eslint-visitor-keys "^3.3.0"
 
-"@xstate/react@^3.0.2":
-  version "3.0.2"
-  resolved "https://registry.yarnpkg.com/@xstate/react/-/react-3.0.2.tgz#7907f1e2df464c14b1cac2120a25070a0c81e111"
-  integrity sha512-sFbnMyi+FHF6bXbdvOF6RKVJ9VxrhhUz7KJ/8qKwpqFs0h+EoGOXdfAeuS3aEy29JsFaRclozBxDpsEJd/vlkg==
+"@xstate/react@^3.2.1":
+  version "3.2.1"
+  resolved "https://registry.yarnpkg.com/@xstate/react/-/react-3.2.1.tgz#ac7b78e8c1d6d3802dfb29a6499f18e48b3dfdb3"
+  integrity sha512-L/mqYRxyBWVdIdSaXBHacfvS8NKn3sTKbPb31aRADbE9spsJ1p+tXil0GVQHPlzrmjGeozquLrxuYGiXsFNU7g==
   dependencies:
     use-isomorphic-layout-effect "^1.0.0"
     use-sync-external-store "^1.0.0"

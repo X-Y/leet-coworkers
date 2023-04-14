@@ -47,7 +47,6 @@ export const LoginStage = () => {
   const [, send] = useActor(gameService.gameService);
 
   const disableOAuth = useIdbGameSetting("disableOAuth");
-  const { oAuthCredential } = useContext(GlobalStoreContext);
 
   const loggedIn = useCallback(() => {
     send({ type: GAME_ACTIONS.LOGGED_IN });
@@ -58,10 +57,10 @@ export const LoginStage = () => {
   };
 
   useEffect(() => {
-    if (disableOAuth || oAuthCredential) {
+    if (disableOAuth) {
       loggedIn();
     }
-  }, [disableOAuth, loggedIn, oAuthCredential]);
+  }, [disableOAuth, loggedIn]);
 
   return (
     <Center>

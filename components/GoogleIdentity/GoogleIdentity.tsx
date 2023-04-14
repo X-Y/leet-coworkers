@@ -10,15 +10,17 @@ interface GoogleIdentityProps {
 export const GoogleIdentity = ({ onSuccess }: GoogleIdentityProps) => {
   const { data: session } = useSession();
 
+  const isSignedIn = !!session?.user;
+
   useEffect(() => {
-    if (session) {
+    if (isSignedIn) {
       onSuccess && onSuccess();
     }
   }, [session, onSuccess]);
 
   return (
-    <MainButton onClick={() => (session ? signOut() : signIn("google"))}>
-      Sign {session ? "out" : "in"}
+    <MainButton onClick={() => (isSignedIn ? signOut() : signIn("google"))}>
+      Sign {isSignedIn ? "out" : "in"}
     </MainButton>
   );
 };
