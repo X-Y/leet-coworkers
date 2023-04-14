@@ -6,13 +6,15 @@ import { SubButton } from "../../components/Button/MainMenuButtons";
 export const SettingsID = () => {
   const { data: session } = useSession();
 
+  const isSignedIn = !!session?.user;
+
   return (
     <Stack>
       <Text color={"white"}>
-        {session ? "Logged in as: " : "Requires 1337 sign-in to play"}
+        {isSignedIn ? "Logged in as: " : "Requires 1337 sign-in to play"}
       </Text>
       <Flex align={"center"} gap={"sm"}>
-        {session ? (
+        {isSignedIn ? (
           <>
             <Avatar
               radius={"xl"}
