@@ -19,12 +19,13 @@ export const authOptions: AuthOptions = {
   callbacks: {
     async signIn({ account, profile }) {
       if (account?.provider === "google") {
-        return (
+        return !!(
           profile?.email_verified &&
-          (profile.email?.endsWith("@1337.tech") as any)
+          (profile.email?.endsWith("@1337.tech") ||
+            profile.email?.endsWith("@tretton37.com"))
         );
       }
-      return;
+      return false;
     },
   },
 };

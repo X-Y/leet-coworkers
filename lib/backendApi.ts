@@ -13,10 +13,15 @@ export const fetchCoworkersApi = async () => {
   const cacheHours = 24;
   const stringRes = cacheData.get(leetCoworkerUrl);
   if (stringRes) {
-    const jsonRes: Coworker[] = JSON.parse(stringRes);
-    console.log("Using cached API response");
-    console.log("Cached API response length is", jsonRes.length);
-    return jsonRes;
+    try {
+      const jsonRes: Coworker[] = JSON.parse(stringRes);
+      console.log("Using cached API response");
+      console.log("Cached API response length is", jsonRes.length);
+      return jsonRes;
+    } catch (e) {
+      console.error("Error!!", stringRes);
+      throw e;
+    }
   }
 
   console.log("Using real API...");
@@ -41,10 +46,19 @@ export const fetchCoworkersApi = async () => {
             output += chunk;
           })
           .on("end", function () {
-            cacheData.put(leetCoworkerUrl, output, cacheHours * 1000 * 60 * 60);
-            const jsonRes: Coworker[] = JSON.parse(output);
-            console.log("API response length is", jsonRes.length);
-            resolve(jsonRes);
+            try {
+              const jsonRes: Coworker[] = JSON.parse(output);
+              console.log("API response length is", jsonRes.length);
+              cacheData.put(
+                leetCoworkerUrl,
+                output,
+                cacheHours * 1000 * 60 * 60
+              );
+              resolve(jsonRes);
+            } catch (e) {
+              console.error("API response invalid:", output);
+              reject(e);
+            }
           });
       }
     );

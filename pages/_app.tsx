@@ -11,7 +11,13 @@ import { GlobalStoreContextProvider } from "../contexts/GlobalStoreContext/Globa
 
 const queryClient = new QueryClient();
 
-function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
+interface PageProps {
+  session: any;
+}
+function MyApp({
+  Component,
+  pageProps: { session, ...pageProps },
+}: AppProps<PageProps>) {
   return (
     <>
       <Head>
