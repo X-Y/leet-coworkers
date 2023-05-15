@@ -35,8 +35,10 @@ const pickRandoms = <T>(arr: T[], num: number) => {
 };
 
 const getRandomFromCache = async (existing: string[]) => {
-  const data = await fetchCoworkersApi();
-  if (!data) {
+  let data: Coworker[];
+  try {
+    data = await fetchCoworkersApi();
+  } catch (e) {
     throw "Coworker data not cached yet";
   }
 
@@ -97,7 +99,11 @@ export const getHeadPics = async () => {
     picks = pickRandoms(files, num);
     console.info("using cached images, and generating some more");
 
-    getRandomFromCache(picks).then(generatePics);
+    getRandomFromCache(picks)
+      .then(generatePics)
+      .catch((e) => {
+        console.error("Cannot get head pics, ", e);
+      });
   } else {
     try {
       const randomsNew = await getRandomFromCache(picks);

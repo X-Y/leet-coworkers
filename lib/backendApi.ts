@@ -20,7 +20,7 @@ export const fetchCoworkersApi = async () => {
       return jsonRes;
     } catch (e) {
       console.error("Error!!", stringRes);
-      return;
+      throw e;
     }
   }
 
@@ -46,10 +46,19 @@ export const fetchCoworkersApi = async () => {
             output += chunk;
           })
           .on("end", function () {
-            cacheData.put(leetCoworkerUrl, output, cacheHours * 1000 * 60 * 60);
-            const jsonRes: Coworker[] = JSON.parse(output);
-            console.log("API response length is", jsonRes.length);
-            resolve(jsonRes);
+            try {
+              const jsonRes: Coworker[] = JSON.parse(output);
+              console.log("API response length is", jsonRes.length);
+              cacheData.put(
+                leetCoworkerUrl,
+                output,
+                cacheHours * 1000 * 60 * 60
+              );
+              resolve(jsonRes);
+            } catch (e) {
+              console.error("API response invalid:", output);
+              reject(e);
+            }
           });
       }
     );
