@@ -13,10 +13,15 @@ export const fetchCoworkersApi = async () => {
   const cacheHours = 24;
   const stringRes = cacheData.get(leetCoworkerUrl);
   if (stringRes) {
-    const jsonRes: Coworker[] = JSON.parse(stringRes);
-    console.log("Using cached API response");
-    console.log("Cached API response length is", jsonRes.length);
-    return jsonRes;
+    try {
+      const jsonRes: Coworker[] = JSON.parse(stringRes);
+      console.log("Using cached API response");
+      console.log("Cached API response length is", jsonRes.length);
+      return jsonRes;
+    } catch (e) {
+      console.error("Error!!", stringRes);
+      return;
+    }
   }
 
   console.log("Using real API...");
