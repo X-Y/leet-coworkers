@@ -44,10 +44,13 @@ export const generateGameSet = (
 
         const options = createConfusions(valid, confusions, data);
 
-        entries.push({
-          ...valid,
-          options,
-        });
+        // avoid adding broken options
+        if (options.length === confusions) {
+          entries.push({
+            ...valid,
+            options,
+          });
+        }
       }
 
       audited++;
@@ -93,18 +96,18 @@ const createConfusions = (
   numConfusions: number,
   data: Coworker[]
 ) => {
-  const { name, office: validOffice } = valid;
-  let confuses: string[] = [name];
+  const { name: realName, office: validOffice } = valid;
 
-  const filteredData = data.filter(({ office }) => office === validOffice);
+  const filteredData = data
+    .filter(
+      ({ office }) =>
+        office?.toLocaleLowerCase() === validOffice?.toLocaleLowerCase()
+    )
+    .filter(({ name }) => name !== realName);
 
-  while (confuses.length < numConfusions) {
-    const confuse =
-      filteredData[Math.round(Math.random() * (filteredData.length - 1))];
-    if (confuses.findIndex((name) => name === confuse.name) === -1) {
-      confuses.push(confuse.name);
-    }
-  }
-
-  return confuses.sort(() => 0.5 - Math.random());
+  return filteredData
+    .sort(() => 0.5 - Math.random())
+    .slice(0, numConfusions - 1)
+    .map(({ name }) => name)
+    .concat(realName);
 };
