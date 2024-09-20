@@ -98,16 +98,19 @@ const createConfusions = (
 ) => {
   const { name: realName, office: validOffice } = valid;
 
-  const filteredData = data
+  const candidates = data
     .filter(
       ({ office }) =>
         office?.toLocaleLowerCase() === validOffice?.toLocaleLowerCase()
     )
-    .filter(({ name }) => name !== realName);
-
-  return filteredData
     .sort(() => 0.5 - Math.random())
-    .slice(0, numConfusions - 1)
+    .slice(0, numConfusions)
     .map(({ name }) => name)
+    .filter((name) => name !== realName)
     .concat(realName);
+
+  // realName is always added to the end, so 1st element is safe to remove
+  if (candidates.length > numConfusions) candidates.shift();
+
+  return candidates.sort(() => 0.5 - Math.random());
 };
