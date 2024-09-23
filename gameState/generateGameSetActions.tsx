@@ -93,18 +93,31 @@ export const generateGameSet = (
 
 const createConfusions = (
   valid: Coworker,
-  numConfusions: number,
+  numConfusionsMax: number,
   data: Coworker[]
 ) => {
   const { name: realName, office: validOffice } = valid;
 
-  const candidates = data
-    .filter(
-      ({ office }) =>
-        office?.toLocaleLowerCase() === validOffice?.toLocaleLowerCase()
-    )
-    .sort(() => 0.5 - Math.random())
-    .slice(0, numConfusions)
+  const dataByOffice = data.filter(
+    ({ office }) =>
+      office?.toLocaleLowerCase() === validOffice?.toLocaleLowerCase()
+  );
+  const numConfusions = Math.min(dataByOffice.length, numConfusionsMax);
+
+  // Fisher-Yates shuffle to only randomize the necessary numbers
+  for (
+    let i = dataByOffice.length;
+    i > dataByOffice.length - numConfusions;
+    i--
+  ) {
+    const idxToSwap = Math.floor(Math.random() * i);
+    const temp = dataByOffice[i - 1];
+    dataByOffice[i - 1] = dataByOffice[idxToSwap];
+    dataByOffice[idxToSwap] = temp;
+  }
+
+  const candidates = dataByOffice
+    .slice(-numConfusions)
     .map(({ name }) => name)
     .filter((name) => name !== realName)
     .concat(realName);
