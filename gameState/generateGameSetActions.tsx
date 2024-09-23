@@ -44,10 +44,13 @@ export const generateGameSet = (
 
         const options = createConfusions(valid, confusions, data);
 
-        entries.push({
-          ...valid,
-          options,
-        });
+        // avoid adding broken options
+        if (options.length === confusions) {
+          entries.push({
+            ...valid,
+            options,
+          });
+        }
       }
 
       audited++;
@@ -90,21 +93,37 @@ export const generateGameSet = (
 
 const createConfusions = (
   valid: Coworker,
-  numConfusions: number,
+  numConfusionsMax: number,
   data: Coworker[]
 ) => {
-  const { name, office: validOffice } = valid;
-  let confuses: string[] = [name];
+  const { name: realName, office: validOffice } = valid;
 
-  const filteredData = data.filter(({ office }) => office === validOffice);
+  const dataByOffice = data.filter(
+    ({ office }) =>
+      office?.toLocaleLowerCase() === validOffice?.toLocaleLowerCase()
+  );
+  const numConfusions = Math.min(dataByOffice.length, numConfusionsMax);
 
-  while (confuses.length < numConfusions) {
-    const confuse =
-      filteredData[Math.round(Math.random() * (filteredData.length - 1))];
-    if (confuses.findIndex((name) => name === confuse.name) === -1) {
-      confuses.push(confuse.name);
-    }
+  // Fisher-Yates shuffle to only randomize the necessary numbers
+  for (
+    let i = dataByOffice.length;
+    i > dataByOffice.length - numConfusions;
+    i--
+  ) {
+    const idxToSwap = Math.floor(Math.random() * i);
+    const temp = dataByOffice[i - 1];
+    dataByOffice[i - 1] = dataByOffice[idxToSwap];
+    dataByOffice[idxToSwap] = temp;
   }
 
-  return confuses.sort(() => 0.5 - Math.random());
+  const candidates = dataByOffice
+    .slice(-numConfusions)
+    .map(({ name }) => name)
+    .filter((name) => name !== realName)
+    .concat(realName);
+
+  // realName is always added to the end, so 1st element is safe to remove
+  if (candidates.length > numConfusions) candidates.shift();
+
+  return candidates.sort(() => 0.5 - Math.random());
 };

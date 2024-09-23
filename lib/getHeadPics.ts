@@ -111,6 +111,7 @@ export const getHeadPics = async () => {
 
       console.info("using newly generated images");
     } catch (e) {
+      //TODO: Error should be sent to frontend
       console.error(e);
     }
   }
