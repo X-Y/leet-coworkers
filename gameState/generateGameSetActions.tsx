@@ -111,9 +111,10 @@ const createConfusions = (
     i--
   ) {
     const idxToSwap = Math.floor(Math.random() * i);
-    const temp = dataByOffice[i - 1];
-    dataByOffice[i - 1] = dataByOffice[idxToSwap];
-    dataByOffice[idxToSwap] = temp;
+    [dataByOffice[i - 1], dataByOffice[idxToSwap]] = [
+      dataByOffice[idxToSwap],
+      dataByOffice[i - 1],
+    ];
   }
 
   const candidates = dataByOffice
